@@ -124,6 +124,9 @@ void bin(std::vector< std::vector< std::vector< int> > > &bins, particle_t *part
       iposx = floor(particles[p].x/h);
       iposy = floor(particles[p].y/h);  
       bins[iposx][iposy].push_back(p);
+      // set acceleration to zero
+      particles[p].ax = 0;
+      particles[p].ay = 0;
     }
   return;
 };
@@ -175,8 +178,8 @@ int main( int argc, char **argv )
     //int numYcells = std::ceil(std::abs(yedgeT - yedgeB)/ );
 
     double density = 0.0005;
-    //double cutoff = 0.01;
-    double cutoff = sqrt(n*density);
+    double cutoff = 0.01;
+    //double cutoff = sqrt(n*density);
     double h = cutoff;
     double maxXY = sqrt(n*density);
     int numCells = ceil(maxXY/h);

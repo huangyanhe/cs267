@@ -34,9 +34,16 @@ void findNeighbors(std::vector<int > &a_neighbors, std::vector< std::vector< std
     {
       if (j == 0)
 	{
-	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j+1].begin(),bins[i+1][j+1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
+	  if (numCells == 1)
+	    {
+	      return;
+	    }
+	  else
+	    {
+	      a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
+	      a_neighbors.insert(a_neighbors.end(), bins[i+1][j+1].begin(),bins[i+1][j+1].end());
+	      a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
+	    }
 	}
       else if (j == numCells-1)
 	{
@@ -136,7 +143,7 @@ int main( int argc, char **argv )
         return 0;
     }
     
-    int n = read_int( argc, argv, "-n", 10 );
+    int n = read_int( argc, argv, "-n", 100 );
 
     char *savename = read_string( argc, argv, "-o", NULL );
     char *sumname = read_string( argc, argv, "-s", NULL );
@@ -168,11 +175,12 @@ int main( int argc, char **argv )
     //int numYcells = std::ceil(std::abs(yedgeT - yedgeB)/ );
 
     double density = 0.0005;
-    double cutoff = 0.01;
+    //double cutoff = 0.01;
+    double cutoff = sqrt(n*density);
     double h = cutoff;
-    double maxXY = sqrt(n*density)+ h;
+    double maxXY = sqrt(n*density);
     int numCells = ceil(maxXY/h);
-    //int numCells =2;
+    //int numCells =1;
     //std::vector< int> temp1;
     //std::vector< std::vector< int> > temp2(numCells,  temp1);
     //std::vector< std::vector< std::vector< int> > > bins(numCells, std::vector< std::vector< int> >(numCells));
@@ -193,6 +201,8 @@ int main( int argc, char **argv )
 	dmin = 1.0;
 
 	std::vector< std::vector< std::vector< int> > > bins(numCells, std::vector< std::vector< int> >(numCells));
+
+	
     bin(bins, particles, n, h);
     
 	//
@@ -205,10 +215,10 @@ int main( int argc, char **argv )
         //     for (int j = 0; j < n; j++ )
 	// 			apply_force( particles[i], particles[j],&dmin,&davg,&navg);
         // }
-    for (int p = 0; p<n; p++)
-      {
-    	std::cout<<p<<","<<particles[p].x<<std::endl;
-      }
+    // for (int p = 0; p<n; p++)
+    //   {
+    // 	std::cout<<p<<","<<particles[p].x<<std::endl;
+    //   }
     
 	for( int i = 0; i< numCells; i++)
 	  {
@@ -216,12 +226,12 @@ int main( int argc, char **argv )
 	      {
 		std::vector<int> Neighbors;
 		findNeighbors(Neighbors, bins, i, j, numCells);
-		std::cout<<"Neigbors ij ("<<i<<","<<j<<") = ";
-		for(auto pr = Neighbors.begin(); pr!= Neighbors.end(); ++pr )
-		  {
-		    std::cout<<*pr<<",";
-		  }
-		std::cout<<std::endl;
+		// std::cout<<"Neigbors ij ("<<i<<","<<j<<") = ";
+		// for(auto pr = Neighbors.begin(); pr!= Neighbors.end(); ++pr )
+		//   {
+		//     std::cout<<*pr<<",";
+		//   }
+		// std::cout<<std::endl;
 		for(int k = 0; k<bins[i][j].size(); k++ )
 		  {
 		    for(int q=0; q<Neighbors.size(); q++)

@@ -13,7 +13,7 @@ const int SAVEFREQ = 10;
 //
 // particle data structure
 //
-typedef struct 
+typedef struct
 {
   double x;
   double y;

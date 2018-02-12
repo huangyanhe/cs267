@@ -14,8 +14,8 @@ TARGETS = serial openmp mpi autograder
 
 all:	$(TARGETS)
 
-serial: serial.o common.o
-	$(CC) -o $@ $(LIBS) serial.o common.o
+serial: serial.o common.o decomposition.o
+	$(CC) -o $@ $(LIBS) serial.o common.o decomposition.o
 autograder: autograder.o common.o
 	$(CC) -o $@ $(LIBS) autograder.o common.o
 openmp: openmp.o common.o
@@ -33,6 +33,8 @@ mpi.o: mpi.cpp common.h
 	$(MPCC) -c $(CFLAGS) mpi.cpp
 common.o: common.cpp common.h
 	$(CC) -c $(CFLAGS) common.cpp
+decomposition.o: decomposition.cpp decomposition.h
+	$(CC) -c $(CFLAGS) decomposition.cpp
 
 clean:
-	rm -f *.o $(TARGETS) *.stdout *.txt
+	rm -f *.o $(TARGETS) *.stdout *.txt *.error

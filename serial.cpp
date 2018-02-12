@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <math.h>
 #include "common.h"
+#include "decomposition.h"
 
 //
 //  benchmarking program
@@ -35,6 +36,9 @@ int main( int argc, char **argv )
     set_size( n );
     init_particles( n, particles );
 
+    decomp grid;
+    malloc_decomp(&grid);
+    initial_decomp(n, particles, &grid);
     //
     //  simulate a number of time steps
     //
@@ -51,15 +55,31 @@ int main( int argc, char **argv )
         for( int i = 0; i < n; i++ )
         {
             particles[i].ax = particles[i].ay = 0;
-            for (int j = 0; j < n; j++ )
-            apply_force( particles[i], particles[j],&dmin,&davg,&navg);
+            int m = particles[i].x/RegionSize, n = particles[i].y/RegionSize;
+            for(int mInd = max(m-1,0); mInd <= min(m+1,grid.M-1); mInd++){
+                for(int nInd = max(n-1,0); nInd <= min(n+1,grid.N-1); nInd++){
+                    region& temp = grid.region_list[region_indexing(mInd, nInd, &grid)];
+                    for(int k = 0; k < temp.Num; k++){
+                        apply_force(particles[i], particles[temp.ind[k]], &dmin, &davg, &navg);
+                    }
+                }
+            }
+            //printf("m = %d, n = %d\n", m, n);
+            //printf("number of neighbors (%d - %d) * (%d - %d)\n", min(m+1, grid.M), max(m-1,0), min(n+1, grid.N), max(n-1,0));
         }
 
         //
         //  move particles
         //
-        for( int i = 0; i < n; i++ )
-            move( particles[i] );
+        for( int i = 0; i < n; i++ ){
+            int m_old = particles[i].x/RegionSize, n_old = particles[i].y/RegionSize;
+            move(particles[i]);
+            int m_new = particles[i].x/RegionSize, n_new = particles[i].y/RegionSize;
+            if( m_new != m_old || n_new != n_old ){
+                remove_particle(i, region_indexing(m_old, n_old, &grid), &grid);
+                add_particle(i, region_indexing(m_new, n_new, &grid), &grid);
+            }
+        }
 
         if( find_option( argc, argv, "-no" ) == -1 )
         {
@@ -80,6 +100,7 @@ int main( int argc, char **argv )
         }
     }
     simulation_time = read_timer( ) - simulation_time;
+    free_decomp(&grid);
 
     printf( "n = %d, simulation time = %g seconds", n, simulation_time);
 

@@ -8,7 +8,7 @@
 
 extern double size;
 
-#define InitialCapacity 20
+#define InitialCapacity 1
 #define RegionSize 0.01
 
 typedef struct{

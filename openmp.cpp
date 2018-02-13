@@ -3,101 +3,135 @@
 #include <assert.h>
 #include <math.h>
 #include "common.h"
+#include "decomposition.h"
 #include "omp.h"
 
 //
 //  benchmarking program
 //
 int main( int argc, char **argv )
-{   
-    int navg,nabsavg=0,numthreads; 
-    double dmin, absmin=1.0,davg,absavg=0.0;
-	
+{
+    int navg,nabsavg=0,numthreads;
+    double davg,dmin, absmin=1.0, absavg=0.0;
+
     if( find_option( argc, argv, "-h" ) >= 0 )
     {
         printf( "Options:\n" );
         printf( "-h to see this help\n" );
-        printf( "-n <int> to set number of particles\n" );
+        printf( "-n <int> to set the number of particles\n" );
         printf( "-o <filename> to specify the output file name\n" );
-        printf( "-s <filename> to specify a summary file name\n" ); 
-        printf( "-no turns off all correctness checks and particle output\n");   
+        printf( "-s <filename> to specify a summary file name\n" );
+        printf( "-no turns off all correctness checks and particle output\n");
         return 0;
     }
 
     int n = read_int( argc, argv, "-n", 1000 );
+
     char *savename = read_string( argc, argv, "-o", NULL );
     char *sumname = read_string( argc, argv, "-s", NULL );
 
     FILE *fsave = savename ? fopen( savename, "w" ) : NULL;
-    FILE *fsum = sumname ? fopen ( sumname, "a" ) : NULL;      
+    FILE *fsum = sumname ? fopen ( sumname, "a" ) : NULL;
 
     particle_t *particles = (particle_t*) malloc( n * sizeof(particle_t) );
     set_size( n );
     init_particles( n, particles );
 
+    decomp grid;
+    malloc_decomp(&grid);
+    initial_decomp(n, particles, &grid);
     //
     //  simulate a number of time steps
     //
+    //omp_lock_t *writelock = (omp_lock_t*)malloc(grid.Num_region*sizeof(omp_lock_t));
+    //for(int i = 0; i < grid.Num_region; i++){
+        //omp_init_lock(&writelock[i]);
+    //}
     double simulation_time = read_timer( );
-
-    #pragma omp parallel private(dmin) 
+#pragma omp parallel private(dmin)
     {
     numthreads = omp_get_num_threads();
     for( int step = 0; step < NSTEPS; step++ )
     {
         navg = 0;
         davg = 0.0;
-	dmin = 1.0;
+        dmin = 1.0;
         //
-        //  compute all forces
+        //  compute forces
         //
-        #pragma omp for reduction (+:navg) reduction(+:davg)
+#pragma omp for schedule(dynamic) reduction(+:navg) reduction(+:davg)
         for( int i = 0; i < n; i++ )
         {
             particles[i].ax = particles[i].ay = 0;
-            for (int j = 0; j < n; j++ )
-                apply_force( particles[i], particles[j],&dmin,&davg,&navg);
+            int m = particles[i].x/RegionSize, n = particles[i].y/RegionSize;
+            for(int mInd = max(m-1,0); mInd <= min(m+1,grid.M-1); mInd++){
+                for(int nInd = max(n-1,0); nInd <= min(n+1,grid.N-1); nInd++){
+                    region& temp = grid.region_list[region_indexing(mInd, nInd, &grid)];
+                    for(int k = 0; k < temp.Num; k++){
+                        apply_force(particles[i], particles[temp.ind[k]], &dmin, &davg, &navg);
+                    }
+                }
+            }
         }
-        
-		
+
         //
         //  move particles
         //
-        #pragma omp for
-        for( int i = 0; i < n; i++ ) 
-            move( particles[i] );
-  
-        if( find_option( argc, argv, "-no" ) == -1 ) 
+#pragma omp for schedule(dynamic)
+        for( int i = 0; i < n; i++ ){
+            int m_old = particles[i].x/RegionSize, n_old = particles[i].y/RegionSize;
+            int index_old = m_old+n_old*grid.M;
+            move(particles[i]);
+            int m_new = particles[i].x/RegionSize, n_new = particles[i].y/RegionSize;
+            int index_new = m_old+n_old*grid.M;
+            if( m_new != m_old || n_new != n_old ){
+                //omp_set_lock(&writelock[index_old]);
+#pragma omp critical
+                {
+                remove_particle(i, region_indexing(m_old, n_old, &grid), &grid);
+                //omp_unset_lock(&writelock[index_old]);
+
+                //omp_set_lock(&writelock[index_new]);
+                add_particle(i, region_indexing(m_new, n_new, &grid), &grid);
+                //omp_unset_lock(&writelock[index_new]);
+                }
+            }
+        }
+        if( find_option( argc, argv, "-no" ) == -1 )
         {
           //
-          //  compute statistical data
+          // Computing statistical data
           //
-          #pragma omp master
-          if (navg) { 
-            absavg += davg/navg;
+#pragma omp master
+        if (navg) {
+            absavg +=  davg/navg;
             nabsavg++;
           }
+#pragma omp critical
+          if (dmin < absmin) absmin = dmin;
 
-          #pragma omp critical
-	  if (dmin < absmin) absmin = dmin; 
-		
           //
           //  save if necessary
           //
-          #pragma omp master
+#pragma omp master
           if( fsave && (step%SAVEFREQ) == 0 )
               save( fsave, n, particles );
         }
     }
-}
+    }
     simulation_time = read_timer( ) - simulation_time;
-    
+    //for(int i = 0; i < grid.Num_region; i++){
+        //omp_destroy_lock(&writelock[i]);
+    //}
+    //free(writelock);
+    free_decomp(&grid);
+
     printf( "n = %d,threads = %d, simulation time = %g seconds", n,numthreads, simulation_time);
 
     if( find_option( argc, argv, "-no" ) == -1 )
     {
       if (nabsavg) absavg /= nabsavg;
-    // 
+    //
     //  -The minimum distance absmin between 2 particles during the run of the simulation
     //  -A Correct simulation will have particles stay at greater than 0.4 (of cutoff) with typical values between .7-.8
     //  -A simulation where particles don't interact correctly will be less than 0.4 (of cutoff) with typical values between .01-.05
@@ -109,7 +143,7 @@ int main( int argc, char **argv )
     if (absavg < 0.8) printf ("\nThe average distance is below 0.8 meaning that most particles are not interacting");
     }
     printf("\n");
-    
+
     //
     // Printing summary data
     //
@@ -121,10 +155,9 @@ int main( int argc, char **argv )
     //
     if( fsum )
         fclose( fsum );
-
     free( particles );
     if( fsave )
         fclose( fsave );
-    
+
     return 0;
 }

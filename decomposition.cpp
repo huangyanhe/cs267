@@ -1,46 +1,45 @@
 #include "decomposition.h"
 
-void malloc_decomp(decomp* a_decomp){
-    int M = ceil(size/RegionSize);
-    a_decomp->M = M;
-    a_decomp->N = M;
-    a_decomp->Num_region = M*M;
-    a_decomp->region_list = (region*)malloc(a_decomp->Num_region*sizeof(region));
-    for(int i = 0; i < a_decomp->Num_region; i++){
-        a_decomp->region_list[i].Num = 0;
-        a_decomp->region_list[i].Capacity = InitialCapacity;
-        a_decomp->region_list[i].ind = (int*)malloc(InitialCapacity*sizeof(int));
-    }
-}
+extern double size;
+extern double RegionSize;
+extern int InitialCapacity;
 
-void initial_decomp(double num_particle, particle_t* particles, decomp* a_decomp){
-    for(int i = 0; i < a_decomp->Num_region; i++){
-        a_decomp->region_list[i].Num = 0;
+decomp::decomp(double num_particle, particle_t* particles){
+    int required = ceil(size/RegionSize);
+    M = required;
+    N = required;
+    Num_region = M*N;
+    region_list = (region*)malloc(Num_region*sizeof(region));
+    for(int i = 0; i < Num_region; i++){
+        region_list[i].Num = 0;
+        region_list[i].Capacity = InitialCapacity;
+        region_list[i].ind = (int*)malloc(InitialCapacity*sizeof(int));
     }
+
     for(int i = 0; i < num_particle; i++){
         int m = particles[i].x/RegionSize, n = particles[i].y/RegionSize;
-        add_particle(i, region_indexing(m,n,a_decomp), a_decomp);
+        add_particle(i, m, n);
     }
 }
 
-void free_decomp(decomp* a_decomp){
-    for(int i = 0; i < a_decomp->Num_region; i++){
-        free(a_decomp->region_list[i].ind);
+decomp::~decomp(){
+    for(int i = 0; i < Num_region; i++){
+        free(region_list[i].ind);
     }
-    free(a_decomp->region_list);
+    free(region_list);
 }
 
-int region_indexing(int i, int j, decomp* a_decomp){
-    if(i < 0 || j < 0 || i >= a_decomp->M || j>= a_decomp->N){
+region& decomp::operator()(int i, int j){
+    if(i < 0 || j < 0 || i >= M || j>= N){
         printf("indices excess the boundary\n");
         printf("i = %d, j = %d\n", i,j);
         abort();
     }
-    return i+j*a_decomp->M;
+    return region_list[i+j*M];
 }
 
-void add_particle(int particle_ind, int region_ind, decomp* a_decomp){
-    region& temp = a_decomp->region_list[region_ind];
+void decomp::add_particle(int particle_ind, int i, int j){
+    region& temp = region_list[i+j*M];
     if(temp.Num == temp.Capacity){
         temp.Capacity+=InitialCapacity;
         temp.ind = (int*)realloc(temp.ind, temp.Capacity*sizeof(int));
@@ -49,8 +48,8 @@ void add_particle(int particle_ind, int region_ind, decomp* a_decomp){
     temp.Num++;
 }
 
-void remove_particle(int particle_ind, int region_ind, decomp* a_decomp){
-    region& temp = a_decomp->region_list[region_ind];
+void decomp::remove_particle(int particle_ind, int i, int j){
+    region& temp = region_list[i+j*M];
     for(int i = 0; i < temp.Num; i++){
         if(temp.ind[i] == particle_ind){
             for(int j = i; j < temp.Num-1; j++){
@@ -59,17 +58,17 @@ void remove_particle(int particle_ind, int region_ind, decomp* a_decomp){
             break;
         }
         if(i == temp.Num-1){
-            printf("Fail to remove particle %d from region %d\n", particle_ind, region_ind);
+            printf("Fail to remove particle %d from region (%d, %d)\n", particle_ind,i,j);
             abort();
         }
     }
     temp.Num--;
 }
 
-void check(int num_particle, decomp* a_decomp){
+void decomp::check(int num_particle){
     int test = 0;
-    for(int i = 0;i < a_decomp->Num_region; i++){
-        test += a_decomp->region_list[i].Num;
+    for(int i = 0;i < Num_region; i++){
+        test += region_list[i].Num;
     }
     if(test != num_particle){
         printf("wrong total number");

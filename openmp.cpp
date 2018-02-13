@@ -6,6 +6,9 @@
 #include "decomposition.h"
 #include "omp.h"
 
+int InitialCapacity = 8;
+double RegionSize = 0.05;
+
 //
 //  benchmarking program
 //
@@ -37,18 +40,18 @@ int main( int argc, char **argv )
     set_size( n );
     init_particles( n, particles );
 
-    decomp grid;
-    malloc_decomp(&grid);
-    initial_decomp(n, particles, &grid);
+    decomp grid(n, particles);
+    //malloc_decomp(&grid);
+    //initial_decomp(n, particles, &grid);
     //
     //  simulate a number of time steps
     //
-    //omp_lock_t *writelock = (omp_lock_t*)malloc(grid.Num_region*sizeof(omp_lock_t));
-    //for(int i = 0; i < grid.Num_region; i++){
-        //omp_init_lock(&writelock[i]);
-    //}
+    omp_lock_t *writelock = (omp_lock_t*)malloc(grid.Num_region*sizeof(omp_lock_t));
+    for(int i = 0; i < grid.Num_region; i++){
+        omp_init_lock(&writelock[i]);
+    }
     double simulation_time = read_timer( );
-#pragma omp parallel private(dmin)
+#pragma omp parallel private(dmin) //reduction(min:absmin)
     {
     numthreads = omp_get_num_threads();
     for( int step = 0; step < NSTEPS; step++ )
@@ -60,13 +63,14 @@ int main( int argc, char **argv )
         //  compute forces
         //
 #pragma omp for schedule(dynamic) reduction(+:navg) reduction(+:davg)
-        for( int i = 0; i < n; i++ )
-        {
+        for(int i = 0; i < n; i++){
+        //for( int i = id; i < n; i+=numthreads ){
             particles[i].ax = particles[i].ay = 0;
             int m = particles[i].x/RegionSize, n = particles[i].y/RegionSize;
             for(int mInd = max(m-1,0); mInd <= min(m+1,grid.M-1); mInd++){
                 for(int nInd = max(n-1,0); nInd <= min(n+1,grid.N-1); nInd++){
-                    region& temp = grid.region_list[region_indexing(mInd, nInd, &grid)];
+                    //region& temp = grid.region_list[region_indexing(mInd, nInd, &grid)];
+                    region& temp = grid(mInd, nInd);
                     for(int k = 0; k < temp.Num; k++){
                         apply_force(particles[i], particles[temp.ind[k]], &dmin, &davg, &navg);
                     }
@@ -79,20 +83,23 @@ int main( int argc, char **argv )
         //
 #pragma omp for schedule(dynamic)
         for( int i = 0; i < n; i++ ){
+        //for(int i = id; i < n; i += numthreads){
             int m_old = particles[i].x/RegionSize, n_old = particles[i].y/RegionSize;
             int index_old = m_old+n_old*grid.M;
             move(particles[i]);
             int m_new = particles[i].x/RegionSize, n_new = particles[i].y/RegionSize;
             int index_new = m_old+n_old*grid.M;
             if( m_new != m_old || n_new != n_old ){
-                //omp_set_lock(&writelock[index_old]);
 #pragma omp critical
                 {
-                remove_particle(i, region_indexing(m_old, n_old, &grid), &grid);
+                //omp_set_lock(&writelock[index_old]);
+                //remove_particle(i, region_indexing(m_old, n_old, &grid), &grid);
+                grid.remove_particle(i, m_old, n_old);
                 //omp_unset_lock(&writelock[index_old]);
 
                 //omp_set_lock(&writelock[index_new]);
-                add_particle(i, region_indexing(m_new, n_new, &grid), &grid);
+                //add_particle(i, region_indexing(m_new, n_new, &grid), &grid);
+                grid.add_particle(i, m_new, n_new);
                 //omp_unset_lock(&writelock[index_new]);
                 }
             }
@@ -120,11 +127,11 @@ int main( int argc, char **argv )
     }
     }
     simulation_time = read_timer( ) - simulation_time;
-    //for(int i = 0; i < grid.Num_region; i++){
-        //omp_destroy_lock(&writelock[i]);
-    //}
-    //free(writelock);
-    free_decomp(&grid);
+    for(int i = 0; i < grid.Num_region; i++){
+        omp_destroy_lock(&writelock[i]);
+    }
+    free(writelock);
+    //free_decomp(&grid);
 
     printf( "n = %d,threads = %d, simulation time = %g seconds", n,numthreads, simulation_time);
 

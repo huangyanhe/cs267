@@ -30,7 +30,7 @@
 void findNeighbors(std::vector<int > &a_neighbors, std::vector< std::vector< std::vector< int> > > &bins, int i, int j, int numCells)
 {
   a_neighbors.insert(a_neighbors.end(), bins[i][j].begin(), bins[i][j].end());	  
- if (i == 0)
+  if (i == 0)
     {
       if (j == 0)
 	{

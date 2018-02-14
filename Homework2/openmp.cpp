@@ -2,8 +2,133 @@
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
+#include <iostream>
+#include <algorithm>
+#include <vector>
 #include "common.h"
 #include "omp.h"
+
+void findNeighbors(std::vector<int > &a_neighbors, std::vector< std::vector< std::vector< int> > > &bins, int i, int j, int numCells)
+{
+  a_neighbors.insert(a_neighbors.end(), bins[i][j].begin(), bins[i][j].end());	  
+ if (i == 0)
+    {
+      if (j == 0)
+	{
+	  if (numCells == 1)
+	    {
+	      return;
+	    }
+	  else
+	    {
+	      a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
+	      a_neighbors.insert(a_neighbors.end(), bins[i+1][j+1].begin(),bins[i+1][j+1].end());
+	      a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
+	    }
+	}
+      else if (j == numCells-1)
+	{
+	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
+	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j-1].begin(),bins[i+1][j-1].end());
+	  a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
+
+	}
+      else
+	{
+	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
+	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j+1].begin(),bins[i+1][j+1].end());
+	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j-1].begin(),bins[i+1][j-1].end());
+	  a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
+	  a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
+	}
+    }
+  else if ( i == numCells-1)
+    {
+      if (j == 0)
+	{
+	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
+	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j+1].begin(),bins[i-1][j+1].end());
+	  a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
+	}
+      else if (j == numCells-1)
+	{
+	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
+	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j-1].begin(),bins[i-1][j-1].end());
+	  a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
+
+	}
+      else
+	{
+	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
+	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j+1].begin(),bins[i-1][j+1].end());
+	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j-1].begin(),bins[i-1][j-1].end());
+	  a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
+	  a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
+	}
+    }
+  else if (j == 0)
+    {
+      a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
+      a_neighbors.insert(a_neighbors.end(), bins[i-1][j+1].begin(),bins[i-1][j+1].end());
+      a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
+      a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
+      a_neighbors.insert(a_neighbors.end(), bins[i+1][j+1].begin(),bins[i+1][j+1].end());
+
+    }
+  else if (j == numCells-1)
+    {
+      a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
+      a_neighbors.insert(a_neighbors.end(), bins[i-1][j-1].begin(),bins[i-1][j-1].end());
+      a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
+      a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
+      a_neighbors.insert(a_neighbors.end(), bins[i+1][j-1].begin(),bins[i+1][j-1].end());
+    }
+  else
+    {
+      a_neighbors.insert(a_neighbors.end(), bins[i-1][j+1].begin(),bins[i-1][j+1].end());
+      a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
+      a_neighbors.insert(a_neighbors.end(), bins[i-1][j-1].begin(),bins[i-1][j-1].end());
+      a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
+      a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
+      a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
+      a_neighbors.insert(a_neighbors.end(), bins[i+1][j-1].begin(),bins[i+1][j-1].end());
+      a_neighbors.insert(a_neighbors.end(), bins[i+1][j+1].begin(),bins[i+1][j+1].end()); 
+    }
+  
+  
+};
+void bin(std::vector< std::vector< std::vector< int> > > &bins, particle_t *particles, int n, double h)
+{
+  int iposx, iposy;
+  for(int p=0; p< n; p++)
+    {
+      iposx = floor(particles[p].x/h);
+      iposy = floor(particles[p].y/h);  
+      bins[iposx][iposy].push_back(p);
+      // set acceleration to zero
+      particles[p].ax = 0;
+      particles[p].ay = 0;
+    }
+  return;
+};
+void computeBlock(int M, int N,  int i, int j, int numCells, double dmin, double davg, int navg ,std::vector< std::vector< std::vector< int> > > &bins, particle_t *particles)
+{
+  for(int m = 0; m<M; m++)
+    {
+      for(int n = 0; n<N; n++)
+	{
+	  std::vector<int> Neighbors;
+	  findNeighbors(Neighbors, bins, i + m, j + n , numCells);
+	  for(int k = 0; k<bins[i+m][j+n].size(); k++ )
+	    {
+	      for(int q=0; q<Neighbors.size(); q++)
+		{			
+		  apply_force( particles[bins[i+m][j+n][k]], particles[Neighbors[q]],&dmin,&davg,&navg);
+		}
+	    }
+	}
+    }
+};
 
 //
 //  benchmarking program
@@ -40,6 +165,14 @@ int main( int argc, char **argv )
     //
     double simulation_time = read_timer( );
 
+    double density = 0.0005;
+    double cutoff = 0.01;
+    double h = cutoff;
+    double maxXY = sqrt(n*density);
+    int numCells = ceil(maxXY/h);
+    int BlockSizeM = floor(numCells/4.0);
+    int BlockSizeN = floor(numCells/8.0);
+    
     #pragma omp parallel private(dmin) 
     {
     numthreads = omp_get_num_threads();
@@ -48,16 +181,26 @@ int main( int argc, char **argv )
         navg = 0;
         davg = 0.0;
 	dmin = 1.0;
+
+	std::vector< std::vector< std::vector< int> > > bins(numCells, std::vector< std::vector< int> >(numCells));
+	
+#pragma omp single
+	{
+	  bin(bins, particles, n, h);
+	}
         //
         //  compute all forces
         //
         #pragma omp for reduction (+:navg) reduction(+:davg)
-        for( int i = 0; i < n; i++ )
-        {
-            particles[i].ax = particles[i].ay = 0;
-            for (int j = 0; j < n; j++ )
-                apply_force( particles[i], particles[j],&dmin,&davg,&navg);
-        }
+        for( int i = 0; i< numCells; i += BlockSizeM)
+	  {
+	    int M = std::min(numCells - i, BlockSizeM);
+	    for( int j = 0; j< numCells; j += BlockSizeN)
+	      {
+		int N = std::min(numCells - i, BlockSizeN);	    
+		computeBlock(M, N, i, j, numCells, dmin, davg, navg, bins, particles);
+	      }
+	  }
         
 		
         //

@@ -102,7 +102,6 @@ int main( int argc, char **argv )
                             decomposition.add_particle(temp_region.ind[k], m_new, n_new);
                         }
                         else{
-                            // need be done here
                             int dest_id_m = 0, dest_id_n = 0;
                             for(int test_i = 0; test_i < decomposition.num_sub_M; test_i++){
                                 if(m_new < decomposition.grid_M[test_i]){

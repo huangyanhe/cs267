@@ -4,3 +4,7 @@
 *.e*
 *.stdout
 *.error
+autograder
+openmp
+mpi
+serial

@@ -85,9 +85,9 @@ int main( int argc, char **argv )
         //
         {
         int id = omp_get_thread_num();
-        sub_decomp& temp_sub_decomp = decomposition.sub_decomp_list[id];
-        for(int i = temp_sub_decomp.ul_m; i < temp_sub_decomp.rd_m; i++){
-            for(int j = temp_sub_decomp.ul_n; j < temp_sub_decomp.rd_n; j++){
+        int id_m = id%decomposition.num_sub_M, id_n = id/decomposition.num_sub_M;
+        for(int i = decomposition.grid_M[id_m]; i < decomposition.grid_M[id_m+1]; i++){
+            for(int j = decomposition.grid_N[id_n]; i < decomposition.grid_N[id_n+1]; i++){
                 region& temp_region = decomposition(i,j);
                 for(int k = 0; k < temp_region.Num; k++){
                     particle_t& temp_par = particles[temp_region.ind[k]];
@@ -95,17 +95,29 @@ int main( int argc, char **argv )
                     int m_new = temp_par.x/RegionSize, n_new = temp_par.y/RegionSize;
                     if(m_new != i || n_new != j){
                         decomposition.delete_particle(temp_region.ind[k],i,j);
-                        if(m_new >= temp_sub_decomp.ul_m &&
-                            m_new < temp_sub_decomp.rd_m &&
-                            n_new >= temp_sub_decomp.ul_n &&
-                            n_new < temp_sub_decomp.rd_n){
+                        if(m_new >= decomposition.grid_M[id_m] &&
+                            m_new < decomposition.grid_M[id_m+1] &&
+                            n_new >= decomposition.grid_N[id_n] &&
+                            n_new < decomposition.grid_N[id_n+1])
                             decomposition.add_particle(temp_region.ind[k], m_new, n_new);
                         }
                         else{
                             // need be done here
-                            int sub_dest = 0;
-                            decomposition.sub_decomp_list[sub_dest]
-                               .particle_removed[id].push_back(temp_region.ind[k]);
+                            int dest_id_m = 0, dest_id_n = 0;
+                            for(int test_i = 0; test_i < decomposition.num_sub_M; test_i++){
+                                if(m_new < decomposition.grid_M[test_i]){
+                                    break;
+                                }
+                                dest_id_m = test_i;
+                            }
+                            for(int test_j = 0; test_j < decomposition.num_sub_N; test_j++){
+                                if(n_new < decomposition.grid_N[test_j]){
+                                    break;
+                                }
+                                dest_id_n = test_j;
+                            }
+                            int dest_id = dest_id_m+dest_id_n*decomposition.num_sub_M;
+                            decomposition.particle_removed[dest_id*numthreads+id].push_back(temp_region.ind[k]);
                         }
                     }
                 }
@@ -116,9 +128,8 @@ int main( int argc, char **argv )
 
         {
         int id = omp_get_thread_num();
-        sub_decomp& temp_sub_decomp = decomposition.sub_decomp_list[id];
         for(int i = 0; i < numthreads; i++){
-            std::vector<int>& temp_vec = temp_sub_decomp.particle_removed[i];
+            std::vector<int>& temp_vec = decomposition.particle_removed[id*numthreads+i];
             for(int k = 0; k < temp_vec.size(); k++){
                 int m = particles[temp_vec[k]].x/RegionSize, n = particles[temp_vec[k]].y/RegionSize;
                 decomposition.add_particle(temp_vec[k], m, n);

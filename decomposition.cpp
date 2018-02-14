@@ -87,9 +87,8 @@ void decomp::malloc_sub_decomp(int numthreads){
     }
     num_sub_N = M/num_sub_M;
 
-    sub_decomp_list = new sub_decomp[Num_sub];
     int size_M = M/num_sub_M, size_N = M/num_sub_N;
-    int remain_M = M%num_sub_M, remain_N = M%num_sub_N;
+    int remain_M = M%num_sub_M, remain_N = M%um_sub_N;
     grid_M.clear(); grid_N.clear();
     int temp_grid = 0;
     for(int i = 0; i < num_sub_M; i++){
@@ -103,19 +102,6 @@ void decomp::malloc_sub_decomp(int numthreads){
         temp_grid += (i < remain_N)? size_N+1:size_N;
     }
     grid_N.push_back(M);
-
-    for(int i = 0; i < num_sub_M; i++){
-        for(int j = 0; j < num_sub_N; j++){
-            sub_decomp& temp = sub_decomp_list[i+j*num_sub_M];
-            temp.ul_m = grid_M.at(i);
-            temp.ul_n = grid_N.at(j);
-            temp.rd_m = grid_M.at(i+1);
-            temp.rd_n = grid_N.at(j+1);
-            temp.particle_removed.resize(numthreads);
-        }
-    }
+    particle_removed.resize(Num_sub*Num_sub);
 }
 
-void decomp::free_sub_decomp(){
-    delete[] sub_decomp_list;
-}

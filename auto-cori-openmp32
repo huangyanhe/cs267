@@ -2,12 +2,12 @@
 #SBATCH -C haswell
 #SBATCH -p debug            # change this option for non-debug runs
 #SBATCH -N 1                # you'll never need more than 1 node for the serial code
-#SBATCH -t 00:20:00         # adjust the amount of time as necessary
+#SBATCH -t 00:30:00         # adjust the amount of time as necessary
 #SBATCH -J auto-openmp32
 #SBATCH -o auto-openmp32.%j.stdout
 #SBATCH -e auto-openmp32.%j.error
 
-rm openmp.txt
+rm -f openmp.txt
 srun -n 1 -c 1 ./serial -n 50000 -no -s openmp.txt
 export OMP_NUM_THREADS=1
 srun -n 1 -c 1 ./openmp -p 1 -n 50000 -no -s openmp.txt

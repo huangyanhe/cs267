@@ -5,9 +5,8 @@
 #include "common.h"
 #include "decomposition.h"
 
-int InitialCapacity = 1;
+int InitialCapacity = 5;
 double RegionSize = 0.01;
-
 //
 //  benchmarking program
 //
@@ -39,9 +38,7 @@ int main( int argc, char **argv )
     set_size( n );
     init_particles( n, particles );
 
-    decomp grid(n, particles);
-    //malloc_decomp(&grid);
-    //initial_decomp(n, particles, &grid);
+    decomp decomposition(n, particles);
     //
     //  simulate a number of time steps
     //
@@ -59,17 +56,14 @@ int main( int argc, char **argv )
         {
             particles[i].ax = particles[i].ay = 0;
             int m = particles[i].x/RegionSize, n = particles[i].y/RegionSize;
-            for(int mInd = max(m-1,0); mInd <= min(m+1,grid.M-1); mInd++){
-                for(int nInd = max(n-1,0); nInd <= min(n+1,grid.N-1); nInd++){
-                    //region& temp = grid.region_list[region_indexing(mInd, nInd, &grid)];
-                    region& temp = grid(mInd, nInd);
+            for(int mInd = max(m-1,0); mInd <= min(m+1,decomposition.M-1); mInd++){
+                for(int nInd = max(n-1,0); nInd <= min(n+1,decomposition.M-1); nInd++){
+                    region& temp = decomposition(mInd, nInd);
                     for(int k = 0; k < temp.Num; k++){
                         apply_force(particles[i], particles[temp.ind[k]], &dmin, &davg, &navg);
                     }
                 }
             }
-            //printf("m = %d, n = %d\n", m, n);
-            //printf("number of neighbors (%d - %d) * (%d - %d)\n", min(m+1, grid.M), max(m-1,0), min(n+1, grid.N), max(n-1,0));
         }
 
         //
@@ -80,10 +74,8 @@ int main( int argc, char **argv )
             move(particles[i]);
             int m_new = particles[i].x/RegionSize, n_new = particles[i].y/RegionSize;
             if( m_new != m_old || n_new != n_old ){
-                grid.remove_particle(i, m_old, n_old);
-                grid.add_particle(i, m_new, n_new);
-                //remove_particle(i, region_indexing(m_old, n_old, &grid), &grid);
-                //add_particle(i, region_indexing(m_new, n_new, &grid), &grid);
+                decomposition.delete_particle(i, m_old, n_old);
+                decomposition.add_particle(i, m_new, n_new);
             }
         }
 
@@ -106,7 +98,6 @@ int main( int argc, char **argv )
         }
     }
     simulation_time = read_timer( ) - simulation_time;
-    //free_decomp(&grid);
 
     printf( "n = %d, simulation time = %g seconds", n, simulation_time);
 

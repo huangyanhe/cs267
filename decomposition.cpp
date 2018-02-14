@@ -1,14 +1,14 @@
 #include "decomposition.h"
+#include <math.h>
 
 extern double size;
-extern double RegionSize;
 extern int InitialCapacity;
+extern double RegionSize;
 
 decomp::decomp(double num_particle, particle_t* particles){
     int required = ceil(size/RegionSize);
     M = required;
-    N = required;
-    Num_region = M*N;
+    Num_region = M*M;
     region_list = (region*)malloc(Num_region*sizeof(region));
     for(int i = 0; i < Num_region; i++){
         region_list[i].Num = 0;
@@ -30,7 +30,7 @@ decomp::~decomp(){
 }
 
 region& decomp::operator()(int i, int j){
-    if(i < 0 || j < 0 || i >= M || j>= N){
+    if(i < 0 || j < 0 || i >= M || j>= M){
         printf("indices excess the boundary\n");
         printf("i = %d, j = %d\n", i,j);
         abort();
@@ -48,7 +48,7 @@ void decomp::add_particle(int particle_ind, int i, int j){
     temp.Num++;
 }
 
-void decomp::remove_particle(int particle_ind, int i, int j){
+void decomp::delete_particle(int particle_ind, int i, int j){
     region& temp = region_list[i+j*M];
     for(int i = 0; i < temp.Num; i++){
         if(temp.ind[i] == particle_ind){
@@ -74,4 +74,48 @@ void decomp::check(int num_particle){
         printf("wrong total number");
         abort();
     }
+}
+
+void decomp::malloc_sub_decomp(int numthreads){
+    Num_sub = numthreads;
+    int num_sub_M = sqrt(numthreads);
+    for(int i = num_sub_M; i > 0; i--){
+        if(Num_sub%i == 0){
+            num_sub_M = i;
+            break;
+        }
+    }
+    num_sub_N = M/num_sub_M;
+
+    sub_decomp_list = new sub_decomp[Num_sub];
+    int size_M = M/num_sub_M, size_N = M/num_sub_N;
+    int remain_M = M%num_sub_M, remain_N = M%num_sub_N;
+    grid_M.clear(); grid_N.clear();
+    int temp_grid = 0;
+    for(int i = 0; i < num_sub_M; i++){
+        grid_M.push_back(temp_grid);
+        temp_grid += (i < remain_M)? size_M+1:size_M;
+    }
+    grid_M.push_back(M);
+    temp_grid = 0;
+    for(int i = 0; i < num_sub_N; i++){
+        grid_N.push_back(temp_grid);
+        temp_grid += (i < remain_N)? size_N+1:size_N;
+    }
+    grid_N.push_back(M);
+
+    for(int i = 0; i < num_sub_M; i++){
+        for(int j = 0; j < num_sub_N; j++){
+            sub_decomp& temp = sub_decomp_list[i+j*num_sub_M];
+            temp.ul_m = grid_M.at(i);
+            temp.ul_n = grid_N.at(j);
+            temp.rd_m = grid_M.at(i+1);
+            temp.rd_n = grid_N.at(j+1);
+            temp.particle_removed.resize(numthreads);
+        }
+    }
+}
+
+void decomp::free_sub_decomp(){
+    delete[] sub_decomp_list;
 }

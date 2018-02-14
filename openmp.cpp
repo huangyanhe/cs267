@@ -121,9 +121,9 @@ int main( int argc, char **argv )
                     }
                 }
             }
-        }
 #pragma omp barrier
         }
+
 
         {
         int id = omp_get_thread_num();
@@ -180,7 +180,7 @@ int main( int argc, char **argv )
     }
     simulation_time = read_timer( ) - simulation_time;
 
-    decomposition.free_sub_decomp();
+    //decomposition.free_sub_decomp();
     //for(int i = 0; i < decomposition.Num_region; i++){
         //omp_destroy_lock(&region_lock[i]);
     //}

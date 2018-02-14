@@ -88,7 +88,7 @@ void decomp::malloc_sub_decomp(int numthreads){
     num_sub_N = M/num_sub_M;
 
     int size_M = M/num_sub_M, size_N = M/num_sub_N;
-    int remain_M = M%num_sub_M, remain_N = M%um_sub_N;
+    int remain_M = M%num_sub_M, remain_N = M%num_sub_N;
     grid_M.clear(); grid_N.clear();
     int temp_grid = 0;
     for(int i = 0; i < num_sub_M; i++){

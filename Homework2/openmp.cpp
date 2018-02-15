@@ -100,7 +100,7 @@ void findNeighbors(std::vector<int > &a_neighbors, std::vector< std::vector< std
 void bin(std::vector< std::vector< std::vector< int> > > &bins, particle_t *particles, int n, double h)
 {
   for(int i = 0 ; i < bins.size(); i++} {
-    for(int j = 0; j < bins[i].size(); i++)
+    for(int j = 0; j < bins[i].size(); j++)
       bins[i][j].clear();
   }
   int iposx, iposy;
@@ -153,31 +153,34 @@ int main( int argc, char **argv )
     double h = cutoff;
     double maxXY = sqrt(n*density);
     int numCells = ceil(maxXY/h);
-    int BlockSizeM = floor(numCells/4.0);
-    int BlockSizeN = floor(numCells/8.0);
-
+    
     double bin_time = 0;
     double force_time = 0;
     double move_time = 0;
     double before_bin, before_move, before_force;
     std::vector< std::vector< std::vector< int> > > bins(numCells, std::vector< std::vector< int> >(numCells));    
-    #pragma omp parallel private(dmin) 
+#pragma omp parallel private(dmin) 
     {
-    numthreads = omp_get_num_threads();
-    for( int step = 0; step < NSTEPS; step++ )
-    {
-        navg = 0;
-        davg = 0.0;
-	dmin = 1.0;
+      numthreads = omp_get_num_threads();
+      for( int step = 0; step < NSTEPS; step++ )
+	{
+	  navg = 0;
+	  davg = 0.0;
+	  dmin = 1.0;
 #pragma omp master
-	{
-	  before_bin = omp_get_wtime();
-	}
-
+	  {
+	    before_bin = omp_get_wtime();
+	  }
+	  
 #pragma omp single
-	{
-	  bin(bins, particles, n, h);
-	}
+	  {
+	    bin(bins, particles, n, h);
+	  }
+#pragma omp master
+          {
+            double after_bin = omp_get_wtime();
+            bin_time += (after_bin - before_bin)/NSTEPS;
+          }
         //
         //  compute all forces
         //

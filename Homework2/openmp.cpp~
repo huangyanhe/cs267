@@ -99,10 +99,6 @@ void findNeighbors(std::vector<int > &a_neighbors, std::vector< std::vector< std
 };
 void bin(std::vector< std::vector< std::vector< int> > > &bins, particle_t *particles, int n, double h)
 {
-  for(int i = 0 ; i < bin.size(); i++} {
-    for(int j = 0; j < bin[i].size(); i++)
-      b[i][j].clear();
-  }
   int iposx, iposy;
   for(int p=0; p< n; p++)
     {
@@ -121,6 +117,8 @@ void bin(std::vector< std::vector< std::vector< int> > > &bins, particle_t *part
 int main( int argc, char **argv )
 {   
     int navg,nabsavg=0,numthreads; 
+    double dmin, absmin=1.0,davg,absavg=0.0;
+	
     if( find_option( argc, argv, "-h" ) >= 0 )
     {
         printf( "Options:\n" );
@@ -155,12 +153,7 @@ int main( int argc, char **argv )
     int numCells = ceil(maxXY/h);
     int BlockSizeM = floor(numCells/4.0);
     int BlockSizeN = floor(numCells/8.0);
-
-    double bin_time = 0;
-    double force_time = 0;
-    double move_time = 0;
-    double before_bin, before_move, before_force;
-    std::vector< std::vector< std::vector< int> > > bins(numCells, std::vector< std::vector< int> >(numCells));    
+    
     #pragma omp parallel private(dmin) 
     {
     numthreads = omp_get_num_threads();
@@ -169,11 +162,9 @@ int main( int argc, char **argv )
         navg = 0;
         davg = 0.0;
 	dmin = 1.0;
-#pragma omp master
-	{
-	  before_bin = omp_get_wtime();
-	}
 
+	std::vector< std::vector< std::vector< int> > > bins(numCells, std::vector< std::vector< int> >(numCells));
+	
 #pragma omp single
 	{
 	  bin(bins, particles, n, h);
@@ -181,12 +172,8 @@ int main( int argc, char **argv )
         //
         //  compute all forces
         //
-#pragma omp master
-	{
-	  before_force = omp_get_wtime();
-	}
-#pragma omp for reduction (+:navg) reduction(+:davg) collapse(2)
-	for( int i = 0; i< numCells; i++)
+        #pragma omp for reduction (+:navg) reduction(+:davg)
+        	for( int i = 0; i< numCells; i++)
 	  {
 	    for( int j = 0; j< numCells; j++)
 	      {
@@ -201,48 +188,35 @@ int main( int argc, char **argv )
 		  }
 	      }
 	  }
-#pragma omp master
-	{
-	  double after_force = omp_get_wtime();
-	  force_time += (after_force - before_force)/NSTEPS;
-	}      
+        
 		
         //
         //  move particles
         //
-#pragma omp master
-	{
-	  before_move = omp_get_wtime();
-	}
-#pragma omp for schedule(static)
+        #pragma omp for
         for( int i = 0; i < n; i++ ) 
             move( particles[i] );
-#pragma omp master
-	{
-	  double after_move = omp_get_wtime();
-	  move_time += (after_move - before_move)/NSTEPS;
-	}
-
+  
         if( find_option( argc, argv, "-no" ) == -1 ) 
         {
           //
           //  compute statistical data
           //
-#pragma omp master
+          #pragma omp master
           if (navg) { 
             absavg += davg/navg;
             nabsavg++;
           }
 
-#pragma omp critical
+          #pragma omp critical
 	  if (dmin < absmin) absmin = dmin; 
 		
           //
           //  save if necessary
           //
-#pragma omp master
+          #pragma omp master
           if( fsave && (step%SAVEFREQ) == 0 )
-	    save( fsave, n, particles );
+              save( fsave, n, particles );
         }
     }
 }
@@ -271,7 +245,6 @@ int main( int argc, char **argv )
     //
     if( fsum)
         fprintf(fsum,"%d %d %g\n",n,numthreads,simulation_time);
-    printf("bin_time =  %lf, force_time = %lf, move_time = %lf", bin_time, force_time, move_time);
 
     //
     // Clearing space

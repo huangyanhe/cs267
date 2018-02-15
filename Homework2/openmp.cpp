@@ -99,9 +99,9 @@ void findNeighbors(std::vector<int > &a_neighbors, std::vector< std::vector< std
 };
 void bin(std::vector< std::vector< std::vector< int> > > &bins, particle_t *particles, int n, double h)
 {
-  for(int i = 0 ; i < bin.size(); i++} {
-    for(int j = 0; j < bin[i].size(); i++)
-      b[i][j].clear();
+  for(int i = 0 ; i < bins.size(); i++} {
+    for(int j = 0; j < bins[i].size(); i++)
+      bins[i][j].clear();
   }
   int iposx, iposy;
   for(int p=0; p< n; p++)

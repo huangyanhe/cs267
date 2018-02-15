@@ -111,25 +111,6 @@ void bin(std::vector< std::vector< std::vector< int> > > &bins, particle_t *part
     }
   return;
 };
-void computeBlock(int M, int N,  int i, int j, int numCells, double dmin, double davg, int navg ,std::vector< std::vector< std::vector< int> > > &bins, particle_t *particles)
-{
-  for(int m = 0; m<M; m++)
-    {
-      for(int n = 0; n<N; n++)
-	{
-	  std::vector<int> Neighbors;
-	  findNeighbors(Neighbors, bins, i + m, j + n , numCells);
-	  for(int k = 0; k<bins[i+m][j+n].size(); k++ )
-	    {
-	      for(int q=0; q<Neighbors.size(); q++)
-		{			
-		  apply_force( particles[bins[i+m][j+n][k]], particles[Neighbors[q]],&dmin,&davg,&navg);
-		}
-	    }
-	}
-    }
-};
-
 //
 //  benchmarking program
 //
@@ -192,13 +173,19 @@ int main( int argc, char **argv )
         //  compute all forces
         //
         #pragma omp for reduction (+:navg) reduction(+:davg)
-        for( int i = 0; i< numCells; i += BlockSizeM)
+        	for( int i = 0; i< numCells; i++)
 	  {
-	    int M = std::min(numCells - i, BlockSizeM);
-	    for( int j = 0; j< numCells; j += BlockSizeN)
+	    for( int j = 0; j< numCells; j++)
 	      {
-		int N = std::min(numCells - i, BlockSizeN);	    
-		computeBlock(M, N, i, j, numCells, dmin, davg, navg, bins, particles);
+		std::vector<int> Neighbors;
+		findNeighbors(Neighbors, bins, i, j, numCells);
+		for(int k = 0; k<bins[i][j].size(); k++ )
+		  {
+		    for(int q=0; q<Neighbors.size(); q++)
+		      {			
+			apply_force( particles[bins[i][j][k]], particles[Neighbors[q]],&dmin,&davg,&navg);
+		      }
+		  }
 	      }
 	  }
         

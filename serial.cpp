@@ -5,7 +5,7 @@
 #include "common.h"
 #include "decomposition.h"
 
-int InitialCapacity = 5;
+int InitialCapacity = 10;
 double RegionSize = 0.01;
 //
 //  benchmarking program
@@ -58,65 +58,26 @@ int main( int argc, char **argv )
             int m = particles[i].x/RegionSize, n = particles[i].y/RegionSize;
             for(int mInd = max(m-1,0); mInd <= min(m+1,decomposition.M-1); mInd++){
                 for(int nInd = max(n-1,0); nInd <= min(n+1,decomposition.M-1); nInd++){
-                    region& temp = decomposition(mInd, nInd);
-                    for(int k = 0; k < temp.Num; k++){
-                        apply_force(particles[i], particles[temp.ind[k]], &dmin, &davg, &navg);
+                    std::vector<int>& temp = decomposition(mInd, nInd);
+                    for(int k = 0; k < temp.size(); k++){
+                        apply_force(particles[i], particles[temp[k]], &dmin, &davg, &navg);
                     }
                 }
             }
         }
-        //for(int m = 0; m < decomposition.M; m++){
-            //for(int n = 0; n < decomposition.M; n++){
-                //region& temp = decomposition(m,n);
-                //for(int i = 0; i < temp.Num; i++){
-                    //particles[temp.ind[i]].ax = 0; particles[temp.ind[i]].ay = 0;
-                    //for(int mInd = max(m-1,0); mInd <= min(m+1,decomposition.M-1); mInd++){
-                        //for(int nInd = max(n-1,0); nInd <= min(n+1,decomposition.M-1); nInd++){
-                            //region& neighbor = decomposition(mInd, nInd);
-                            //for(int j = 0; j < neighbor.Num; j++){
-                                //apply_force(particles[temp.ind[i]], particles[neighbor.ind[j]],
-                                        //&dmin, &davg, &navg);
-                            //}
-                        //}
-                    //}
-                //}
-            //}
-        //}
 
         //
         //  move particles
         //
-        //decomposition.check(n, particles);
-        for( int i = 0; i < n; i++ ){
-            int m_old = particles[i].x/RegionSize, n_old = particles[i].y/RegionSize;
-            move(particles[i]);
-            int m_new = particles[i].x/RegionSize, n_new = particles[i].y/RegionSize;
-            if( m_new != m_old || n_new != n_old ){
-                decomposition.delete_particle(i, m_old, n_old);
-                decomposition.add_particle(i, m_new, n_new);
-            }
-        }
-
-        //printf("step = %d\n", step);
-        //for(int m = 0; m < decomposition.M; m++){
-            //for(int n = 0; n < decomposition.M; n++){
-                //printf("cells(%d, %d)\n", m, n);
-                //region& temp = decomposition(m,n);
-                //for(int i = 0; i < temp.Num; i++){
-                    //int index = temp.ind[i];
-                    //printf("index = %d\n", index);
-                    //move(particles[index]);
-                    //int m_new = particles[index].x/RegionSize, n_new = particles[index].y/RegionSize;
-                    //if(m_new!=m||n_new!=n){
-                        //decomposition.delete_particle(index, m, n);
-                        //decomposition.add_particle(index, m_new, n_new);
-                    //}
-                //}
+        //for( int i = 0; i < n; i++ ){
+            //int m_old = particles[i].x/RegionSize, n_old = particles[i].y/RegionSize;
+            //move(particles[i]);
+            //int m_new = particles[i].x/RegionSize, n_new = particles[i].y/RegionSize;
+            //if( m_new != m_old || n_new != n_old ){
+                //decomposition.delete_particle(i, m_old, n_old);
+                //decomposition.add_particle(i, m_new, n_new);
             //}
         //}
-
-        //decomposition.init(n,particles);
-        //decomposition.check(n,particles);
 
         if( find_option( argc, argv, "-no" ) == -1 )
         {

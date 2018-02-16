@@ -1,16 +1,16 @@
 #!/bin/bash -l
 #SBATCH -C haswell
-#SBATCH -p debug          # change this option for non-debug runs
+#SBATCH -p regular          # change this option for non-debug runs
 #SBATCH -N 1              # you'll never need more than 1 node for the serial code
-#SBATCH -t 00:30:00       # adjust the amount of time as necessary
+#SBATCH -t 01:00:00       # adjust the amount of time as necessary
 #SBATCH -J auto-serial
 #SBATCH -o auto-serial.%j.stdout
 #SBATCH -e auto-serial.%j.error
 
 rm -f serial.txt
-srun -n 1 -c 1 ./serial -n 5000 -no -s serial.txt
-srun -n 1 -c 1 ./serial -n 10000 -no -s serial.txt
-srun -n 1 -c 1 ./serial -n 20000 -no -s serial.txt
-srun -n 1 -c 1 ./serial -n 40000 -no -s serial.txt
-srun -n 1 -c 1 ./serial -n 80000 -no -s serial.txt
+srun -n 1 -c 1 ./serial -n 50000 -no -s serial.txt
+srun -n 1 -c 1 ./serial -n 100000 -no -s serial.txt
+srun -n 1 -c 1 ./serial -n 200000 -no -s serial.txt
+srun -n 1 -c 1 ./serial -n 400000 -no -s serial.txt
+srun -n 1 -c 1 ./serial -n 800000 -no -s serial.txt
 ./autograder -v serial -s serial.txt

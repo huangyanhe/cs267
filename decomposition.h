@@ -6,18 +6,11 @@
 #include <stdio.h>
 #include "common.h"
 
-
-class region{
-    public:
-        int* ind;
-        int Num;
-        int Capacity;
-};
-
 class decomp{
     public:
         //region* region_list;
         std::vector< std::vector<int> > region_list;
+        std::vector< int >region_length;
         int M, N, Num_region;
 
         std::vector<int> grid_M, grid_N;

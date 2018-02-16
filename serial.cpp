@@ -67,7 +67,7 @@ int main( int argc, char **argv )
         }
 
         //
-        //  move particles
+        //   move particles
         //
         //for( int i = 0; i < n; i++ ){
             //int m_old = particles[i].x/RegionSize, n_old = particles[i].y/RegionSize;
@@ -78,6 +78,26 @@ int main( int argc, char **argv )
                 //decomposition.add_particle(i, m_new, n_new);
             //}
         //}
+        for(int m = 0; m < decomposition.M; m++){
+            for(int n = 0; n < decomposition.M; n++){
+                  for(int s = 0, k = 0; s < decomposition.region_length[m+n*decomposition.M]; s++){
+                    int index = decomposition(m,n)[k];
+                    move(particles[index]);
+                    int m_new = particles[index].x/RegionSize, n_new = particles[index].y/RegionSize;
+                    if(m_new != m|| n_new != n){
+                        decomposition(m,n).erase(decomposition(m,n).begin()+k);
+                        decomposition(m_new, n_new).push_back(index);
+                    }
+                    else{
+                        k++;
+                    }
+                }
+            }
+        }
+
+        for(int i = 0; i < decomposition.Num_region; i++){
+            decomposition.region_length[i] = decomposition.region_list[i].size();
+        }
 
         if( find_option( argc, argv, "-no" ) == -1 )
         {

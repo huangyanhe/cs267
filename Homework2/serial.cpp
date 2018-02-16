@@ -159,7 +159,7 @@ void particleArithmetic(std::vector< std::vector<particle_t> >& particleBins, st
   for(int j = 0; j<leftCell.size(); j++)
     {
       numDeletedParticles++;
-      particleBins[leftCell[j][3] + leftCell[j][3]*numCells].push_back(particleBins[leftCell[j][0] + leftCell[j][1]*numCells][leftCell[j][2]]);
+      particleBins[leftCell[j][3] + leftCell[j][4]*numCells].push_back(particleBins[leftCell[j][0] + leftCell[j][1]*numCells][leftCell[j][2]]);
       
       particleBins[leftCell[j][0] + leftCell[j][1]*numCells][leftCell[j][2]].exists = false;
     }
@@ -234,7 +234,9 @@ int main( int argc, char **argv )
     //  simulate a number of time steps
     //
     double simulation_time = read_timer( );
-	
+
+    bin( particleBins, particles, n, numCells, h);
+    
     for( int step = 0; step < NSTEPS; step++ )
     {
 	navg = 0;

@@ -6,7 +6,7 @@
 #include "decomposition.h"
 #include "omp.h"
 
-int InitialCapacity = 6;
+int InitialCapacity = 5;
 double RegionSize = 0.01;
 // 2 0.01 0.59 0.59
 //

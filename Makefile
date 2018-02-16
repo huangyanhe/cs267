@@ -37,4 +37,4 @@ decomposition.o: decomposition.cpp decomposition.h
 	$(CC) -c $(CFLAGS) decomposition.cpp
 
 clean:
-	rm -f *.o $(TARGETS) *.txt *.error
+	rm -f *.o $(TARGETS) *.stdout *.txt *.error

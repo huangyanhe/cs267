@@ -8,28 +8,15 @@
 #include <vector>
 
 
-// void particleComputeMove(particle_t particles, int n)
-// {
-//   for( int i = 0; i < n; i++ )
-//         {
-//             particles[i].ax = particles[i].ay = 0;
-//             for (int j = 0; j < n; j++ )
-// 				apply_force( particles[i], particles[j],&dmin,&davg,&navg);
-//         }
- 
-//         //
-//         //  move particles
-//         //
-//         for( int i = 0; i < n; i++ ) 
-//             move( particles[i] );
-// };
+
 
 //
 //  benchmarking program
 //
-void findNeighbors(std::vector<int > &a_neighbors, std::vector< std::vector< std::vector< int> > > &bins, int i, int j, int numCells)
+
+void findNeighbors(std::vector<particle_t > &a_neighbors, std::vector< std::vector<particle_t> >& particleBins, int i, int j, int numCells)
 {
-  a_neighbors.insert(a_neighbors.end(), bins[i][j].begin(), bins[i][j].end());	  
+  a_neighbors.insert(a_neighbors.end(), particleBins[i+numCells*j].begin(), particleBins[i + numCells*j].end());	  
  if (i == 0)
     {
       if (j == 0)
@@ -40,96 +27,165 @@ void findNeighbors(std::vector<int > &a_neighbors, std::vector< std::vector< std
 	    }
 	  else
 	    {
-	      a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
-	      a_neighbors.insert(a_neighbors.end(), bins[i+1][j+1].begin(),bins[i+1][j+1].end());
-	      a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
+	      a_neighbors.insert(a_neighbors.end(), particleBins[i+1 + numCells*j].begin(), particleBins[i+1 + numCells*j].end());
+	      a_neighbors.insert(a_neighbors.end(), particleBins[i+1 + (j+1)*numCells].begin(),particleBins[i+1 + (j+1)*numCells].end());
+	      a_neighbors.insert(a_neighbors.end(), particleBins[i + (j+1)*numCells].begin(), particleBins[i + (j+1)*numCells].end());
 	    }
 	}
       else if (j == numCells-1)
 	{
-	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j-1].begin(),bins[i+1][j-1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i+1 + numCells*j].begin(), particleBins[i+1 + numCells*j].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i+1 + (j-1)*numCells].begin(),particleBins[i+1 + (j-1)*numCells].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i + (j-1)*numCells].begin(), particleBins[i+(j-1)*numCells].end());
 
 	}
       else
 	{
-	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j+1].begin(),bins[i+1][j+1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j-1].begin(),bins[i+1][j-1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i+1 + numCells*j].begin(), particleBins[i+1 + numCells*j].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i+1 + (j+1)*numCells].begin(),particleBins[i+1 + (j+1)*numCells].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i+1 + (j-1)*numCells].begin(),particleBins[i+1 +(j-1)*numCells].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i + (j+1)*numCells].begin(), particleBins[i+ (j+1)*numCells].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i + (j-1)*numCells].begin(), particleBins[i + (j-1)*numCells].end());
 	}
     }
   else if ( i == numCells-1)
     {
       if (j == 0)
 	{
-	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j+1].begin(),bins[i-1][j+1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i-1 + numCells*j].begin(), particleBins[i-1 + numCells*j].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i-1 + (j+1)*numCells].begin(),particleBins[i-1 + (j+1)*numCells].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i + (j+1)*numCells].begin(), particleBins[i + (j+1)*numCells].end());
 	}
       else if (j == numCells-1)
 	{
-	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j-1].begin(),bins[i-1][j-1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i-1 + numCells*j].begin(), particleBins[i-1 + numCells*j].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i-1+ (j-1)*numCells].begin(),particleBins[i-1 + (j-1)*numCells].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i + (j-1)*numCells].begin(), particleBins[i + (j-1)*numCells].end());
 
 	}
       else
 	{
-	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j+1].begin(),bins[i-1][j+1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j-1].begin(),bins[i-1][j-1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i-1 + numCells*j].begin(), particleBins[i-1 + numCells*j].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i-1 + (j+1)*numCells].begin(),particleBins[i-1 + (j+1)*numCells].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i-1+(j-1)*numCells].begin(),particleBins[i-1+(j-1)*numCells].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i+(j+1)*numCells].begin(), particleBins[i + (j+1)*numCells].end());
+	  a_neighbors.insert(a_neighbors.end(), particleBins[i + (j-1)*numCells].begin(), particleBins[i + (j-1)*numCells].end());
 	}
     }
   else if (j == 0)
     {
-      a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i-1][j+1].begin(),bins[i-1][j+1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i+1][j+1].begin(),bins[i+1][j+1].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i-1 + numCells*j].begin(), particleBins[i-1 + numCells*j].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i-1 + (j+1)*numCells].begin(),particleBins[i-1 + (j+1)*numCells].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i + (j+1)*numCells].begin(), particleBins[i + (j+1)*numCells].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i+1 + numCells*j].begin(), particleBins[i+1 + numCells*j].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i+1 + (j+1)*numCells].begin(),particleBins[i+1 + (j+1)*numCells].end());
 
     }
   else if (j == numCells-1)
     {
-      a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i-1][j-1].begin(),bins[i-1][j-1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i+1][j-1].begin(),bins[i+1][j-1].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i-1 + numCells*j].begin(), particleBins[i-1 + numCells*j].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i-1 + (j-1)*numCells].begin(),particleBins[i-1 + (j-1)*numCells].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i + (j-1)*numCells].begin(), particleBins[i + (j-1)*numCells].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i+1 + numCells*j].begin(), particleBins[i+1 + numCells*j].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i+1 + (j-1)*numCells].begin(),particleBins[i+1 + (j-1)*numCells].end());
     }
   else
     {
-      a_neighbors.insert(a_neighbors.end(), bins[i-1][j+1].begin(),bins[i-1][j+1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i-1][j-1].begin(),bins[i-1][j-1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i+1][j-1].begin(),bins[i+1][j-1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i+1][j+1].begin(),bins[i+1][j+1].end()); 
+      a_neighbors.insert(a_neighbors.end(), particleBins[i-1+(j+1)*numCells].begin(),particleBins[i-1 + (j+1)*numCells].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i-1 + numCells*j].begin(), particleBins[i-1 + numCells*j].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i-1 + (j-1)*numCells].begin(),particleBins[i-1 + (j-1)*numCells].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i + (j+1)*numCells].begin(), particleBins[i + (j+1)*numCells].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i + (j-1)*numCells].begin(), particleBins[i + (j-1)*numCells].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i+1 + numCells*j].begin(), particleBins[i+1 + numCells*j].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i+1 + (j-1)*numCells].begin(),particleBins[i+1 + (j-1)*numCells].end());
+      a_neighbors.insert(a_neighbors.end(), particleBins[i+1 + (j+1)*numCells].begin(),particleBins[i+1 + (j+1)*numCells].end()); 
     }
   
   
 };
-void bin(std::vector< std::vector< std::vector< int> > > &bins, particle_t *particles, int n, double h)
+void bin( std::vector< std::vector<particle_t> >& particleBins, particle_t *particles, int n, int numCells,double h)
 {
+  //Need to think about whether this needs to be here now
+  // for(int i = 0 ; i < particleBins.size(); i++} {
+  //   for(int j = 0; j < bins[i].size(); j++)
+  //     bins[i][j].clear();
+  // }
+  
   int iposx, iposy;
   for(int p=0; p< n; p++)
     {
       iposx = floor(particles[p].x/h);
       iposy = floor(particles[p].y/h);  
-      bins[iposx][iposy].push_back(p);
-      // set acceleration to zero
-      particles[p].ax = 0;
-      particles[p].ay = 0;
+      particleBins[iposx + iposy*numCells].push_back(particles[p]);
     }
   return;
 };
+void move(std::vector< std::vector<particle_t> >& particleBins, std::vector<std::vector<int> >& leftCell, int numCells, double h)
+{
+  int iposx, iposy;
+  for( int i = 0; i< numCells; i++)
+    {
+      for( int j = 0; j< numCells; j++)
+	{
+	  for(int k = 0; k<particleBins[i + numCells*j].size(); k++ )
+	    {
+	      if (particleBins[i + numCells*j][k].exists == true)
+		{
+		  move( particleBins[i + numCells*j][k]);
+		  // set acceleration to zero
+		  particleBins[i + numCells*j][k].ax = 0;
+		  particleBins[i + numCells*j][k].ay = 0;
+		  iposx = floor(particleBins[i + numCells*j][k].x/h);
+		  iposy = floor(particleBins[i + numCells*j][k].y/h);  
+		  if (iposx != i || iposy != j)
+		    {
+		      std::vector<int> Coordinates(5, 0);
+		      Coordinates[0] = i;
+		      Coordinates[1] = j;
+		      Coordinates[2] = k;
+		      Coordinates[3] = iposx;
+		      Coordinates[4] = iposy;
+		      leftCell.push_back(Coordinates);
+		    }
+		}
+	    }
+	}
+    }
+}
+/* Need to think about what the correct thing to do in this case is. One option is to delete the particle but maybe better is to leave it alone and just flag it as not used. I could move it outside the domain and anytime I came to the particle for force calculations, I could just ignore it. 
+ */ 
+void particleArithmetic(std::vector< std::vector<particle_t> >& particleBins, std::vector<std::vector<int> >& leftCell, int numCells, int numDeletedParticles)
+{
+  for(int j = 0; j<leftCell.size(); j++)
+    {
+      numDeletedParticles++;
+      particleBins[leftCell[j][3] + leftCell[j][3]*numCells].push_back(particleBins[leftCell[j][0] + leftCell[j][1]*numCells][leftCell[j][2]]);
+      
+      particleBins[leftCell[j][0] + leftCell[j][1]*numCells][leftCell[j][2]].exists = false;
+    }
+}
+void computeForces(std::vector< std::vector<particle_t> >& particleBins, int numCells, double& dmin, double& davg, int& navg)
+{
+  	for( int i = 0; i< numCells; i++)
+	  {
+	    for( int j = 0; j< numCells; j++)
+	      {
+		std::vector<particle_t> Neighbors;
+		findNeighbors(Neighbors, particleBins, i, j, numCells);
+		for(int k = 0; k<particleBins[i + numCells*j].size(); k++ )
+		  {
+		    for(int q=0; q<Neighbors.size(); q++)
+		      {
+			if (particleBins[i+numCells*j][k].exists == true && Neighbors[q].exists == true)
+			apply_force( particleBins[i+numCells*j][k], Neighbors[q],&dmin,&davg,&navg);
+		      }
+		  }
+	      }
+	  }
+}
+//
+//  benchmarking program
+//
 int main( int argc, char **argv )
 {    
     int navg,nabsavg=0;
@@ -158,39 +214,21 @@ int main( int argc, char **argv )
     set_size( n );
     init_particles( n, particles );
 
-    
-    // for(int p=0; p< n; p++)
-    //   {
-    // 	maxX = std::max(particles[p].x, maxX);
-    // 	maxY = std::max(particles[p].y, maxY);
-    // 	minX = std::min( particles[p].x, minX);
-   // 	minY = std::min( particles[p].y, minY);
-    //   }
-
-    // std::cout<<"Max = ("<< maxX<<","<<maxY<< ")"<<std::endl;
-    // std::cout<<"Min = ("<< minX<<","<<minY<< ")"<<std::endl;
-
-    //double xedgeL = minX - 0.5;
-    //double xedgeR = maxX + 0.5;
-    //double yedgeB = minY - 0.5;
-    //double yedgeT = maxY + 0.5;
-    
-    //int numYcells = std::ceil(std::abs(yedgeT - yedgeB)/ );
 
     double density = 0.0005;
     double cutoff = 0.01;
-    //double cutoff = sqrt(n*density);
     double h = cutoff;
     double maxXY = sqrt(n*density);
     int numCells = ceil(maxXY/h);
-    //int numCells =1;
-    //std::vector< int> temp1;
-    //std::vector< std::vector< int> > temp2(numCells,  temp1);
-    //std::vector< std::vector< std::vector< int> > > bins(numCells, std::vector< std::vector< int> >(numCells));
-
+    int numDeletedParticles = 0;
     
-    //bin(bins, particles, n, h);
-    
+    int avgParticlesPerCell = ceil(n/numCells);
+    int overStorageFactor = 2;
+    int maxNumParticlesinBin = avgParticlesPerCell*overStorageFactor;
+    //std::vector<particle_t> initVector;
+    //initVector.reserve(maxNumParticlesinBin);
+    std::vector< std::vector<particle_t> > particleBins(numCells*numCells, std::vector<particle_t>(maxNumParticlesinBin));
+    //    particleBins.reserve(numCells*numCells);
     
     //
     //  simulate a number of time steps
@@ -202,54 +240,22 @@ int main( int argc, char **argv )
 	navg = 0;
         davg = 0.0;
 	dmin = 1.0;
-
-	std::vector< std::vector< std::vector< int> > > bins(numCells, std::vector< std::vector< int> >(numCells));
-
-	
-    bin(bins, particles, n, h);
-    
 	//
-        // compute forces
+        //  compute forces
         //
-	
-        // for( int i = 0; i < n; i++ )
-        // {
-        //     particles[i].ax = particles[i].ay = 0;
-        //     for (int j = 0; j < n; j++ )
-	// 			apply_force( particles[i], particles[j],&dmin,&davg,&navg);
-        // }
-    // for (int p = 0; p<n; p++)
-    //   {
-    // 	std::cout<<p<<","<<particles[p].x<<std::endl;
-    //   }
-    
-	for( int i = 0; i< numCells; i++)
-	  {
-	    for( int j = 0; j< numCells; j++)
-	      {
-		std::vector<int> Neighbors;
-		findNeighbors(Neighbors, bins, i, j, numCells);
-		// std::cout<<"Neigbors ij ("<<i<<","<<j<<") = ";
-		// for(auto pr = Neighbors.begin(); pr!= Neighbors.end(); ++pr )
-		//   {
-		//     std::cout<<*pr<<",";
-		//   }
-		// std::cout<<std::endl;
-		for(int k = 0; k<bins[i][j].size(); k++ )
-		  {
-		    for(int q=0; q<Neighbors.size(); q++)
-		      {			
-			apply_force( particles[bins[i][j][k]], particles[Neighbors[q]],&dmin,&davg,&navg);
-		      }
-		  }
-	      }
-	  }
-	
+	computeForces( particleBins, numCells,  dmin, davg, navg);
         //
         //  move particles
         //
-        for( int i = 0; i < n; i++ ) 
-            move( particles[i] );
+	std::vector<std::vector<int> > leftCell;
+	move( particleBins,  leftCell, numCells, h);
+	//
+        //  transfer particles between cells
+        //	
+	particleArithmetic( particleBins,  leftCell, numCells, numDeletedParticles);
+	//
+        //  copy and delete false particles if too many false particles
+        //
 	
 
         if( find_option( argc, argv, "-no" ) == -1 )

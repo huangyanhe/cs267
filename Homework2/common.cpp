@@ -78,6 +78,9 @@ void init_particles( int n, particle_t *p )
         //
         p[i].vx = drand48()*2-1;
         p[i].vy = drand48()*2-1;
+
+	//Added for dealing with deleting particles that left the cell.
+	p[i].exists = true; 
     }
     free( shuffle );
 }

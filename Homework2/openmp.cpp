@@ -97,24 +97,29 @@ void findNeighbors(std::vector<int > &a_neighbors, std::vector< std::vector< std
   
   
 };
-void bin(std::vector< std::vector< std::vector< int> > > &bins, particle_t *particles, int n, double h)
+void bin( std::vector< std::vector<particle_t> >& particleBins, particle_t *particles, int n, int numCells,double h)
 {
-  for(int i = 0 ; i < bins.size(); i++} {
-    for(int j = 0; j < bins[i].size(); j++)
-      bins[i][j].clear();
-  }
+  //Need to think about whether this needs to be here now
+  // for(int i = 0 ; i < particleBins.size(); i++} {
+  //   for(int j = 0; j < bins[i].size(); j++)
+  //     bins[i][j].clear();
+  // }
+  
   int iposx, iposy;
   for(int p=0; p< n; p++)
     {
       iposx = floor(particles[p].x/h);
       iposy = floor(particles[p].y/h);  
-      bins[iposx][iposy].push_back(p);
-      // set acceleration to zero
-      particles[p].ax = 0;
-      particles[p].ay = 0;
+      bins[iposx + iposy*numCells].push_back(particles[p]);
     }
   return;
 };
+void move()
+{
+  // set acceleration to zero
+      particles[p].ax = 0;
+      particles[p].ay = 0;
+}
 //
 //  benchmarking program
 //
@@ -153,12 +158,20 @@ int main( int argc, char **argv )
     double h = cutoff;
     double maxXY = sqrt(n*density);
     int numCells = ceil(maxXY/h);
+
+    int avgParticlesPerCell = ceil(n/numCells);
+    int overStorageFactor = 3;
+    
+    std::vector< std::vector<particle_t, avgParticlesPerCell*overStorageFactor> > particleBins;
+    particleBins.reserve(numCells*numCells);
+
+    
     
     double bin_time = 0;
     double force_time = 0;
     double move_time = 0;
     double before_bin, before_move, before_force;
-    std::vector< std::vector< std::vector< int> > > bins(numCells, std::vector< std::vector< int> >(numCells));    
+    //std::vector< std::vector< std::vector< int> > > bins(numCells, std::vector< std::vector< int> >(numCells));    
 #pragma omp parallel private(dmin) 
     {
       numthreads = omp_get_num_threads();

@@ -17,20 +17,26 @@ class region{
 class decomp{
     public:
         region* region_list;
-        int M, Num_region;
+        int* save;
+        //int* region_list;
+        //std::vector<int*> region_head;
+        //int* Num;
+        //int* Capacity;
+        int M, N, Num_region;
 
         std::vector<int> grid_M, grid_N;
         int num_sub_M, num_sub_N, Num_sub;
-        std::vector<std::vector<int> > particle_removed;
+        //std::vector<std::vector<int> > particle_removed;
 
         decomp(double num_particle, particle_t* particles);
+        void init(double num_particle, particle_t* particles);
         ~decomp();
 
         region& operator()(int i, int j);
 
         void add_particle(int particle_ind, int i, int j);
         void delete_particle(int particle_ind, int i, int j);
-        void check(int num_particle);
+        void check(int num_particle, particle_t* particles);
 
         void malloc_sub_decomp(int numthreads);
 };

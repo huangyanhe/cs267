@@ -6,7 +6,7 @@
 #include "decomposition.h"
 #include "omp.h"
 
-int InitialCapacity = 5;
+int InitialCapacity = 6;
 double RegionSize = 0.01;
 // 2 0.01 0.59 0.59
 //
@@ -40,12 +40,8 @@ int main( int argc, char **argv )
     set_size( n );
     init_particles( n, particles );
 
-#pragma omp parallel
-{
-    numthreads = omp_get_num_threads();
-}
     decomp decomposition(n, particles);
-    decomposition.malloc_sub_decomp(numthreads);
+    //decomposition.malloc_sub_decomp(numthreads);
 
     omp_lock_t* region_lock = (omp_lock_t*)malloc(decomposition.Num_region*sizeof(omp_lock_t));
     for(int i = 0; i < decomposition.Num_region; i++){
@@ -58,6 +54,7 @@ int main( int argc, char **argv )
     double simulation_time = read_timer( );
 #pragma omp parallel private(dmin)
     {
+    numthreads = omp_get_num_threads();
     for( int step = 0; step < NSTEPS; step++ )
     {
         navg = 0;
@@ -190,18 +187,18 @@ int main( int argc, char **argv )
           //
           // Computing statistical data
           //
-//#pragma omp master
+#pragma omp master
         if (navg) {
             absavg +=  davg/navg;
             nabsavg++;
           }
-//#pragma omp critical
+#pragma omp critical
           if (dmin < absmin) absmin = dmin;
 
           //
           //  save if necessary
           //
-//#pragma omp master
+#pragma omp master
           if( fsave && (step%SAVEFREQ) == 0 )
               save( fsave, n, particles );
         }

@@ -5,7 +5,7 @@
 #include "common.h"
 #include "decomposition.h"
 
-int InitialCapacity = 5;
+int InitialCapacity = 6;
 double RegionSize = 0.01;
 //
 //  benchmarking program

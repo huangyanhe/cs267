@@ -11,7 +11,7 @@ decomp::decomp(double num_particle, particle_t* particles){
     M = required;
     Num_region = M*M;
     region_list = (region*)malloc(Num_region*sizeof(region));
-    //save = (int*)_mm_malloc(Num_region*InitialCapacity*sizeof(int), InitialCapacity*sizeof(int));
+    save = (int*)_mm_malloc(Num_region*InitialCapacity*sizeof(int), InitialCapacity*sizeof(int));
     for(int i = 0; i < Num_region; i++){
         region_list[i].Num = 0;
         region_list[i].Capacity = InitialCapacity;
@@ -57,7 +57,7 @@ void decomp::add_particle(int particle_ind, int i, int j){
     if(temp.Num == temp.Capacity){
         temp.Capacity*=2;
         temp.ind = (int*)realloc(temp.ind, temp.Capacity*sizeof(int));
-        printf("Capacity = %d\n", temp.Capacity);
+        //printf("Capacity = %d\n", temp.Capacity);
     }
     temp.ind[temp.Num] = particle_ind;
     temp.Num++;

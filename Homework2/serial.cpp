@@ -13,6 +13,15 @@
 //
 //  benchmarking program
 //
+// Lambda for removing numbers less than 3
+auto removeParticle = [](particle_t particle) -> bool
+{
+    return particle.exists;
+};
+bool markedToDelete(particle_t& particle )
+{
+  return particle.exists;
+}
 void buildNeighbors(std::vector<std::vector<int>> &a_neighbors, int numCells)
 {
   if (numCells == 1)
@@ -271,8 +280,15 @@ int main( int argc, char **argv )
 	//
         //  copy and delete false particles if too many false particles
         //
-	
-
+	if (numDeletedParticles > n/5)
+	  {
+	    for (int j =0; j<numCells*numCells; j++)
+	      {
+		remove_if(particleBins[j].begin(), particleBins[j].end(), removeParticle); 
+	      }
+	    numDeletedParticles = 0;
+	  }
+ 
         if( find_option( argc, argv, "-no" ) == -1 )
         {
           //

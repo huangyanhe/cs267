@@ -36,7 +36,13 @@ int main( int argc, char **argv )
     set_size( n );
     init_particles( n, particles );
 
+#pragma omp parallel
+    {
+    numthreads = omp_get_num_threads();
+    }
+
     decomp decomposition(n, particles);
+    decomposition.sub_decomp(numthreads);
 
     omp_lock_t* region_lock = (omp_lock_t*)malloc(decomposition.Num_region*sizeof(omp_lock_t));
     for(int i = 0; i < decomposition.Num_region; i++){
@@ -49,7 +55,6 @@ int main( int argc, char **argv )
     double simulation_time = read_timer( );
 #pragma omp parallel private(dmin)
     {
-    numthreads = omp_get_num_threads();
     for( int step = 0; step < NSTEPS; step++ )
     {
         navg = 0;
@@ -74,21 +79,61 @@ int main( int argc, char **argv )
         //
         // move particles
         //
-#pragma omp for schedule(static)
-        for( int i = 0; i < n; i++ ){
-            int m_old = particles[i].x/RegionSize, n_old = particles[i].y/RegionSize;
-            move(particles[i]);
-            int m_new = particles[i].x/RegionSize, n_new = particles[i].y/RegionSize;
-            if( m_new != m_old || n_new != n_old ){
-                omp_set_lock(&region_lock[m_old+n_old*decomposition.M]);
-                decomposition.delete_particle(i, m_old, n_old);
-                omp_unset_lock(&region_lock[m_old+n_old*decomposition.M]);
+#pragma omp for schedule(dynamic) collapse(2)
+    for(int i = 0; i < decomposition.num_sub_M; i++){
+        for(int j = 0; j < decomposition.num_sub_N; j++){
 
-                omp_set_lock(&region_lock[m_new+n_new*decomposition.M]);
-                decomposition.add_particle(i, m_new, n_new);
-                omp_unset_lock(&region_lock[m_new+n_new*decomposition.M]);
+            for(int m = decomposition.grid_M[i]; m < decomposition.grid_M[i+1]; m++){
+                for(int n = decomposition.grid_N[j]; n < decomposition.grid_N[j+1]; n++){
+                    for(int s = 0, k = 0; s < decomposition.region_length[m+n*decomposition.M]; s++){
+                        int index = decomposition(m,n).ind[k];
+                        move(particles[index]);
+                        int m_new = particles[index].x/RegionSize, n_new = particles[index].y/RegionSize;
+                        if(m_new != m || n_new != n){
+                            if(m_new >= decomposition.grid_M[i] && m_new < decomposition.grid_M[i+1] &&
+                                    n_new >= decomposition.grid_N[j] && n_new < decomposition.grid_N[j+1]){
+                                decomposition.delete_particle(index, m, n);
+                                decomposition.add_particle(index, m_new, n_new);
+                            }
+                            else{
+                                omp_set_lock(&region_lock[m+n*decomposition.M]);
+                                decomposition.delete_particle(index, m, n);
+                                omp_unset_lock(&region_lock[m+n*decomposition.M]);
+
+                                omp_set_lock(&region_lock[m_new+n_new*decomposition.M]);
+                                decomposition.add_particle(index, m_new, n_new);
+                                omp_unset_lock(&region_lock[m_new+n_new*decomposition.M]);
+                            }
+                        }
+                        else{
+                            k++;
+                        }
+                    }
+                }
             }
         }
+    }
+#pragma omp for schedule(static)
+        for(int i = 0; i < decomposition.Num_region; i++){
+            decomposition.region_length[i] = decomposition.region_list[i].Num;
+        }
+
+
+//#pragma omp for schedule(static)
+        //for( int i = 0; i < n; i++ ){
+            //int m_old = particles[i].x/RegionSize, n_old = particles[i].y/RegionSize;
+            //move(particles[i]);
+            //int m_new = particles[i].x/RegionSize, n_new = particles[i].y/RegionSize;
+            //if( m_new != m_old || n_new != n_old ){
+                //omp_set_lock(&region_lock[m_old+n_old*decomposition.M]);
+                //decomposition.delete_particle(i, m_old, n_old);
+                //omp_unset_lock(&region_lock[m_old+n_old*decomposition.M]);
+
+                //omp_set_lock(&region_lock[m_new+n_new*decomposition.M]);
+                //decomposition.add_particle(i, m_new, n_new);
+                //omp_unset_lock(&region_lock[m_new+n_new*decomposition.M]);
+            //}
+        //}
 
         if( find_option( argc, argv, "-no" ) == -1 )
         {

@@ -42,6 +42,10 @@ int main( int argc, char **argv )
     //
     //  simulate a number of time steps
     //
+    //int max_move = 0;
+    //int max_move_m = 0;
+    //int max_move_n = 0;
+
     double simulation_time = read_timer( );
 
     for( int step = 0; step < NSTEPS; step++ )
@@ -70,15 +74,63 @@ int main( int argc, char **argv )
         //  move particles
         //
         //decomposition.check(n, particles);
-        for( int i = 0; i < n; i++ ){
-            int m_old = particles[i].x/RegionSize, n_old = particles[i].y/RegionSize;
-            move(particles[i]);
-            int m_new = particles[i].x/RegionSize, n_new = particles[i].y/RegionSize;
-            if( m_new != m_old || n_new != n_old ){
-                decomposition.delete_particle(i, m_old, n_old);
-                decomposition.add_particle(i, m_new, n_new);
+        for(int m = 0; m < decomposition.M; m++){
+            for(int n = 0; n < decomposition.M; n++){
+                for(int s = 0, k = 0; s < decomposition.region_length[m+n*decomposition.M]; s++){
+                    int index = decomposition(m,n).ind[k];
+                    move(particles[index]);
+                    int m_new = particles[index].x/RegionSize, n_new = particles[index].y/RegionSize;
+                    if(m_new != m || n_new != n){
+                        //int move = abs(m_new - m)+abs(n_new - n);
+                        //int move_m = abs(m_new - m);
+                        //int move_n = abs(n_new - n);
+                        //if(move > max_move) max_move = move;
+                        //if(move_m > max_move_m) max_move_m = move_m;
+                        //if(move_n > max_move_n) max_move_n = move_n;
+                        decomposition.delete_particle(index, m, n);
+                        decomposition.add_particle(index, m_new, n_new);
+                    }
+                    else{
+                        k++;
+                    }
+                }
             }
         }
+    //for(int i = 0; i < decomposition.num_sub_M; i++){
+        //for(int j = 0; j < decomposition.num_sub_N; j++){
+
+            //for(int m = decomposition.grid_M[i]; m < decomposition.grid_M[i+1]; m++){
+                //for(int n = decomposition.grid_N[j]; n < decomposition.grid_N[j+1]; n++){
+                    //for(int s = 0, k = 0; s < decomposition.region_length[m+n*decomposition.M]; s++){
+                        //int index = decomposition(m,n).ind[k];
+                        //move(particles[index]);
+                        //int m_new = particles[index].x/RegionSize, n_new = particles[index].y/RegionSize;
+                        //if(m_new != m || n_new != n){
+                            //decomposition.delete_particle(index, m, n);
+                            //decomposition.add_particle(index, m_new, n_new);
+                        //}
+                        //else{
+                            //k++;
+                        //}
+                    //}
+                //}
+            //}
+        //}
+    //}
+
+        for(int i = 0; i < decomposition.Num_region; i++){
+            decomposition.region_length[i] = decomposition.region_list[i].Num;
+        }
+
+        //for( int i = 0; i < n; i++ ){
+            //int m_old = particles[i].x/RegionSize, n_old = particles[i].y/RegionSize;
+            //move(particles[i]);
+            //int m_new = particles[i].x/RegionSize, n_new = particles[i].y/RegionSize;
+            //if( m_new != m_old || n_new != n_old ){
+                //decomposition.delete_particle(i, m_old, n_old);
+                //decomposition.add_particle(i, m_new, n_new);
+            //}
+        //}
 
         if( find_option( argc, argv, "-no" ) == -1 )
         {
@@ -117,6 +169,7 @@ int main( int argc, char **argv )
     if (absavg < 0.8) printf ("\nThe average distance is below 0.8 meaning that most particles are not interacting");
     }
     printf("\n");
+    //printf("max_move = %d, max_move_m = %d, max_move_n = %d\n", max_move, max_move_m, max_move_n);
 
     //
     // Printing summary data

@@ -6,7 +6,7 @@ extern double size;
 extern int InitialCapacity;
 extern double RegionSize;
 
-decomp::decomp(double num_particle, particle_t* particles){
+decomp::decomp(int num_particle, particle_t* particles){
     int required = ceil(size/RegionSize);
     M = required;
     Num_region = M*M;
@@ -21,9 +21,14 @@ decomp::decomp(double num_particle, particle_t* particles){
         int m = particles[i].x/RegionSize, n = particles[i].y/RegionSize;
         add_particle(i, m, n);
     }
+
+    region_length = (int*)malloc(Num_region*sizeof(int));
+    for(int i = 0; i < Num_region; i++){
+        region_length[i] = region_list[i].Num;
+    }
 }
 
-void decomp::init(double num_particle, particle_t* particles){
+void decomp::init(int num_particle, particle_t* particles){
     for(int i = 0; i < Num_region; i++){
         region_list[i].Num = 0;
     }
@@ -38,6 +43,7 @@ decomp::~decomp(){
         free(region_list[i].ind);
     }
     free(region_list);
+    free(region_length);
     //_mm_free(save);
 }
 
@@ -96,4 +102,31 @@ void decomp::check(int num_particle, particle_t* particles){
             }
         }
     }
+}
+
+void decomp::sub_decomp(int numthreads){
+    Num_sub = numthreads;
+    for(int i = sqrt(numthreads); i > 0; i--){
+        if(Num_sub%i==0){
+            num_sub_M = i;
+            break;
+        }
+    }
+    num_sub_N = Num_sub/num_sub_M;
+    num_sub_M *= 2; num_sub_N *= 2;
+
+    int size_M = M/num_sub_M, size_N = M/num_sub_N,
+        remain_M = M%num_sub_M, remain_N = M%num_sub_N;
+    int temp = 0;
+    for(int i = 0; i < num_sub_M; i++){
+        grid_M.push_back(temp);
+        temp += (i < remain_M)? size_M+1:size_M;
+    }
+    grid_M.push_back(M);
+    temp = 0;
+    for(int i = 0; i < num_sub_N; i++){
+        grid_N.push_back(temp);
+        temp += (i < remain_N)? size_N+1:size_N;
+    }
+    grid_N.push_back(M);
 }

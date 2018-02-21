@@ -132,12 +132,13 @@ void bin( std::vector< std::vector<particle_t> >& particleBins, particle_t *part
   for(int p=0; p< n; p++)
     {
       iposx = floor(particles[p].x/h);
-      iposy = floor(particles[p].y/h);  
+      iposy = floor(particles[p].y/h);
+      bool doesExist = particles[p].exists;
       particleBins[iposx + iposy*numCells].push_back(particles[p]);
     }
-  return;
 };
-void move(std::vector< std::vector<particle_t> >& particleBins, std::vector<std::vector<int> >& leftCell, int numCells, double h)
+
+void moveandcheck(std::vector< std::vector<particle_t> >& particleBins, std::vector<std::vector<int> >& leftCell, int numCells, double h)
 {
   int iposx, iposy;
   for( int i = 0; i< numCells; i++)
@@ -146,6 +147,7 @@ void move(std::vector< std::vector<particle_t> >& particleBins, std::vector<std:
 	{
 	  for(int k = 0; k<particleBins[i + numCells*j].size(); k++ )
 	    {
+	      bool thisParticleExists = particleBins[i + numCells*j][k].exists;
 	      if (particleBins[i + numCells*j][k].exists == true)
 		{
 		  move( particleBins[i + numCells*j][k]);
@@ -175,9 +177,8 @@ void particleArithmetic(std::vector< std::vector<particle_t> >& particleBins, st
 {
   for(int j = 0; j<leftCell.size(); j++)
     {
-      numDeletedParticles++;
+      //numDeletedParticles += 1;
       particleBins[leftCell[j][3] + leftCell[j][4]*numCells].push_back(particleBins[leftCell[j][0] + leftCell[j][1]*numCells][leftCell[j][2]]);
-      
       particleBins[leftCell[j][0] + leftCell[j][1]*numCells][leftCell[j][2]].exists = false;
     }
 }
@@ -187,14 +188,16 @@ void computeForces(std::vector< std::vector<particle_t> >& particleBins, std::ve
 	  {
 	    for( int j = 0; j< numCells; j++)
 	      {
+		    //particle_t part = particleBins[i+numCells*j][k];
+		    //std::cout<<"("<<i<<", "<< j<<", "<<k<<" )"<<part.exists<<std::endl;
 		for(int q=0; q<a_neighbors[i + numCells*j].size(); q++)
 		  {
 		    for(int k = 0; k<particleBins[i + numCells*j].size(); k++ )
 		      {
 			for(int r = 0; r<particleBins[a_neighbors[i + numCells*j][q]].size(); r++ )
 			  {
-			if (particleBins[i+numCells*j][k].exists == true && particleBins[a_neighbors[i + numCells*j][q]][r].exists == true)
-			apply_force( particleBins[i+numCells*j][k], particleBins[a_neighbors[i + numCells*j][q]][r],&dmin,&davg,&navg);
+			    if (particleBins[i+numCells*j][k].exists == true && particleBins[a_neighbors[i + numCells*j][q]][r].exists == true)
+			      apply_force( particleBins[i+numCells*j][k], particleBins[a_neighbors[i + numCells*j][q]][r],&dmin,&davg,&navg);
 			  }
 		      }
 		  }
@@ -220,7 +223,7 @@ int main( int argc, char **argv )
         return 0;
     }
     
-    int n = read_int( argc, argv, "-n", 100 );
+    int n = read_int( argc, argv, "-n", 1000 );
 
     char *savename = read_string( argc, argv, "-o", NULL );
     char *sumname = read_string( argc, argv, "-s", NULL );
@@ -239,14 +242,16 @@ int main( int argc, char **argv )
     double maxXY = sqrt(n*density);
     int numCells = ceil(maxXY/h);
     int numDeletedParticles = 0;
+    int copyFactor = 3; 
     
     int avgParticlesPerCell = ceil(n/numCells);
     int overStorageFactor = 2;
     int maxNumParticlesinBin = avgParticlesPerCell*overStorageFactor;
     //std::vector<particle_t> initVector;
     //initVector.reserve(maxNumParticlesinBin);
-    std::vector< std::vector<particle_t> > particleBins(numCells*numCells, std::vector<particle_t>(maxNumParticlesinBin));
-    //    particleBins.reserve(numCells*numCells);
+    std::vector< std::vector<particle_t> > particleBins;
+    //std::vector< std::vector<particle_t> > particleBins(numCells*numCells, initVector);
+    particleBins.reserve(numCells*numCells);
     
     //
     //  simulate a number of time steps
@@ -260,6 +265,7 @@ int main( int argc, char **argv )
     buildNeighbors(neighbors, numCells);
       
     for( int step = 0; step < NSTEPS; step++ )
+    //for( int step = 0; step < 1; step++ )
     {
 	navg = 0;
         davg = 0.0;
@@ -272,15 +278,19 @@ int main( int argc, char **argv )
         //  move particles
         //
 	std::vector<std::vector<int> > leftCell;
-	move( particleBins,  leftCell, numCells, h);
+	moveandcheck( particleBins,  leftCell, numCells, h);
 	//
         //  transfer particles between cells
-        //	
+        //
+	numDeletedParticles += leftCell.size();
+	//std::cout<<leftCell.size()<<std::endl;
 	particleArithmetic( particleBins,  leftCell, numCells, numDeletedParticles);
 	//
         //  copy and delete false particles if too many false particles
         //
-	if (numDeletedParticles > n/5)
+
+       	//std::cout<< step<<" "<<numDeletedParticles<<std::endl;
+	if (numDeletedParticles > copyFactor*n)
 	  {
 	    for (int j =0; j<numCells*numCells; j++)
 	      {
@@ -288,7 +298,9 @@ int main( int argc, char **argv )
 	      }
 	    numDeletedParticles = 0;
 	  }
- 
+
+	
+	
         if( find_option( argc, argv, "-no" ) == -1 )
         {
           //

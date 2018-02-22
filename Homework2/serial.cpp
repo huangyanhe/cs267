@@ -16,7 +16,8 @@
 // Lambda for removing numbers less than 3
 auto removeParticle = [](particle_t particle) -> bool
 {
-    return particle.exists;
+  bool removeIfFalse =  !particle.exists;
+  return removeIfFalse;
 };
 bool markedToDelete(particle_t& particle )
 {
@@ -242,7 +243,7 @@ int main( int argc, char **argv )
     double maxXY = sqrt(n*density);
     int numCells = ceil(maxXY/h);
     int numDeletedParticles = 0;
-    int copyFactor = 3; 
+    int copyFactor = 10; 
     
     int avgParticlesPerCell = ceil(n/numCells);
     int overStorageFactor = 2;
@@ -289,13 +290,15 @@ int main( int argc, char **argv )
         //  copy and delete false particles if too many false particles
         //
 
-       	//std::cout<< step<<" "<<numDeletedParticles<<std::endl;
+       	std::cout<< step<<" "<<numDeletedParticles<<std::endl;
 	if (numDeletedParticles > copyFactor*n)
 	  {
+	    std::cout<<"In Remove If"<<std::endl;
 	    for (int j =0; j<numCells*numCells; j++)
 	      {
-		remove_if(particleBins[j].begin(), particleBins[j].end(), removeParticle); 
+		particleBins[j].erase(std::remove_if(particleBins[j].begin(), particleBins[j].end(), removeParticle), end(particleBins[j])); 
 	      }
+	    std::cout<<"Out of Remove If"<<std::endl;
 	    numDeletedParticles = 0;
 	  }
 

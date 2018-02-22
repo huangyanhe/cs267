@@ -290,15 +290,15 @@ int main( int argc, char **argv )
         //  copy and delete false particles if too many false particles
         //
 
-       	std::cout<< step<<" "<<numDeletedParticles<<std::endl;
+//       	std::cout<< step<<" "<<numDeletedParticles<<std::endl;
 	if (numDeletedParticles > copyFactor*n)
 	  {
-	    std::cout<<"In Remove If"<<std::endl;
+//	    std::cout<<"In Remove If"<<std::endl;
 	    for (int j =0; j<numCells*numCells; j++)
 	      {
 		particleBins[j].erase(std::remove_if(particleBins[j].begin(), particleBins[j].end(), removeParticle), end(particleBins[j])); 
 	      }
-	    std::cout<<"Out of Remove If"<<std::endl;
+//	    std::cout<<"Out of Remove If"<<std::endl;
 	    numDeletedParticles = 0;
 	  }
 

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include "common.h"
+#include "Particle.h"
 
 //
 //  benchmarking program

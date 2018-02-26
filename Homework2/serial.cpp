@@ -244,7 +244,6 @@ int main( int argc, char **argv )
     int numCells = ceil(maxXY/h);
     int numDeletedParticles = 0;
     int copyFactor = 10; 
-    
     int avgParticlesPerCell = ceil(n/numCells);
     int overStorageFactor = 2;
     int maxNumParticlesinBin = avgParticlesPerCell*overStorageFactor;

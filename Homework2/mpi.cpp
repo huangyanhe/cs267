@@ -13,7 +13,23 @@ int main( int argc, char **argv )
     double dmin, absmin=1.0,davg,absavg=0.0;
     double rdavg,rdmin;
     int rnavg; 
- 
+
+
+    double density = 0.0005;
+    double cutoff = 0.01;
+    double h = cutoff;
+    double maxXY = sqrt(n*density);
+    int numCells = ceil(maxXY/h);
+    int numDeletedParticles = 0;
+    int copyFactor = 10; 
+    int avgParticlesPerCell = ceil(n/numCells);
+    int overStorageFactor = 2;
+    int maxNumParticlesinBin = avgParticlesPerCell*overStorageFactor;
+    //std::vector<particle_t> initVector;
+    //initVector.reserve(maxNumParticlesinBin);
+
+    
+    
     //
     //  process command line parameters
     //
@@ -75,23 +91,56 @@ int main( int argc, char **argv )
     //  initialize and distribute the particles (that's fine to leave it unoptimized)
     //
     set_size( n );
-    if( rank == 0 )
-        init_particles( n, particles );
     MPI_Scatterv( particles, partition_sizes, partition_offsets, PARTICLE, local, nlocal, PARTICLE, 0, MPI_COMM_WORLD );
+    
+    std::vector< std::vector<particle_t> > particleBins;
+    bin( particleBins, particles, n, numCells, h);
+    std::vector<std::vector<int>> neighbors;
+    neighbors.reserve(numCells*numCells);
+    buildNeighbors(neighbors, numCells);
+    std::vector<vector<int>> cellIndexMapping;
+    cellIndexMapping.reserve(numCells*numCells);
+    oneDtwoDMapping( numCells, cellIndexMapping);
+    std::vector<std::vector<int>> assignedCells;
+    assignedCells.reserve(n_proc);
+    std::vector<int> cellProcessorMapping;
+    cellProcessorMapping.reserve(numCells*numCells);
+    assignCells2P(numCells, n_proc, assignedCells, cellProcessorMapping);
+
+    int BlockSize = ceil(numCells*numCells/n_proc);
+    
+    if( rank == 0 )
+      {
+        init_particles( n, particles );
+	for (int j = 1; j<n_proc; j++)
+	  {
+	    MPI_Send(&assignedCells[j].front(), &assignedCells[j].size(), MPI_INT, j, MPI_COMM_WORLD);
+	  }
+      }
+    else
+      {
+	//Buffer the size to be half a size larger just in case.
+	int myCells[BlockSize + BlockSize/2];
+	MPI_IRecv(&myCells, BlockSize + BlockSize/2, MPI_INT, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      }
+    
+    std::set<int> neighborProcessors;
+    findNeighborProcessors( myCells, neighbors, cellProcessorMapping, neighborProcessors);
+
     
     //
     //  simulate a number of time steps
     //
     double simulation_time = read_timer( );
     for( int step = 0; step < NSTEPS; step++ )
-    {
+      {
         navg = 0;
         dmin = 1.0;
         davg = 0.0;
         // 
         //  collect all global data locally (not good idea to do)
         //
-        MPI_Allgatherv( local, nlocal, PARTICLE, particles, partition_sizes, partition_offsets, PARTICLE, MPI_COMM_WORLD );
+        //  MPI_Allgatherv( local, nlocal, PARTICLE, particles, partition_sizes, partition_offsets, PARTICLE, MPI_COMM_WORLD );
         
         //
         //  save current step if necessary (slightly different semantics than in other codes)
@@ -99,16 +148,110 @@ int main( int argc, char **argv )
         if( find_option( argc, argv, "-no" ) == -1 )
           if( fsave && (step%SAVEFREQ) == 0 )
             save( fsave, n, particles );
+
+	//
+        //  compute forces
+        //
+	computeForces( particleBins, neighbors, myCells, numCells,  dmin, davg, navg);
+        //
+        //  move particles
+        //
+	std::vector<std::vector<int> > leftCell;
+	moveandcheck( particleBins, myCells, cellIndexMapping, leftCell, numCells, h);
+	//
+        //  transfer particles between cells
+        //
+	numDeletedParticles += leftCell.size();
+	vector< transfered_particle> particles2Transfer;
+	particleArithmetic( particleBins,  leftCell, myCells, cellProcessorMapping, neighborProcessors, particles2Transfer,numCells, numDeletedParticles);
+	//
+        //  Communication of Particles that changed cells and processors
+        //
+	for (auto it = neighborProcessors.begin(); it != neighborProcessors.end(); ++it)
+	  {
+	    vector< particle_t> particles4Processorj;
+	    for (int k=0; k < particles2Transfer.size(); k++ )
+	      {
+		if (particles2Transfer[k].processor == *it)
+		  {
+		    particles4Processorj.push_back();
+		    particles4Processorj.end().x = particles2Transfer[k].x;
+		    particles4Processorj.end().y = particles2Transfer[k].y;
+		    particles4Processorj.end().vx = particles2Transfer[k].vx;
+		    particles4Processorj.end().vy = particles2Transfer[k].vy;
+		    particles4Processorj.end().ax = 0.0;
+		    particles4Processorj.end().ay = 0.0;
+		  }
+	      }
+	    if (avgParticlesPerCell < particles4Processorj.size())
+	      {
+		printf ("\n Particles sent was longer than particles received.");
+		fflush(stdout);
+	      }
+	    MPI_Isend(&particles4Processorj.begin(), &particles4Processorj.size(), PARTICLE, *it, step, MPI_COMM_WORLD);
+	  }
+	vector< particle_t> particlesFromProcessorj;
+	for (auto it = neighborProcessors.begin(); it != neighborProcessors.begin(); ++it)
+	  {
+	    vector< particle_t> particlesFromProcessorjTemp;
+	    // This could be dangerous but can just empirically check that it is okay.
+	    particlesFromProcessorjTemp.resize(avgParticlesPerCell);
+	    MPI_IRecv(&particlesFromProcessorjTemp, particlesFromProcessorjTemp.end(), PARTICLE, *it, step,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+	    particlesFromProcessorj.insert( particlesFromProcessorj.end(), particlesFromProcessorjTemp.begin(), particlesFromProcessorjTemp.end());
+	  }
+
+	unwrapReceivedParticles( particleBins, particlesFromProcessorj, h);
+
+	//
+        //  Communication of Particles on boundary needed for next apply force.
+        //
+	//Does the send of all particles that processor touches to all neighboring processors (not finished)
+
+	vector< particle_t> particles4ProcessorNeighbors;
+	for (auto it = neighborCellstoProcessors.begin(); it != neighborCellstoProcessors.end(); ++it)
+	  {
+	    for( int k = 0; k<particleBin[*it].end(); k++)
+	      {
+		particles4ProcessorNeighbors.push_back();
+		particles4ProcessorNeighbors.end().x =particleBin[*it][k].particle.x;
+		particles4ProcessorNeighbors.end().y = particleBin[*it][k].particle.y;
+		particles4ProcessorNeighbors.end().vx = particleBin[*it][k].particle.vx;
+		particles4ProcessorNeighbors.end().vy = particleBin[*it][k].particle.vy;
+		particles4ProcessorNeighbors.end().ax = 0.0;
+		particles4ProcessorNeighbors.end().ay = 0.0;
+	      }
+	  }
+	for (auto it = neighborProcessors.begin(); it != neighborProcessors.end(); ++it)
+	  {
+	    MPI_Isend(&particles4ProcessorNeighbors.begin(), &particles4ProcessorNeighbors.size(), PARTICLE, *it, step, MPI_COMM_WORLD);
+	  }
+	//Does Receive (probably working)
+	vector< particle_t> particlesFromProcessorjNeighbors;
+	for (auto it = neighborCellsfromProcessors.begin(); it != neighborCellsfromProcessors.end(); ++it)
+	  {
+	    vector< particle_t> particlesFromProcessorjTemp;
+	    // This could be dangerous but can just empirically check that it is okay.
+	    particlesFromProcessorjTemp.resize(3*avgParticlesPerCell);
+	    MPI_IRecv(&particlesFromProcessorjTemp, particlesFromProcessorjTemp.end(), PARTICLE, cellProcessorMapping[*it], 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+	    particlesFromProcessorjNeighbors.insert( particlesFromProcessorjNeighbors.end(), particlesFromProcessorjTemp.begin(), particlesFromProcessorjTemp.end());
+	  }
+	
+
+	//Need a Waitall statement somewhere around here. 
+	  
+	
+	
+         copy and delete false particles if too many false particles
         
-        //
-        //  compute all forces
-        //
-        for( int i = 0; i < nlocal; i++ )
-        {
-            local[i].ax = local[i].ay = 0;
-            for (int j = 0; j < n; j++ )
-                apply_force( local[i], particles[j], &dmin, &davg, &navg );
-        }
+	if (step%10 == 0)
+	  {
+	    for (int j =0; j<numCells*numCells; j++)
+	      {
+		particleBins[j].erase(std::remove_if(particleBins[j].begin(), particleBins[j].end(), removeParticle), end(particleBins[j])); 
+	      }
+	    //numDeletedParticles = 0;
+	  }
+        
      
         if( find_option( argc, argv, "-no" ) == -1 )
         {
@@ -130,11 +273,7 @@ int main( int argc, char **argv )
           }
         }
 
-        //
-        //  move particles
-        //
-        for( int i = 0; i < nlocal; i++ )
-            move( local[i] );
+        
     }
     simulation_time = read_timer( ) - simulation_time;
   
@@ -173,6 +312,7 @@ int main( int argc, char **argv )
     free( partition_sizes );
     free( local );
     free( particles );
+    free( myCells );
     if( fsave )
         fclose( fsave );
     

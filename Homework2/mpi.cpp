@@ -251,14 +251,12 @@ int main( int argc, char **argv )
 	  int iposy = floor(local[i].y/h);
 	  std::vector<int> Neighbors;
 	  findNeighbors(Neighbors, bins, iposx, iposy, numCells);
-	  for(int k = 0; k<bins[iposx][iposy].size(); k++ )
-	    {
-	      for(int q=0; q<Neighbors.size(); q++)
-		{			
-		  apply_force( particles[bins[iposx][iposy][k]], particles[Neighbors[q]],&dmin,&davg,&navg);
-		}
+	  for(int q=0; q<Neighbors.size(); q++)
+	    {			
+	      apply_force( local[i], particles[Neighbors[q]],&dmin,&davg,&navg);
 	    }
 	}
+	
 	
         // for( int i = 0; i < nlocal; i++ )
         // {

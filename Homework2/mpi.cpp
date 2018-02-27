@@ -3,7 +3,9 @@
 #include <stdio.h>
 #include <assert.h>
 #include "common.h"
-
+#include <iostream>
+#include <algorithm>
+#include <vector>
 
 // void particleComputeMove(particle_t particles, int n)
 // {
@@ -24,7 +26,7 @@
 //
 //  benchmarking program
 //
-void findNeighbors(std::vector<int > &a_neighbors, std::vector< std::vector< std::vector< int> > > &bins, int i, int j, int numCells)
+void findNeighbors(std::vector<int >& a_neighbors, std::vector< std::vector< std::vector< int> > >& bins, int i, int j, int numCells )
 {
   a_neighbors.insert(a_neighbors.end(), bins[i][j].begin(), bins[i][j].end());	  
  if (i == 0)

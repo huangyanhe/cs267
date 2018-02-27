@@ -139,12 +139,7 @@ int main( int argc, char **argv )
     double rdavg,rdmin;
     int rnavg; 
 
-    double density = 0.0005;	
-    double cutoff = 0.01;
-    //double cutoff = sqrt(n*density);
-    double h = cutoff;
-    double maxXY = sqrt(n*density);
-    int numCells = ceil(maxXY/h);	
+    	
 
  
     //
@@ -211,6 +206,13 @@ int main( int argc, char **argv )
     if( rank == 0 )
         init_particles( n, particles );
     MPI_Scatterv( particles, partition_sizes, partition_offsets, PARTICLE, local, nlocal, PARTICLE, 0, MPI_COMM_WORLD );
+
+    double density = 0.0005;	
+    double cutoff = 0.01;
+    //double cutoff = sqrt(n*density);
+    double h = cutoff;
+    double maxXY = sqrt(n*density);
+    int numCells = ceil(maxXY/h);
     
     //
     //  simulate a number of time steps
@@ -245,8 +247,8 @@ int main( int argc, char **argv )
 	for( int i = 0; i < nlocal; i++ )
         {
 	  local[i].ax = local[i].ay = 0;
-	  iposx = floor(local[i].x/h);
-	  iposy = floor(local[i].y/h);
+	  int iposx = floor(local[i].x/h);
+	  int iposy = floor(local[i].y/h);
 	  std::vector<int> Neighbors;
 	  findNeighbors(Neighbors, bins, iposx, iposy, numCells);
 	  for(int k = 0; k<bins[iposx][iposy].size(); k++ )

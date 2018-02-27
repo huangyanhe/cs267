@@ -20,8 +20,8 @@ autograder: autograder.o common.o
 	$(CC) -o $@ $(LIBS) autograder.o common.o
 openmp: openmp.o common.o decomposition.o
 	$(CC) -o $@ $(LIBS) $(OPENMP) openmp.o common.o decomposition.o
-mpi: mpi.o common.o
-	$(MPCC) -o $@ $(LIBS) $(MPILIBS) mpi.o common.o
+mpi: mpi.o common.o decomposition_mpi.o
+	$(MPCC) -o $@ $(LIBS) $(MPILIBS) mpi.o common.o decomposition_mpi.o
 
 autograder.o: autograder.cpp common.h
 	$(CC) -c $(CFLAGS) autograder.cpp
@@ -35,6 +35,8 @@ common.o: common.cpp common.h
 	$(CC) -c $(CFLAGS) common.cpp
 decomposition.o: decomposition.cpp decomposition.h
 	$(CC) -c $(CFLAGS) decomposition.cpp
+decomposition_mpi.o: decomposition_mpi.cpp decomposition_mpi.h
+	$(CC) -c $(CFLAGS) decomposition_mpi.cpp
 
 clean:
 	rm -f *.o $(TARGETS) *.stdout *.txt *.error

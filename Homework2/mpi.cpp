@@ -136,6 +136,14 @@ int main( int argc, char **argv )
     double dmin, absmin=1.0,davg,absavg=0.0;
     double rdavg,rdmin;
     int rnavg; 
+
+    double density = 0.0005;	
+    double cutoff = 0.01;
+    //double cutoff = sqrt(n*density);
+    double h = cutoff;
+    double maxXY = sqrt(n*density);
+    int numCells = ceil(maxXY/h);	
+
  
     //
     //  process command line parameters

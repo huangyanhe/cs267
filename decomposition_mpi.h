@@ -8,6 +8,7 @@
 class decomp_proc{
     public:
         int proc_m, proc_n; // arrangement of processors
+        int local_rank;
         int rank_m, rank_n; // position of this processor
         double block_size_m, block_size_n; // size of the domain in a single processor
         int num_region_m, num_region_n; // number of small bins in a single processor
@@ -33,7 +34,7 @@ class decomp_proc{
         void local_delete_particle(int local_index);
         void pre_sync(int ind, int m_ind, int n_ind);
         void synchronization(particle_t* particles, int time_step);
-        void write_sendbuf(double* sendbuf, std::vector<int>& send_ind, particle_t* particles);
+        void write_sendbuf(int rank, int step, double* sendbuf, std::vector<int>& send_ind, particle_t* particles);
         void read_recvbuf(double* recvbuf, particle_t* particles);
         //void check(int num_particle, particle_t* particles);
 };

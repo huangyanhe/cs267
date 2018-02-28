@@ -80,14 +80,13 @@ int main( int argc, char **argv )
         init_particles( n, particles );
     //MPI_Scatterv( particles, partition_sizes, partition_offsets, PARTICLE, local, nlocal, PARTICLE, 0, MPI_COMM_WORLD );
     MPI_Bcast(particles, n, PARTICLE, 0, MPI_COMM_WORLD);
-    //printf("rank %d complete Bcast\n", rank); fflush(stdout);
     decomp_proc local_proc(num_proc, rank, n, particles);
 
-    //printf("rank %d complete initialization\n", rank); fflush(stdout);
 
     //
     //  simulate a number of time steps
     //
+    //int see_rank = 0;
     double simulation_time = read_timer( );
     for( int step = 0; step < NSTEPS; step++ )
     {
@@ -121,8 +120,9 @@ int main( int argc, char **argv )
                 }
             }
         }
-
-
+        //if(rank == see_rank){
+        //printf("rank %d step %d apply_force complete \n", rank, step); fflush(stdout);
+        //}
         if( find_option( argc, argv, "-no" ) == -1 )
         {
 
@@ -144,8 +144,13 @@ int main( int argc, char **argv )
         }
 
         // clean the boundary
+        //if(rank == see_rank){
+        //printf("rank %d step %d  before clean_boundary\n", rank, step); fflush(stdout);
+        //}
         local_proc.clean_boundary();
-
+        //if(rank == see_rank){
+        //printf("rank %d step %d clean_boundary complete \n", rank, step); fflush(stdout);
+        //}
         //
         //  move particles
         //
@@ -163,12 +168,23 @@ int main( int argc, char **argv )
                     local_proc(m_new, n_new).push_back(local_proc.local_ind[k]);
                 }
                 else{
+                    if(m_new >= local_proc.closure_l_m && m_new < local_proc.closure_u_m
+                            && n_new >= local_proc.closure_l_n && n_new < local_proc.closure_u_n){
+                        local_proc(m_new, n_new).push_back(local_proc.local_ind[k]);
+                    }
                     local_proc.local_delete_particle(k);
                     k--;
                 }
             }
         }
+
+        //if(rank == see_rank){
+        //printf("rank %d step %d move complete \n", rank, step); fflush(stdout);
+        //}
         local_proc.synchronization(particles, step);
+        //if(rank == see_rank){
+        //printf("rank %d step %d synchronization complete \n", rank, step); fflush(stdout);
+        //}
     }
     simulation_time = read_timer( ) - simulation_time;
 

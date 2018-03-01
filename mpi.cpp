@@ -78,7 +78,6 @@ int main( int argc, char **argv )
     set_size( n );
     if( rank == 0 )
         init_particles( n, particles );
-    //MPI_Scatterv( particles, partition_sizes, partition_offsets, PARTICLE, local, nlocal, PARTICLE, 0, MPI_COMM_WORLD );
     MPI_Bcast(particles, n, PARTICLE, 0, MPI_COMM_WORLD);
     decomp_proc local_proc(num_proc, rank, n, particles);
 
@@ -86,17 +85,12 @@ int main( int argc, char **argv )
     //
     //  simulate a number of time steps
     //
-    //int see_rank = 0;
     double simulation_time = read_timer( );
     for( int step = 0; step < NSTEPS; step++ )
     {
         navg = 0;
         dmin = 1.0;
         davg = 0.0;
-        //
-        //  collect all global data locally (not good idea to do)
-        //
-        //MPI_Allgatherv( local, nlocal, PARTICLE, particles, partition_sizes, partition_offsets, PARTICLE, MPI_COMM_WORLD );
 
         //
         //  save current step if necessary (slightly different semantics than in other codes)
@@ -120,9 +114,7 @@ int main( int argc, char **argv )
                 }
             }
         }
-        //if(rank == see_rank){
-        //printf("rank %d step %d apply_force complete \n", rank, step); fflush(stdout);
-        //}
+
         if( find_option( argc, argv, "-no" ) == -1 )
         {
 
@@ -143,24 +135,17 @@ int main( int argc, char **argv )
           }
         }
 
-        // clean the boundary
-        //if(rank == see_rank){
-        //printf("rank %d step %d  before clean_boundary\n", rank, step); fflush(stdout);
-        //}
-        local_proc.clean_boundary();
-        //if(rank == see_rank){
-        //printf("rank %d step %d clean_boundary complete \n", rank, step); fflush(stdout);
-        //}
         //
         //  move particles
         //
+        local_proc.clean_boundary();
         int num_local_particles = local_proc.local_ind.size();
         for(int i = 0, k = 0; i < num_local_particles; i++, k++){
             particle_t& temp = particles[local_proc.local_ind[k]];
             int m_old = temp.x/local_proc.region_size_m, n_old = temp.y/local_proc.region_size_n;
             move(temp);
             int m_new = temp.x/local_proc.region_size_m, n_new = temp.y/local_proc.region_size_n;
-            local_proc.pre_sync(local_proc.local_ind[k], m_new, n_new);
+            local_proc.pre_sync(local_proc.local_ind[k], m_new, n_new, particles);
             if(m_new != m_old || n_new != n_old){
                 local_proc.delete_particle(m_old, n_old, local_proc.local_ind[k]);
                 if(m_new >= local_proc.interior_l_m && m_new < local_proc.interior_u_m
@@ -178,13 +163,7 @@ int main( int argc, char **argv )
             }
         }
 
-        //if(rank == see_rank){
-        //printf("rank %d step %d move complete \n", rank, step); fflush(stdout);
-        //}
         local_proc.synchronization(particles, step);
-        //if(rank == see_rank){
-        //printf("rank %d step %d synchronization complete \n", rank, step); fflush(stdout);
-        //}
     }
     simulation_time = read_timer( ) - simulation_time;
 

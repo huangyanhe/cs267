@@ -17,12 +17,10 @@ decomp_proc::decomp_proc(int num_proc, int rank, int num_particle, particle_t* p
     proc_n = num_proc / proc_m;
 
     rank_m = rank % proc_m; rank_n = rank / proc_m;
-    //printf("rank = %d, rank_m = %d, rank_n = %d\n", rank, rank_m, rank_n); fflush(stdout);
 
-    block_size_m = size/proc_m; block_size_n = size/proc_n;
+    double block_size_m = size/proc_m, block_size_n = size/proc_n;
 
-    num_region_m = floor(block_size_m/cutoff);
-    num_region_n = floor(block_size_n/cutoff);
+    int num_region_m = floor(block_size_m/cutoff), num_region_n = floor(block_size_n/cutoff);
 
     region_size_m = block_size_m/num_region_m;
     region_size_n = block_size_n/num_region_n;
@@ -38,7 +36,6 @@ decomp_proc::decomp_proc(int num_proc, int rank, int num_particle, particle_t* p
     closure_u_n = (rank_n == proc_n-1)? interior_u_n: interior_u_n+1;
 
     lda = closure_u_m - closure_l_m;
-    //printf("rank %d, closure_l_m = %d, closure_u_m = %d, closure_l_n = %d, closure_u_n = %d\n", rank, closure_l_m, closure_u_m, closure_l_n, closure_u_n); fflush(stdout);
 
     max_recvcount = 5*num_particle+1;
 
@@ -56,18 +53,40 @@ decomp_proc::decomp_proc(int num_proc, int rank, int num_particle, particle_t* p
         }
     }
 
-    out_ind.resize(8);
-
     for(int i = 0; i < 8; i++){
         sendbufs[i] = (double*) malloc(sizeof(double)*max_recvcount);
-        //sendbufs[i][0] = 0.0;
-        //if(rank == 0){
-            //printf("sendbufs[i][0] = %f\n", sendbufs[i][0]); fflush(stdout);
-        //}
+        sendbufs[i][0] = 0.0;
         recvbufs[i] = (double*) malloc(sizeof(double)*max_recvcount);
     }
+
+    neighbor_exist.resize(8);
+    neighbor_exist[0] = (rank_m < proc_m-1);
+    neighbor_exist[1] = (rank_m < proc_m-1 && rank_n >0);
+    neighbor_exist[2] = (rank_n > 0);
+    neighbor_exist[3] = (rank_m > 0 && rank_n > 0);
+    neighbor_exist[4] = (rank_m > 0);
+    neighbor_exist[5] = (rank_m > 0 && rank_n < proc_n-1);
+    neighbor_exist[6] = (rank_n < proc_n-1);
+    neighbor_exist[7] = (rank_n < proc_n-1 && rank_m < proc_m-1);
+
+    neighbor_shift.resize(16);
+    neighbor_shift[0] = 1;
+    neighbor_shift[1] = 0;
+    neighbor_shift[2] = 1;
+    neighbor_shift[3] = -1;
+    neighbor_shift[4] = 0;
+    neighbor_shift[5] = -1;
+    neighbor_shift[6] = -1;
+    neighbor_shift[7] = -1;
+    neighbor_shift[8] = -1;
+    neighbor_shift[9] = 0;
+    neighbor_shift[10] = -1;
+    neighbor_shift[11] = 1;
+    neighbor_shift[12] = 0;
+    neighbor_shift[13] = 1;
+    neighbor_shift[14] = 1;
+    neighbor_shift[15] = 1;
 }
-//checked
 
 decomp_proc::~decomp_proc(){
     for(int i = 0; i < 8; i++){
@@ -75,13 +94,11 @@ decomp_proc::~decomp_proc(){
         free(recvbufs[i]);
     }
 }
-//checked
 
 std::vector<int>& decomp_proc::operator()(int i, int j){
     int ind_m = i - closure_l_m, ind_n = j - closure_l_n;
     return region_list[ind_m+ind_n*lda];
 }
-//checked
 
 void decomp_proc::clean_boundary(){
     for(int m = closure_l_m; m < closure_u_m; m++){
@@ -93,7 +110,6 @@ void decomp_proc::clean_boundary(){
         }
     }
 }
-//checked
 
 void decomp_proc::delete_particle(int m_ind, int n_ind, int index){
     std::vector<int>::iterator it = find((*this)(m_ind, n_ind).begin(), (*this)(m_ind, n_ind).end(), index);
@@ -109,279 +125,146 @@ void decomp_proc::local_delete_particle(int local_index){
     local_ind.pop_back();
 }
 
-void decomp_proc::pre_sync(int ind, int m_ind, int n_ind){
+void decomp_proc::pre_sync(int ind, int m_ind, int n_ind, particle_t* particles){
     if(m_ind >= interior_l_m+1 && m_ind < interior_u_m-1){
         if(n_ind >= interior_l_n+1 && n_ind < interior_u_n-1){
         }
         else if( n_ind < interior_l_n+1){
-            out_ind[2].push_back(ind);
+            sendbuf_push_back(2, ind, particles);
         }
         else{
-            out_ind[6].push_back(ind);
+            sendbuf_push_back(6, ind, particles);
         }
     }
     else if(n_ind >= interior_l_n+1 && n_ind < interior_u_n-1){
         if(m_ind < interior_l_m+1){
-            out_ind[4].push_back(ind);
+            sendbuf_push_back(4, ind, particles);
         }
         else{
-            out_ind[0].push_back(ind);
+            sendbuf_push_back(0, ind, particles);
         }
     }
     else if(n_ind < interior_l_n+1 && n_ind >= interior_l_n-1){
         if(m_ind < interior_l_m-1){
-            out_ind[3].push_back(ind);
-            out_ind[4].push_back(ind);
+            sendbuf_push_back(3, ind, particles);
+            sendbuf_push_back(4, ind, particles);
         }
         else if(m_ind >= interior_l_m-1 && m_ind < interior_l_m+1){
-            out_ind[2].push_back(ind);
-            out_ind[3].push_back(ind);
-            out_ind[4].push_back(ind);
+            sendbuf_push_back(2, ind, particles);
+            sendbuf_push_back(3, ind, particles);
+            sendbuf_push_back(4, ind, particles);
         }
         else if(m_ind >= interior_u_m-1 && m_ind < interior_u_m+1){
-            out_ind[0].push_back(ind);
-            out_ind[1].push_back(ind);
-            out_ind[2].push_back(ind);
+            sendbuf_push_back(0, ind, particles);
+            sendbuf_push_back(1, ind, particles);
+            sendbuf_push_back(2, ind, particles);
         }
         else{
-            out_ind[0].push_back(ind);
-            out_ind[1].push_back(ind);
+            sendbuf_push_back(0, ind, particles);
+            sendbuf_push_back(1, ind, particles);
         }
     }
     else if(n_ind >= interior_u_n-1 && n_ind < interior_u_n+1){
         if(m_ind < interior_l_m-1){
-            out_ind[4].push_back(ind);
-            out_ind[5].push_back(ind);
+            sendbuf_push_back(4, ind, particles);
+            sendbuf_push_back(5, ind, particles);
         }
         else if(m_ind >= interior_l_m-1 && m_ind < interior_l_m+1){
-            out_ind[4].push_back(ind);
-            out_ind[5].push_back(ind);
-            out_ind[6].push_back(ind);
+            sendbuf_push_back(4, ind, particles);
+            sendbuf_push_back(5, ind, particles);
+            sendbuf_push_back(6, ind, particles);
         }
         else if(m_ind >= interior_u_m-1 && m_ind < interior_u_m+1){
-            out_ind[6].push_back(ind);
-            out_ind[7].push_back(ind);
-            out_ind[0].push_back(ind);
+            sendbuf_push_back(6, ind, particles);
+            sendbuf_push_back(7, ind, particles);
+            sendbuf_push_back(0, ind, particles);
         }
         else{
-            out_ind[7].push_back(ind);
-            out_ind[0].push_back(ind);
+            sendbuf_push_back(7, ind, particles);
+            sendbuf_push_back(0, ind, particles);
         }
     }
     else if(n_ind >= interior_u_n+1){
         if(m_ind < interior_l_m-1){
-            out_ind[5].push_back(ind);
+            sendbuf_push_back(5, ind, particles);
         }
         else if(m_ind >= interior_l_m-1 && m_ind < interior_l_m+1){
-            out_ind[5].push_back(ind);
-            out_ind[6].push_back(ind);
+            sendbuf_push_back(5, ind, particles);
+            sendbuf_push_back(6, ind, particles);
         }
         else if(m_ind >= interior_u_m-1 && m_ind < interior_u_m+1){
-            out_ind[6].push_back(ind);
-            out_ind[7].push_back(ind);
+            sendbuf_push_back(6, ind, particles);
+            sendbuf_push_back(7, ind, particles);
         }
         else{
-            out_ind[7].push_back(ind);
+            sendbuf_push_back(7, ind, particles);
         }
     }
     else{
          if(m_ind < interior_l_m-1){
-            out_ind[3].push_back(ind);
+            sendbuf_push_back(3, ind, particles);
         }
         else if(m_ind >= interior_l_m-1 && m_ind < interior_l_m+1){
-            out_ind[3].push_back(ind);
-            out_ind[2].push_back(ind);
+            sendbuf_push_back(3, ind, particles);
+            sendbuf_push_back(2, ind, particles);
         }
         else if(m_ind >= interior_u_m-1 && m_ind < interior_u_m+1){
-            out_ind[2].push_back(ind);
-            out_ind[1].push_back(ind);
+            sendbuf_push_back(2, ind, particles);
+            sendbuf_push_back(1, ind, particles);
         }
         else{
-            out_ind[1].push_back(ind);
+            sendbuf_push_back(1, ind, particles);
         }
     }
 }
-// checked
 
 void decomp_proc::synchronization(particle_t* particles, int time_step){
-    //int see_rank = 0;
-    //if(rank_m + rank_n*proc_m == see_rank && time_step == 1){
-        //printf("rank %d step 1 synchronization starts\n", see_rank); fflush(stdout);
-    //}
     int indexcount = 0;
-    //if(rank_m + rank_n*proc_m == see_rank && time_step == 1){
-        //printf("0\n"); fflush(stdout);
-            //for(int i = 0; i < out_ind[0].size(); i++){
-                //printf("%d\n", out_ind[0][i]);
-            //}
-    //}
-    if(rank_m < proc_m-1){
-        //if(rank_m + rank_n*proc_m == see_rank && time_step == 1){
-            //printf("oh\n"); fflush(stdout);
-            //sendbufs[0][0] = double(out_ind[0].size());
-            //printf("before write, max_recvcount = %d, out_ind[0].size() = %d\n", max_recvcount, out_ind[0].size()); fflush(stdout);
-        //}
-        write_sendbuf(local_rank, time_step, sendbufs[0], out_ind[0], particles);
-        //if(rank_m + rank_n*proc_m == 2 && time_step == 1){
-            //printf("after write\n"); fflush(stdout);
-        //}
-        MPI_Isend(sendbufs[0], out_ind[0].size()*5+1, MPI_DOUBLE,
-                (rank_m+1)+rank_n*proc_m, time_step, MPI_COMM_WORLD, &requests[indexcount]);
-        MPI_Irecv(recvbufs[0], max_recvcount, MPI_DOUBLE,
-                (rank_m+1)+rank_n*proc_m, time_step, MPI_COMM_WORLD, &requests[indexcount+1]);
-        indexcount += 2;
+    for(int i = 0; i < 8; i++){
+        if(neighbor_exist[i]){
+            MPI_Isend(sendbufs[i], int(sendbufs[i][0])*5+1, MPI_DOUBLE,
+                    (rank_m+neighbor_shift[2*i])+(rank_n+neighbor_shift[2*i+1])*proc_m,
+                    time_step, MPI_COMM_WORLD, &requests[indexcount]);
+            MPI_Irecv(recvbufs[i], max_recvcount, MPI_DOUBLE,
+                    (rank_m+neighbor_shift[2*i])+(rank_n+neighbor_shift[2*i+1])*proc_m,
+                    time_step, MPI_COMM_WORLD, &requests[indexcount+1]);
+            indexcount += 2;
+        }
     }
-    //if(rank_m + rank_n*proc_m == see_rank && time_step == 1){
-        //printf("1\n"); fflush(stdout);
-    //}
-    if(rank_m < proc_m-1 && rank_n > 0){
-        write_sendbuf(local_rank, time_step, sendbufs[1], out_ind[1], particles);
-        MPI_Isend(sendbufs[1], out_ind[1].size()*5+1, MPI_DOUBLE,
-                (rank_m+1)+(rank_n-1)*proc_m, time_step, MPI_COMM_WORLD, &requests[indexcount]);
-        MPI_Irecv(recvbufs[1], max_recvcount, MPI_DOUBLE,
-                (rank_m+1)+(rank_n-1)*proc_m, time_step, MPI_COMM_WORLD, &requests[indexcount+1]);
-        indexcount += 2;
-    }
-    //if(rank_m + rank_n*proc_m == see_rank && time_step == 1){
-        //printf("2\n"); fflush(stdout);
-    //}
-    if(rank_n > 0){
-        write_sendbuf(local_rank, time_step, sendbufs[2], out_ind[2], particles);
-        MPI_Isend(sendbufs[2], out_ind[2].size()*5+1, MPI_DOUBLE,
-                rank_m+(rank_n-1)*proc_m, time_step, MPI_COMM_WORLD, &requests[indexcount]);
-        MPI_Irecv(recvbufs[2], max_recvcount, MPI_DOUBLE,
-                rank_m+(rank_n-1)*proc_m, time_step, MPI_COMM_WORLD, &requests[indexcount+1]);
-        indexcount += 2;
-    }
-    //if(rank_m + rank_n*proc_m == see_rank && time_step == 1){
-        //printf("3\n"); fflush(stdout);
-    //}
-    if(rank_m>0 && rank_n>0){
-        write_sendbuf(local_rank, time_step, sendbufs[3], out_ind[3], particles);
-        MPI_Isend(sendbufs[3], out_ind[3].size()*5+1, MPI_DOUBLE,
-                (rank_m-1)+(rank_n-1)*proc_m, time_step, MPI_COMM_WORLD, &requests[indexcount]);
-        MPI_Irecv(recvbufs[3], max_recvcount, MPI_DOUBLE,
-                (rank_m-1)+(rank_n-1)*proc_m, time_step, MPI_COMM_WORLD, &requests[indexcount+1]);
-        indexcount += 2;
-    }
-    //if(rank_m + rank_n*proc_m == see_rank && time_step == 1){
-        //printf("4\n"); fflush(stdout);
-    //}
-    if(rank_m>0){
-        write_sendbuf(local_rank, time_step, sendbufs[4], out_ind[4], particles);
-        MPI_Isend(sendbufs[4], out_ind[4].size()*5+1, MPI_DOUBLE,
-                (rank_m-1)+rank_n*proc_m, time_step, MPI_COMM_WORLD, &requests[indexcount]);
-        MPI_Irecv(recvbufs[4], max_recvcount, MPI_DOUBLE,
-                (rank_m-1)+rank_n*proc_m, time_step, MPI_COMM_WORLD, &requests[indexcount+1]);
-        indexcount += 2;
-    }
-    //if(rank_m + rank_n*proc_m == see_rank && time_step == 1){
-        //printf("5\n"); fflush(stdout);
-    //}
-    if(rank_m>0 && rank_n<proc_n-1){
-        write_sendbuf(local_rank, time_step, sendbufs[5], out_ind[5], particles);
-        MPI_Isend(sendbufs[5], out_ind[5].size()*5+1, MPI_DOUBLE,
-                (rank_m-1)+(rank_n+1)*proc_m, time_step, MPI_COMM_WORLD, &requests[indexcount]);
-        MPI_Irecv(recvbufs[5], max_recvcount, MPI_DOUBLE,
-                (rank_m-1)+(rank_n+1)*proc_m, time_step, MPI_COMM_WORLD, &requests[indexcount+1]);
-        indexcount += 2;
-    }
-    //if(rank_m + rank_n*proc_m == see_rank && time_step == 1){
-        //printf("6\n"); fflush(stdout);
-    //}
-    if(rank_n<proc_n-1){
-        write_sendbuf(local_rank, time_step, sendbufs[6], out_ind[6], particles);
-        MPI_Isend(sendbufs[6], out_ind[6].size()*5+1, MPI_DOUBLE,
-                rank_m+(rank_n+1)*proc_m, time_step, MPI_COMM_WORLD, &requests[indexcount]);
-        MPI_Irecv(recvbufs[6], max_recvcount, MPI_DOUBLE,
-                rank_m+(rank_n+1)*proc_m, time_step, MPI_COMM_WORLD, &requests[indexcount+1]);
-        indexcount += 2;
-    }
-    //if(rank_m + rank_n*proc_m == see_rank && time_step == 1){
-        //printf("7\n"); fflush(stdout);
-    //}
-    if(rank_m<proc_m-1 && rank_n<proc_n-1){
-        write_sendbuf(local_rank, time_step, sendbufs[7], out_ind[7], particles);
-        MPI_Isend(sendbufs[7], out_ind[7].size()*5+1, MPI_DOUBLE,
-                (rank_m+1)+(rank_n+1)*proc_m, time_step, MPI_COMM_WORLD, &requests[indexcount]);
-        MPI_Irecv(recvbufs[7], max_recvcount, MPI_DOUBLE,
-                (rank_m+1)+(rank_n+1)*proc_m, time_step, MPI_COMM_WORLD, &requests[indexcount+1]);
-        indexcount += 2;
-    }
-    //if(rank_m + rank_n*proc_m == see_rank && time_step == 1){
-        //printf("8\n"); fflush(stdout);
-    //}
-
-    //if(rank_m + rank_n*proc_m == see_rank && time_step == 1){
-        //printf("rank %d step 1 synchronization before waitall\n", see_rank); fflush(stdout);
-    //}
-
     MPI_Waitall(indexcount, requests, MPI_STATUSES_IGNORE);
-    //if(rank_m + rank_n*proc_m == see_rank && time_step == 1){
-        //printf("rank %d step 1 synchronization after waitall\n", see_rank); fflush(stdout);
-    //}
-
-    if(rank_m < proc_m-1){
-        read_recvbuf(recvbufs[0], particles);
-    }
-    if(rank_m < proc_m-1 && rank_n > 0){
-        read_recvbuf(recvbufs[1], particles);
-    }
-    if(rank_n > 0){
-        read_recvbuf(recvbufs[2], particles);
-    }
-    if(rank_m>0 && rank_n>0){
-        read_recvbuf(recvbufs[3], particles);
-    }
-    if(rank_m>0){
-        read_recvbuf(recvbufs[4], particles);
-    }
-    if(rank_m>0 && rank_n<proc_n-1){
-        read_recvbuf(recvbufs[5], particles);
-    }
-    if(rank_n<proc_n-1){
-        read_recvbuf(recvbufs[6], particles);
-    }
-    if(rank_m<proc_m-1 && rank_n<proc_n-1){
-        read_recvbuf(recvbufs[7], particles);
-    }
-
-    //if(rank_m + rank_n*proc_m == see_rank && time_step == 1){
-        //printf("rank %d step 1 synchronization after read recvbufs\n", see_rank); fflush(stdout);
-    //}
 
     for(int i = 0; i < 8; i++){
-        out_ind[i].clear();
+        if(neighbor_exist[i]){
+            read_recvbuf(recvbufs[i], particles);
+        }
     }
-}
-// checked
 
-void decomp_proc::write_sendbuf(int rank, int step, double* sendbuf, std::vector<int>& send_ind, particle_t* particles){
-    //if(rank == 0 && step == 1){
-        //printf("rank 0 step 1 write_sendbuf starts\n"); fflush(stdout);
-        //printf("send_ind.size() = %d\n", send_ind.size()); fflush(stdout);
-        //printf("one more = %f\n", sendbuf[0]); fflush(stdout);
-    //}
-    sendbuf[0] = double(send_ind.size());
-    //if(rank == 0 && step == 1){
-        //printf("rank 0 step 1 after set the total num\n"); fflush(stdout);
-    //}
-    for(int i = 0; i < send_ind.size(); i++){
-        //if(rank == 0 && step == 1){
-            //printf("the %d iteration in write_sendbuf, before get the index\n", i); fflush(stdout);
-        //}
-        sendbuf[5*i+1] = double(send_ind[i]);
-        //if(rank == 0 && step == 1){
-            //printf("the %d iteration in write_sendbuf, get the index, send_ind[%d] = %d\n", i, i, send_ind[i]); fflush(stdout);
-        //}
-        particle_t& temp = particles[send_ind[i]];
-        sendbuf[5*i+2] = temp.x;
-        sendbuf[5*i+3] = temp.y;
-        sendbuf[5*i+4] = temp.vx;
-        sendbuf[5*i+5] = temp.vy;
+    for(int i = 0; i < 8; i++){
+        sendbufs[i][0] = 0.0;
     }
 }
-//checked
+
+void decomp_proc::sendbuf_push_back(int neighbor_ind, int ind, particle_t* particles){
+    int total_num = sendbufs[neighbor_ind][0];
+    sendbufs[neighbor_ind][5*total_num+1] = double(ind);
+    sendbufs[neighbor_ind][5*total_num+2] = particles[ind].x;
+    sendbufs[neighbor_ind][5*total_num+3] = particles[ind].y;
+    sendbufs[neighbor_ind][5*total_num+4] = particles[ind].vx;
+    sendbufs[neighbor_ind][5*total_num+5] = particles[ind].vy;
+    sendbufs[neighbor_ind][0] += 1.0;
+}
+
+//void decomp_proc::write_sendbuf(int rank, int step, double* sendbuf, std::vector<int>& send_ind, particle_t* particles){
+    //sendbuf[0] = double(send_ind.size());
+    //for(int i = 0; i < send_ind.size(); i++){
+        //sendbuf[5*i+1] = double(send_ind[i]);
+        //particle_t& temp = particles[send_ind[i]];
+        //sendbuf[5*i+2] = temp.x;
+        //sendbuf[5*i+3] = temp.y;
+        //sendbuf[5*i+4] = temp.vx;
+        //sendbuf[5*i+5] = temp.vy;
+    //}
+//}
 
 void decomp_proc::read_recvbuf(double* recvbuf, particle_t* particles){
     int recvcount = recvbuf[0];
@@ -399,4 +282,3 @@ void decomp_proc::read_recvbuf(double* recvbuf, particle_t* particles){
         }
     }
 }
-//checked

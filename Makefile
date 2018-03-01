@@ -22,7 +22,6 @@ openmp: openmp.o common.o decomposition.o
 	$(CC) -o $@ $(LIBS) $(OPENMP) openmp.o common.o decomposition.o
 mpi: mpi.o common.o decomposition_mpi.o
 	$(MPCC) -o $@ $(LIBS) $(MPILIBS) mpi.o common.o decomposition_mpi.o
-	sbatch job-cori-mpi32
 
 autograder.o: autograder.cpp common.h
 	$(CC) -c $(CFLAGS) autograder.cpp

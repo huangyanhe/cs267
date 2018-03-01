@@ -2,12 +2,12 @@
 #SBATCH -C haswell
 #SBATCH -p debug 				# change this option for non-debug runs
 #SBATCH -N 32					  # adjust the number of nodes per test (e.g. start with 1, 2, ...)
-#SBATCH -t 00:20:00		  # adjust the amount of time as necessary
+#SBATCH -t 00:10:00		  # adjust the amount of time as necessary
 #SBATCH -J auto-mpi32
 #SBATCH -o auto-mpi32.%j.stdout
 #SBATCH -e auto-mpi32.%j.error
 
-rm mpi.txt
+rm -f mpi.txt
 srun -n 1 -N 1 ./serial -n 500 -no -s mpi.txt
 srun -n 1 -N 1 ./mpi -p 1 -n 500 -no -s mpi.txt
 srun -n 2 -N 2 ./mpi -p 2 -n 500 -no -s mpi.txt

@@ -73,7 +73,6 @@ int main( int argc, char **argv )
         //
         //  move particles
         //
-        //decomposition.check(n, particles);
         for(int m = 0; m < decomposition.M; m++){
             for(int n = 0; n < decomposition.M; n++){
                 for(int s = 0, k = 0; s < decomposition.region_length[m+n*decomposition.M]; s++){
@@ -81,12 +80,6 @@ int main( int argc, char **argv )
                     move(particles[index]);
                     int m_new = particles[index].x/RegionSize, n_new = particles[index].y/RegionSize;
                     if(m_new != m || n_new != n){
-                        //int move = abs(m_new - m)+abs(n_new - n);
-                        //int move_m = abs(m_new - m);
-                        //int move_n = abs(n_new - n);
-                        //if(move > max_move) max_move = move;
-                        //if(move_m > max_move_m) max_move_m = move_m;
-                        //if(move_n > max_move_n) max_move_n = move_n;
                         decomposition.delete_particle(index, m, n);
                         decomposition.add_particle(index, m_new, n_new);
                     }
@@ -96,28 +89,6 @@ int main( int argc, char **argv )
                 }
             }
         }
-    //for(int i = 0; i < decomposition.num_sub_M; i++){
-        //for(int j = 0; j < decomposition.num_sub_N; j++){
-
-            //for(int m = decomposition.grid_M[i]; m < decomposition.grid_M[i+1]; m++){
-                //for(int n = decomposition.grid_N[j]; n < decomposition.grid_N[j+1]; n++){
-                    //for(int s = 0, k = 0; s < decomposition.region_length[m+n*decomposition.M]; s++){
-                        //int index = decomposition(m,n).ind[k];
-                        //move(particles[index]);
-                        //int m_new = particles[index].x/RegionSize, n_new = particles[index].y/RegionSize;
-                        //if(m_new != m || n_new != n){
-                            //decomposition.delete_particle(index, m, n);
-                            //decomposition.add_particle(index, m_new, n_new);
-                        //}
-                        //else{
-                            //k++;
-                        //}
-                    //}
-                //}
-            //}
-        //}
-    //}
-
         for(int i = 0; i < decomposition.Num_region; i++){
             decomposition.region_length[i] = decomposition.region_list[i].Num;
         }

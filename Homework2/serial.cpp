@@ -3,135 +3,15 @@
 #include <assert.h>
 #include <math.h>
 #include "common.h"
-#include <iostream>
-#include <algorithm>
-#include <vector>
+#include "decomposition.h"
 
-
-// void particleComputeMove(particle_t particles, int n)
-// {
-//   for( int i = 0; i < n; i++ )
-//         {
-//             particles[i].ax = particles[i].ay = 0;
-//             for (int j = 0; j < n; j++ )
-// 				apply_force( particles[i], particles[j],&dmin,&davg,&navg);
-//         }
- 
-//         //
-//         //  move particles
-//         //
-//         for( int i = 0; i < n; i++ ) 
-//             move( particles[i] );
-// };
-
+int InitialCapacity = 5;
+double RegionSize = 0.01;
 //
 //  benchmarking program
 //
-void findNeighbors(std::vector<int > &a_neighbors, std::vector< std::vector< std::vector< int> > > &bins, int i, int j, int numCells)
-{
-  a_neighbors.insert(a_neighbors.end(), bins[i][j].begin(), bins[i][j].end());	  
- if (i == 0)
-    {
-      if (j == 0)
-	{
-	  if (numCells == 1)
-	    {
-	      return;
-	    }
-	  else
-	    {
-	      a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
-	      a_neighbors.insert(a_neighbors.end(), bins[i+1][j+1].begin(),bins[i+1][j+1].end());
-	      a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
-	    }
-	}
-      else if (j == numCells-1)
-	{
-	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j-1].begin(),bins[i+1][j-1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
-
-	}
-      else
-	{
-	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j+1].begin(),bins[i+1][j+1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i+1][j-1].begin(),bins[i+1][j-1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
-	}
-    }
-  else if ( i == numCells-1)
-    {
-      if (j == 0)
-	{
-	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j+1].begin(),bins[i-1][j+1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
-	}
-      else if (j == numCells-1)
-	{
-	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j-1].begin(),bins[i-1][j-1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
-
-	}
-      else
-	{
-	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j+1].begin(),bins[i-1][j+1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i-1][j-1].begin(),bins[i-1][j-1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
-	  a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
-	}
-    }
-  else if (j == 0)
-    {
-      a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i-1][j+1].begin(),bins[i-1][j+1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i+1][j+1].begin(),bins[i+1][j+1].end());
-
-    }
-  else if (j == numCells-1)
-    {
-      a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i-1][j-1].begin(),bins[i-1][j-1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i+1][j-1].begin(),bins[i+1][j-1].end());
-    }
-  else
-    {
-      a_neighbors.insert(a_neighbors.end(), bins[i-1][j+1].begin(),bins[i-1][j+1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i-1][j].begin(), bins[i-1][j].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i-1][j-1].begin(),bins[i-1][j-1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i][j+1].begin(), bins[i][j+1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i][j-1].begin(), bins[i][j-1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i+1][j].begin(), bins[i+1][j].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i+1][j-1].begin(),bins[i+1][j-1].end());
-      a_neighbors.insert(a_neighbors.end(), bins[i+1][j+1].begin(),bins[i+1][j+1].end()); 
-    }
-  
-  
-};
-void bin(std::vector< std::vector< std::vector< int> > > &bins, particle_t *particles, int n, double h)
-{
-  int iposx, iposy;
-  for(int p=0; p< n; p++)
-    {
-      iposx = floor(particles[p].x/h);
-      iposy = floor(particles[p].y/h);  
-      bins[iposx][iposy].push_back(p);
-      // set acceleration to zero
-      particles[p].ax = 0;
-      particles[p].ay = 0;
-    }
-  return;
-};
 int main( int argc, char **argv )
-{    
+{
     int navg,nabsavg=0;
     double davg,dmin, absmin=1.0, absavg=0.0;
 
@@ -145,12 +25,12 @@ int main( int argc, char **argv )
         printf( "-no turns off all correctness checks and particle output\n");
         return 0;
     }
-    
-    int n = read_int( argc, argv, "-n", 100 );
+
+    int n = read_int( argc, argv, "-n", 1000 );
 
     char *savename = read_string( argc, argv, "-o", NULL );
     char *sumname = read_string( argc, argv, "-s", NULL );
-    
+
     FILE *fsave = savename ? fopen( savename, "w" ) : NULL;
     FILE *fsum = sumname ? fopen ( sumname, "a" ) : NULL;
 
@@ -158,99 +38,99 @@ int main( int argc, char **argv )
     set_size( n );
     init_particles( n, particles );
 
-    
-    // for(int p=0; p< n; p++)
-    //   {
-    // 	maxX = std::max(particles[p].x, maxX);
-    // 	maxY = std::max(particles[p].y, maxY);
-    // 	minX = std::min( particles[p].x, minX);
-   // 	minY = std::min( particles[p].y, minY);
-    //   }
-
-    // std::cout<<"Max = ("<< maxX<<","<<maxY<< ")"<<std::endl;
-    // std::cout<<"Min = ("<< minX<<","<<minY<< ")"<<std::endl;
-
-    //double xedgeL = minX - 0.5;
-    //double xedgeR = maxX + 0.5;
-    //double yedgeB = minY - 0.5;
-    //double yedgeT = maxY + 0.5;
-    
-    //int numYcells = std::ceil(std::abs(yedgeT - yedgeB)/ );
-
-    double density = 0.0005;
-    double cutoff = 0.01;
-    //double cutoff = sqrt(n*density);
-    double h = cutoff;
-    double maxXY = sqrt(n*density);
-    int numCells = ceil(maxXY/h);
-    //int numCells =1;
-    //std::vector< int> temp1;
-    //std::vector< std::vector< int> > temp2(numCells,  temp1);
-    //std::vector< std::vector< std::vector< int> > > bins(numCells, std::vector< std::vector< int> >(numCells));
-
-    
-    //bin(bins, particles, n, h);
-    
-    
+    decomp decomposition(n, particles);
     //
     //  simulate a number of time steps
     //
+    //int max_move = 0;
+    //int max_move_m = 0;
+    //int max_move_n = 0;
+
     double simulation_time = read_timer( );
-	
+
     for( int step = 0; step < NSTEPS; step++ )
     {
-	navg = 0;
+        navg = 0;
         davg = 0.0;
-	dmin = 1.0;
-
-	std::vector< std::vector< std::vector< int> > > bins(numCells, std::vector< std::vector< int> >(numCells));
-
-	
-    bin(bins, particles, n, h);
-    
-	//
-        // compute forces
+        dmin = 1.0;
         //
-	
-        // for( int i = 0; i < n; i++ )
-        // {
-        //     particles[i].ax = particles[i].ay = 0;
-        //     for (int j = 0; j < n; j++ )
-	// 			apply_force( particles[i], particles[j],&dmin,&davg,&navg);
-        // }
-    // for (int p = 0; p<n; p++)
-    //   {
-    // 	std::cout<<p<<","<<particles[p].x<<std::endl;
-    //   }
-    
-	for( int i = 0; i< numCells; i++)
-	  {
-	    for( int j = 0; j< numCells; j++)
-	      {
-		std::vector<int> Neighbors;
-		findNeighbors(Neighbors, bins, i, j, numCells);
-		// std::cout<<"Neigbors ij ("<<i<<","<<j<<") = ";
-		// for(auto pr = Neighbors.begin(); pr!= Neighbors.end(); ++pr )
-		//   {
-		//     std::cout<<*pr<<",";
-		//   }
-		// std::cout<<std::endl;
-		for(int k = 0; k<bins[i][j].size(); k++ )
-		  {
-		    for(int q=0; q<Neighbors.size(); q++)
-		      {			
-			apply_force( particles[bins[i][j][k]], particles[Neighbors[q]],&dmin,&davg,&navg);
-		      }
-		  }
-	      }
-	  }
-	
+        //  compute forces
+        //
+        for( int i = 0; i < n; i++ )
+        {
+            particles[i].ax = particles[i].ay = 0;
+            int m = particles[i].x/RegionSize, n = particles[i].y/RegionSize;
+            for(int mInd = max(m-1,0); mInd <= min(m+1,decomposition.M-1); mInd++){
+                for(int nInd = max(n-1,0); nInd <= min(n+1,decomposition.M-1); nInd++){
+                    region& temp = decomposition(mInd, nInd);
+                    for(int k = 0; k < temp.Num; k++){
+                        apply_force(particles[i], particles[temp.ind[k]], &dmin, &davg, &navg);
+                    }
+                }
+            }
+        }
+
         //
         //  move particles
         //
-        for( int i = 0; i < n; i++ ) 
-            move( particles[i] );
-	
+        //decomposition.check(n, particles);
+        for(int m = 0; m < decomposition.M; m++){
+            for(int n = 0; n < decomposition.M; n++){
+                for(int s = 0, k = 0; s < decomposition.region_length[m+n*decomposition.M]; s++){
+                    int index = decomposition(m,n).ind[k];
+                    move(particles[index]);
+                    int m_new = particles[index].x/RegionSize, n_new = particles[index].y/RegionSize;
+                    if(m_new != m || n_new != n){
+                        //int move = abs(m_new - m)+abs(n_new - n);
+                        //int move_m = abs(m_new - m);
+                        //int move_n = abs(n_new - n);
+                        //if(move > max_move) max_move = move;
+                        //if(move_m > max_move_m) max_move_m = move_m;
+                        //if(move_n > max_move_n) max_move_n = move_n;
+                        decomposition.delete_particle(index, m, n);
+                        decomposition.add_particle(index, m_new, n_new);
+                    }
+                    else{
+                        k++;
+                    }
+                }
+            }
+        }
+    //for(int i = 0; i < decomposition.num_sub_M; i++){
+        //for(int j = 0; j < decomposition.num_sub_N; j++){
+
+            //for(int m = decomposition.grid_M[i]; m < decomposition.grid_M[i+1]; m++){
+                //for(int n = decomposition.grid_N[j]; n < decomposition.grid_N[j+1]; n++){
+                    //for(int s = 0, k = 0; s < decomposition.region_length[m+n*decomposition.M]; s++){
+                        //int index = decomposition(m,n).ind[k];
+                        //move(particles[index]);
+                        //int m_new = particles[index].x/RegionSize, n_new = particles[index].y/RegionSize;
+                        //if(m_new != m || n_new != n){
+                            //decomposition.delete_particle(index, m, n);
+                            //decomposition.add_particle(index, m_new, n_new);
+                        //}
+                        //else{
+                            //k++;
+                        //}
+                    //}
+                //}
+            //}
+        //}
+    //}
+
+        for(int i = 0; i < decomposition.Num_region; i++){
+            decomposition.region_length[i] = decomposition.region_list[i].Num;
+        }
+
+        //for( int i = 0; i < n; i++ ){
+            //int m_old = particles[i].x/RegionSize, n_old = particles[i].y/RegionSize;
+            //move(particles[i]);
+            //int m_new = particles[i].x/RegionSize, n_new = particles[i].y/RegionSize;
+            //if( m_new != m_old || n_new != n_old ){
+                //decomposition.delete_particle(i, m_old, n_old);
+                //decomposition.add_particle(i, m_new, n_new);
+            //}
+        //}
 
         if( find_option( argc, argv, "-no" ) == -1 )
         {
@@ -262,7 +142,7 @@ int main( int argc, char **argv )
             nabsavg++;
           }
           if (dmin < absmin) absmin = dmin;
-		
+
           //
           //  save if necessary
           //
@@ -271,13 +151,13 @@ int main( int argc, char **argv )
         }
     }
     simulation_time = read_timer( ) - simulation_time;
-    
+
     printf( "n = %d, simulation time = %g seconds", n, simulation_time);
 
     if( find_option( argc, argv, "-no" ) == -1 )
     {
       if (nabsavg) absavg /= nabsavg;
-    // 
+    //
     //  -The minimum distance absmin between 2 particles during the run of the simulation
     //  -A Correct simulation will have particles stay at greater than 0.4 (of cutoff) with typical values between .7-.8
     //  -A simulation where particles don't interact correctly will be less than 0.4 (of cutoff) with typical values between .01-.05
@@ -288,22 +168,23 @@ int main( int argc, char **argv )
     if (absmin < 0.4) printf ("\nThe minimum distance is below 0.4 meaning that some particle is not interacting");
     if (absavg < 0.8) printf ("\nThe average distance is below 0.8 meaning that most particles are not interacting");
     }
-    printf("\n");     
+    printf("\n");
+    //printf("max_move = %d, max_move_m = %d, max_move_n = %d\n", max_move, max_move_m, max_move_n);
 
     //
     // Printing summary data
     //
-    if( fsum) 
+    if( fsum)
         fprintf(fsum,"%d %g\n",n,simulation_time);
- 
+
     //
     // Clearing space
     //
     if( fsum )
-        fclose( fsum );    
+        fclose( fsum );
     free( particles );
     if( fsave )
         fclose( fsave );
-    
+
     return 0;
 }

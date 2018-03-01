@@ -4,7 +4,7 @@
 #include "common.h"
 #include <algorithm>
 #include <vector>
-
+#include <set>
 
 //
 // particle data structure

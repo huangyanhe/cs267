@@ -4,7 +4,9 @@
 #include <assert.h>
 #include "common.h"
 #include "Particle.h"
-
+#include <algorithm>
+#include <vector>
+#include <set>
 //
 //  benchmarking program
 //

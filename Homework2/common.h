@@ -21,7 +21,6 @@ typedef struct
   double vy;
   double ax;
   double ay;
-  bool exists;
 } particle_t;
 
 //

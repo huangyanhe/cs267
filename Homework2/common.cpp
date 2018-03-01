@@ -86,7 +86,7 @@ void init_particles( int n, particle_t *p )
 }
 
 //
-//  interact two particles
+//  interact two particles 13 FPO 
 //
 void apply_force( particle_t &particle, particle_t &neighbor , double *dmin, double *davg, int *navg)
 {
@@ -118,7 +118,7 @@ void apply_force( particle_t &particle, particle_t &neighbor , double *dmin, dou
 }
 
 //
-//  integrate the ODE
+//  integrate the ODE 8 FPO
 //
 void move( particle_t &p )
 {

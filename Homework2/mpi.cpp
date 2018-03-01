@@ -99,14 +99,14 @@ int main( int argc, char **argv )
     std::vector<std::vector<int>> neighbors;
     neighbors.reserve(numCells*numCells);
     buildNeighbors(neighbors, numCells);
-    std::vector<vector<int>> cellIndexMapping;
-    cellIndexMapping.reserve(numCells*numCells);
-    oneDtwoDMapping( numCells, cellIndexMapping);
-    std::vector<std::vector<int>> assignedCells;
-    assignedCells.reserve(n_proc);
-    std::vector<int> cellProcessorMapping;
-    cellProcessorMapping.reserve(numCells*numCells);
-    assignCells2P(numCells, n_proc, assignedCells, cellProcessorMapping);
+    // std::vector<vector<int>> cellIndexMapping;
+    // cellIndexMapping.reserve(numCells*numCells);
+    // oneDtwoDMapping( numCells, cellIndexMapping);
+    // std::vector<std::vector<int>> assignedCells;
+    // assignedCells.reserve(n_proc);
+    // std::vector<int> cellProcessorMapping;
+    // cellProcessorMapping.reserve(numCells*numCells);
+    // assignCells2P(numCells, n_proc, assignedCells, cellProcessorMapping);
 
     int BlockSize = ceil(numCells*numCells/n_proc);
     

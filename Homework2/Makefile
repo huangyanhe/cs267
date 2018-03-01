@@ -7,8 +7,8 @@
 CC = clang++
 MPCC = CC
 OPENMP = -openmp #Note: this is the flag for Intel compilers. Change this to -fopenmp for GNU compilers. See http://www.nersc.gov/users/computational-systems/edison/programming/using-openmp/
-#CFLAGS = -O3
-CFLAGS = -g -std=c++11
+CFLAGS = -O3 -std=c++11
+#CFLAGS = -g -std=c++11
 LIBS =
 
 

@@ -6,6 +6,7 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <cmath>
 
 // void particleComputeMove(particle_t particles, int n)
 // {

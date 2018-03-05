@@ -6,6 +6,8 @@
 #include "common.h"
 
 #define NUM_THREADS 256
+#define InitialCapacity 10
+#define RegionSize 0.01
 
 extern double size;
 //
@@ -32,17 +34,17 @@ __device__ void apply_force_gpu(particle_t &particle, particle_t &neighbor)
 
 }
 
-__global__ void compute_forces_gpu(particle_t * particles, int n)
-{
-  // Get thread (particle) ID
-  int tid = threadIdx.x + blockIdx.x * blockDim.x;
-  if(tid >= n) return;
+/*__global__ void compute_forces_gpu(particle_t * particles, int n)*/
+/*{*/
+  /*// Get thread (particle) ID*/
+  /*int tid = threadIdx.x + blockIdx.x * blockDim.x;*/
+  /*if(tid >= n) return;*/
 
-  particles[tid].ax = particles[tid].ay = 0;
-  for(int j = 0 ; j < n ; j++)
-    apply_force_gpu(particles[tid], particles[j]);
+  /*particles[tid].ax = particles[tid].ay = 0;*/
+  /*for(int j = 0 ; j < n ; j++)*/
+    /*apply_force_gpu(particles[tid], particles[j]);*/
 
-}
+/*}*/
 
 __global__ void move_gpu (particle_t * particles, int n, double size)
 {
@@ -77,7 +79,40 @@ __global__ void move_gpu (particle_t * particles, int n, double size)
 
 }
 
+__device__ int indexing(int region_ind_m, int region_ind_n, int lda, int local_ind){
+    return (region_ind_m+lda*region_ind_n)*InitialCapacity+local_ind;
+}
 
+__global__ void init_region_num(int* region_num, int total_region){
+    int tid = threadIdx.x + blockIdx.x * blockDim.x;
+    if(tid >= total_region) return;
+    region_num[tid] = 0;
+}
+
+__global__ void init_region_list(int* region_list, int* region_num, particle_t* particles, 
+        int n, int lda){
+    int tid = threadIdx.x + blockIdx.x * blockDim.x;
+    if(tid >= n) return;
+    particle_t& temp = particles[tid];
+    int m_ind = temp.x/RegionSize, n_ind = temp.y/RegionSize;
+    int local_ind = atomicAdd(&region_num[m_ind+n_ind*lda], 1);
+    region_list[indexing(m_ind, n_ind, lda, local_ind)] = tid;
+}
+
+__global__ void compute_forces_gpu(int* region_list, int*region_num, particle_t* particles,
+        int n, int lda){
+    int tid = threadIdx.x + blockIdx.x * blockDim.x;
+    if(tid >= n) return;
+    particles[tid].ax = particles[tid].ay = 0;
+    int m_ind = particles[tid].x/RegionSize, n_ind = particles[tid].y/RegionSize;
+    for(int m = max(m_ind-1, 0); m <= min(m_ind+1, lda-1); m++){
+        for(int n = max(n_ind-1, 0); n <= min(n_ind+1, lda-1); n++){
+            for(int i = 0; i < region_num[m+n*lda]; i++){
+                apply_force_gpu(particles[tid], particles[region_list[indexing(m, n, lda, i)]]);
+            }
+        }
+    }
+}
 
 int main( int argc, char **argv )
 {    
@@ -106,7 +141,15 @@ int main( int argc, char **argv )
 
     set_size( n );
 
+    int lda_region = ceil(size/RegionSize);
+    int total_region = lda_region*lda_region;
+
     init_particles( n, particles );
+    
+    int* region_list; cudaMalloc((void **) &region_list, total_region*InitialCapacity*sizeof(int));
+    int* region_num; cudaMalloc((void **) &region_num, total_region*sizeof(int));
+    int particle_blks = (n + NUM_THREADS - 1) / NUM_THREADS;
+    int region_blks = (total_region + NUM_THREADS - 1) / NUM_THREADS;
 
     cudaThreadSynchronize();
     double copy_time = read_timer( );
@@ -128,14 +171,14 @@ int main( int argc, char **argv )
         //
         //  compute forces
         //
-
-	int blks = (n + NUM_THREADS - 1) / NUM_THREADS;
-	compute_forces_gpu <<< blks, NUM_THREADS >>> (d_particles, n);
+    init_region_num <<< region_blks, NUM_THREADS >>> (region_num, total_region);
+    init_region_list <<< particle_blks, NUM_THREADS >>> (region_list, region_num, d_particles, n, lda_region);
+	compute_forces_gpu <<< particle_blks, NUM_THREADS >>> (region_list, region_num, d_particles, n, lda_region);
         
         //
         //  move particles
         //
-	move_gpu <<< blks, NUM_THREADS >>> (d_particles, n, size);
+	move_gpu <<< particle_blks, NUM_THREADS >>> (d_particles, n, size);
         
         //
         //  save if necessary
@@ -154,6 +197,7 @@ int main( int argc, char **argv )
     
     free( particles );
     cudaFree(d_particles);
+    cudaFree(region_list); cudaFree(region_num);
     if( fsave )
         fclose( fsave );
     

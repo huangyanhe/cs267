@@ -2,34 +2,14 @@
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
-#include <vector>
-#include <tuple>
-#include <list>
-#include "common_gsi.h"
+#include "common.h"
+#include "decomposition.h"
 
-// Ordered pair for debugging
-// a's acceleration is affected by interaction with b
-struct pair_t {
-  int a, b;
-
-  pair_t(int a, int b) {
-    this->a = a;
-    this->b = b;
-  }
-
-  bool operator==(const pair_t &y) const {
-    if (this->a == y.a && this->b == y.b) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-};
-
+int InitialCapacity = 5;
+double RegionSize = 0.01;
 //
 //  benchmarking program
 //
-#define cutoff 0.01
 int main( int argc, char **argv )
 {
     int navg,nabsavg=0;
@@ -54,97 +34,74 @@ int main( int argc, char **argv )
     FILE *fsave = savename ? fopen( savename, "w" ) : NULL;
     FILE *fsum = sumname ? fopen ( sumname, "a" ) : NULL;
 
-    double size = set_size(n);
-    //double cutoff = get_cutoff();
-
     particle_t *particles = (particle_t*) malloc( n * sizeof(particle_t) );
+    set_size( n );
     init_particles( n, particles );
 
-    double bin_size = cutoff;
-
-    int bindim = ((int) (ceil(size / bin_size) + 0.5));
-    int nbins = bindim*bindim;
-
-    //printf("grid dimensions are %d -> %lf and cutoff is %lf, so %d bins of size %lf\n", 0, size, cutoff, nbins, bin_size);//fflush(stdout);
-
+    decomp decomposition(n, particles);
     //
     //  simulate a number of time steps
     //
+    //int max_move = 0;
+    //int max_move_m = 0;
+    //int max_move_n = 0;
+
     double simulation_time = read_timer( );
-
-    std::vector <std::list <int> > bins(nbins, std::list <int> ());
-
-    // Bin all the particles
-    for (int i = 0; i < n; i++) {
-        int xbin = (int) (particles[i].x / bin_size);
-        int ybin = (int) (particles[i].y / bin_size);
-        bins[xbin + ybin*bindim].push_back(i);
-    }
 
     for( int step = 0; step < NSTEPS; step++ )
     {
-	navg = 0;
+        navg = 0;
         davg = 0.0;
-	dmin = 1.0;
-
-        for (int i = 0; i < bindim; i++) {
-            for (int j = 0; j < bindim; j++) {
-                for (auto &p1 : bins[j + i*bindim]) {
-                    particles[p1].ax = particles[p1].ay = 0;
-                    for (int ii = i-1; ii <= i+1; ii++) {
-                        for (int jj = j-1; jj <= j+1; jj++) {
-                            if (ii >= 0 && ii < bindim && jj >= 0 && jj < bindim) {
-                                for (auto &p2 : bins[jj + ii*bindim]) {
-                                    apply_force(particles[p1], particles[p2], &dmin,&davg,&navg);
-                                }
-                            }
-                        }
+        dmin = 1.0;
+        //
+        //  compute forces
+        //
+        for( int i = 0; i < n; i++ )
+        {
+            particles[i].ax = particles[i].ay = 0;
+            int m = particles[i].x/RegionSize, n = particles[i].y/RegionSize;
+            for(int mInd = max(m-1,0); mInd <= min(m+1,decomposition.M-1); mInd++){
+                for(int nInd = max(n-1,0); nInd <= min(n+1,decomposition.M-1); nInd++){
+                    region& temp = decomposition(mInd, nInd);
+                    for(int k = 0; k < temp.Num; k++){
+                        apply_force(particles[i], particles[temp.ind[k]], &dmin, &davg, &navg);
                     }
                 }
             }
         }
-
-/*
-        for( int i = 0; i < n; i++ )
-        {
-            particles[i].ax = particles[i].ay = 0;
-            for (int j = 0; j < n; j++ )
-				apply_force( particles[i], particles[j],&dmin,&davg,&navg);
-        }
-*/
 
         //
         //  move particles
         //
-        std::list <std::tuple <std::list <int>::iterator, std::list <int> *>> toRebin;
-        for (int i = 0; i < bindim; i++) {
-            for (int j = 0; j < bindim; j++) {
-                for (std::list <int>::iterator pIt = bins[j + i*bindim].begin(); pIt != bins[j + i*bindim].end(); pIt++) {
-                    int p = *pIt;
-                    int xbin = (int) (particles[p].x / bin_size);
-                    int ybin = (int) (particles[p].y / bin_size);
-                    move(particles[p]);
-                    int newxbin = (int) (particles[p].x / bin_size);
-                    int newybin = (int) (particles[p].y / bin_size);
-                    if (newxbin != xbin || newybin != ybin) {
-                        toRebin.push_back(make_pair(pIt, &bins[j + i*bindim]));
+        for(int m = 0; m < decomposition.M; m++){
+            for(int n = 0; n < decomposition.M; n++){
+                for(int s = 0, k = 0; s < decomposition.region_length[m+n*decomposition.M]; s++){
+                    int index = decomposition(m,n).ind[k];
+                    move(particles[index]);
+                    int m_new = particles[index].x/RegionSize, n_new = particles[index].y/RegionSize;
+                    if(m_new != m || n_new != n){
+                        decomposition.delete_particle(index, m, n);
+                        decomposition.add_particle(index, m_new, n_new);
+                    }
+                    else{
+                        k++;
                     }
                 }
             }
         }
-
-        for (auto &i : toRebin) {
-            std::list <int>::iterator pIt = std::get <0> (i);
-            std::list <int> *bin = std::get <1> (i);
-            int p = *pIt;
-
-            bin->erase(pIt);
-
-            int xbin = (int) (particles[p].x / bin_size);
-            int ybin = (int) (particles[p].y / bin_size);
-
-            bins[xbin + ybin*bindim].push_back(p);
+        for(int i = 0; i < decomposition.Num_region; i++){
+            decomposition.region_length[i] = decomposition.region_list[i].Num;
         }
+
+        //for( int i = 0; i < n; i++ ){
+            //int m_old = particles[i].x/RegionSize, n_old = particles[i].y/RegionSize;
+            //move(particles[i]);
+            //int m_new = particles[i].x/RegionSize, n_new = particles[i].y/RegionSize;
+            //if( m_new != m_old || n_new != n_old ){
+                //decomposition.delete_particle(i, m_old, n_old);
+                //decomposition.add_particle(i, m_new, n_new);
+            //}
+        //}
 
         if( find_option( argc, argv, "-no" ) == -1 )
         {
@@ -183,6 +140,7 @@ int main( int argc, char **argv )
     if (absavg < 0.8) printf ("\nThe average distance is below 0.8 meaning that most particles are not interacting");
     }
     printf("\n");
+    //printf("max_move = %d, max_move_m = %d, max_move_n = %d\n", max_move, max_move_m, max_move_n);
 
     //
     // Printing summary data

@@ -17,10 +17,10 @@ gpu: gpu.o common.o
 autograder: autograder.o common.o
 	$(CC) -o $@ $(LIBS) autograder.o common.o
 
-serial.o: serial.cpp common_gsi.h
-	$(CC) -c $(CFLAGS) serial.cpp
-common_gsi.o: common_gsi.cpp common.h
-	$(CC) -c $(CFLAGS) common_gsi.cpp
+serial.o: serial.cu common_gsi.h
+	$(CC) -c $(CFLAGS) serial.cu
+common_gsi.o: common_gsi.cu common.h
+	$(CC) -c $(CFLAGS) common_gsi.cu
 autograder.o: autograder.cu common.h
 	$(CC) -c $(CFLAGS) autograder.cu
 gpu.o: gpu.cu common.h

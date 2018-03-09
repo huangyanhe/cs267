@@ -1,5 +1,0 @@
-n = 50000, simulation time = 0.944574 seconds
-n = 100000, simulation time = 1.96794 seconds
-n = 200000, simulation time = 5.4934 seconds
-n = 400000, simulation time = 17.4693 seconds
-n = 800000, simulation time = 38.4297 seconds

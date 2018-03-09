@@ -40,3 +40,5 @@ decomposition_mpi.o: decomposition_mpi.cpp decomposition_mpi.h
 
 clean:
 	rm -f *.o $(TARGETS) *.stdout *.txt *.error
+cleanout:
+	rm -f *.stdout *.error

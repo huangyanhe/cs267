@@ -1,5 +1,0 @@
-n = 50000,threads = 12, simulation time = 1.66604 seconds
-n = 100000,threads = 12, simulation time = 3.40598 seconds
-n = 200000,threads = 12, simulation time = 7.34263 seconds
-n = 400000,threads = 12, simulation time = 18.8619 seconds
-n = 800000,threads = 12, simulation time = 40.1771 seconds

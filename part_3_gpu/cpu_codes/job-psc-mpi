@@ -9,4 +9,4 @@
 #SBATCH --ntasks-per-node 1
 
 export I_MPI_JOB_RESPECT_PROCESS_PLACEMENT=0
-mpirun -np $SLURM_NNODES ./mpi -n 500 -o mpi.txt
+mpirun -np 12 ./mpi -n 50000 -o mpi.txt

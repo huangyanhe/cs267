@@ -8,9 +8,9 @@
 #SBATCH -e auto-openmp32.%j.error
 
 rm -f openmp.txt
-export OMP_NUM_THREADS=12
-srun -N 1 -n 1 -c 12 ./openmp -n 50000 -no -o openmp.txt
-srun -N 1 -n 1 -c 12 ./openmp -n 100000 -no -o openmp.txt
-srun -N 1 -n 1 -c 12 ./openmp -n 200000 -no -o openmp.txt
-srun -N 1 -n 1 -c 12 ./openmp -n 400000 -no -o openmp.txt
-srun -N 1 -n 1 -c 12 ./openmp -n 800000 -no -o openmp.txt
+export OMP_NUM_THREADS=32
+srun -N 1 -n 1 -c 32 ./openmp -n 50000 -no -o openmp.txt
+srun -N 1 -n 1 -c 32 ./openmp -n 100000 -no -o openmp.txt
+srun -N 1 -n 1 -c 32 ./openmp -n 200000 -no -o openmp.txt
+srun -N 1 -n 1 -c 32 ./openmp -n 400000 -no -o openmp.txt
+srun -N 1 -n 1 -c 32 ./openmp -n 800000 -no -o openmp.txt

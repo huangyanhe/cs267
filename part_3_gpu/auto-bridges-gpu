@@ -12,8 +12,8 @@
 ./gpu -n 200000 
 ./gpu -n 400000 
 ./gpu -n 800000 
-./serial -n 50000 -no
-./serial -n 100000 -no
-./serial -n 200000 -no
-./serial -n 400000 -no
-./serial -n 800000 -no
+#./serial -n 50000 -no
+#./serial -n 100000 -no
+#./serial -n 200000 -no
+#./serial -n 400000 -no
+#./serial -n 800000 -no

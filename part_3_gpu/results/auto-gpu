@@ -1,0 +1,10 @@
+CPU-GPU copy time = 0.000668 seconds
+n = 50000, simulation time = 0.455119 seconds
+CPU-GPU copy time = 0.001021 seconds
+n = 100000, simulation time = 1.03631 seconds
+CPU-GPU copy time = 0.001801 seconds
+n = 200000, simulation time = 2.24047 seconds
+CPU-GPU copy time = 0.003412 seconds
+n = 400000, simulation time = 4.67954 seconds
+CPU-GPU copy time = 0.006935 seconds
+n = 800000, simulation time = 9.5788 seconds

@@ -6,8 +6,7 @@
 #include "common.h"
 
 #define NUM_THREADS 128
-#define NUM_THREADS_UPDATES 512
-#define InitialCapacity 5
+#define InitialCapacity 10
 #define binSize 0.01
 
 extern double size;
@@ -35,14 +34,19 @@ __device__ void apply_force_gpu(particle_t &particle, particle_t &neighbor)
 
 }
 
-__global__ void move_gpu (particle_t * particles, int n, double size)
+__device__ int indexing(int bin_ind_m, int bin_ind_n, int lda, int local_ind){
+    return (bin_ind_m+lda*bin_ind_n)*InitialCapacity+local_ind;
+}
+
+__global__ void move_gpu (particle_t * particles, int n, double size, int* bin_list, int* bin_num, int lda)
 {
 
   // Get thread (particle) ID
-  int tid = threadIdx.x + blockIdx.x * blockDim.x;
-  if(tid >= n) return;
+    int tid = threadIdx.x + blockIdx.x * blockDim.x;
+    if(tid >= n) return;
 
-  particle_t * p = &particles[tid];
+    particle_t * p = &particles[tid];
+    int m_old = (p->x)/binSize, n_old = (p->y)/binSize;
     //
     //  slightly simplified Velocity Verlet integration
     //  conserves energy better than explicit Euler method
@@ -66,43 +70,32 @@ __global__ void move_gpu (particle_t * particles, int n, double size)
         p->vy = -(p->vy);
     }
 
-}
-
-__device__ int indexing(int bin_ind_m, int bin_ind_n, int lda, int local_ind){
-    return (bin_ind_m+lda*bin_ind_n)*InitialCapacity+local_ind;
-}
-
-__global__ void delete_particles(particle_t * particles, int* bin_list, int* bin_num, int* bin_add_list, int* bin_add_num, int lda)
-{
-
-    int tid = threadIdx.x + blockIdx.x * blockDim.x;
-    if(tid >= lda*lda) return;
-    int num_particles = bin_num[tid];
-    for(int i = 0, k = 0; i < num_particles; i++){
-        int index = bin_list[tid*InitialCapacity+k];
-        particle_t& p = particles[index];
-        int m_new = p.x/binSize, n_new = p.y/binSize;
-        int new_bin = m_new + n_new * lda;
-        if(new_bin != tid){
-            bin_num[tid]--;
-            bin_list[tid*InitialCapacity+k] = bin_list[tid*InitialCapacity+bin_num[tid]];
-            int new_local_ind = atomicAdd(&bin_add_num[new_bin],1);
-            bin_add_list[new_bin * InitialCapacity + new_local_ind] = index;
+    int m_new = (p->x)/binSize, n_new = (p->y)/binSize;
+    if(m_new != m_old || n_new != n_old){
+        for(int i = 0; i < bin_num[m_old + n_old * lda]; i++){
+            if(bin_list[indexing(m_old, n_old, lda, i)] == tid){
+                bin_list[indexing(m_old, n_old, lda, i)] = -1;
+                break;
+            }
         }
-        else{
-            k++;
-        }
+
+        int index = atomicAdd(&bin_num[m_new + n_new * lda], 1);
+        bin_list[indexing(m_new, n_new, lda, index)] = tid;
     }
 }
 
-__global__ void add_particles(int* bin_list, int* bin_num, int* bin_add_list, int* bin_add_num, int lda)
-{
+__global__ void clean_bins(int* bin_list, int* bin_num, int lda){
     int tid = threadIdx.x + blockIdx.x * blockDim.x;
-    if(tid >= lda*lda) return;
-    for(int i = 0; i < bin_add_num[tid]; i++){
-        bin_list[tid*InitialCapacity+bin_num[tid]+i] = bin_add_list[tid*InitialCapacity+i];
+    if(tid >= lda * lda) return;
+
+    int ind = 0;
+    for(int i = 0; i < bin_num[tid]; i++){
+        if(bin_list[tid * InitialCapacity + i] != -1){
+            bin_list[tid * InitialCapacity + ind] = bin_list[tid * InitialCapacity + i];
+            ind++;
+        }
     }
-    bin_num[tid] += bin_add_num[tid];
+    bin_num[tid] = ind;
 }
 
 __global__ void init_bin_num(int* bin_num, int total_bin){
@@ -170,11 +163,8 @@ int main( int argc, char **argv )
 
     int* bin_list; cudaMalloc((void **) &bin_list, total_bin*InitialCapacity*sizeof(int));
     int* bin_num; cudaMalloc((void **) &bin_num, total_bin*sizeof(int));
-    int* bin_add_list; cudaMalloc((void **) &bin_add_list, total_bin*InitialCapacity*sizeof(int));
-    int* bin_add_num; cudaMalloc((void **) &bin_add_num, total_bin*sizeof(int));
     int particle_blks = (n + NUM_THREADS - 1) / NUM_THREADS;
     int bin_blks = (total_bin + NUM_THREADS - 1) / NUM_THREADS;
-    int bin_blks_updates = (total_bin + NUM_THREADS_UPDATES - 1) / NUM_THREADS_UPDATES;
 
     cudaThreadSynchronize();
     double copy_time = read_timer( );
@@ -203,14 +193,9 @@ int main( int argc, char **argv )
         //
         //  move particles
         //
-	move_gpu <<< particle_blks, NUM_THREADS >>> (d_particles, n, size);
+	move_gpu <<< particle_blks, NUM_THREADS >>> (d_particles, n, size, bin_list, bin_num, lda_bin);
+    clean_bins <<< bin_blks, NUM_THREADS >>> (bin_list, bin_num, lda_bin);
 
-        //
-        //  update bins
-        //
-    init_bin_num <<< bin_blks, NUM_THREADS >>> (bin_add_num, total_bin);
-    delete_particles <<< bin_blks_updates, NUM_THREADS_UPDATES >>> (d_particles, bin_list, bin_num, bin_add_list, bin_add_num, lda_bin);
-    add_particles <<< bin_blks_updates, NUM_THREADS_UPDATES >>> (bin_list, bin_num, bin_add_list, bin_add_num, lda_bin);
 
     /*init_bin_num <<< bin_blks, NUM_THREADS >>> (bin_num, bin_add_num, total_bin);*/
     /*init_bin_list <<< particle_blks, NUM_THREADS >>> (bin_list, bin_num, d_particles, n, lda_bin);*/
@@ -232,7 +217,6 @@ int main( int argc, char **argv )
     free( particles );
     cudaFree(d_particles);
     cudaFree(bin_list); cudaFree(bin_num);
-    cudaFree(bin_add_list); cudaFree(bin_add_num);
     if( fsave )
         fclose( fsave );
 

@@ -66,9 +66,9 @@ int main(int argc, char **argv) {
   HashMap hashmap(hash_table_size);
 
   //Vector of global pointers to used and data
-  vector<upcxx::global_ptr<int> > ptr2used(upcxx::rank_n());
+  std::vector<upcxx::global_ptr<int> > ptr2used(upcxx::rank_n());
   ptr2used[upcxx::rank_me()] = *hashmap.refused(); 
-  vector<upcxx::global_ptr<kmer_pair> > ptr2data(upcxx::rank_n());
+  std::vector<upcxx::global_ptr<kmer_pair> > ptr2data(upcxx::rank_n());
   ptr2data[upcxx::rank_me()] = *hashmap.refdata();
   for (int j = 0; j<upcxx::rank_n(); j++)
   {

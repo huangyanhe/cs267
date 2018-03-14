@@ -47,8 +47,39 @@ int main(int argc, char **argv) {
   size_t n_kmers = line_count(kmer_fname);
 
   // Load factor of 0.5
-  size_t hash_table_size = n_kmers * (1.0 / 0.5);
+//  size_t hash_table_size = n_kmers * (1.0 / 0.5);
+
+// Divides the hash table up between the processors.
+  size_t hash_table_size = std::ceil(n_kmers * (1.0 / 0.5)/upcxx::rank_n);
+
+// pointer to an array of pointers that point to local shared used
+//  upcxx::global_ptr<int64_t*> ptr2used = nullptr;
+//  //upcxx::global_ptr<int64_t> ptr2used = new_array<int64_t>(upcxx::rank_n()); 
+//  // broadcast array of size # of processors
+//  if (upcxx::rank_me() == 0)
+//  {
+//      ptr2used = upcxx::new_array<int64_t*>(upcxx::rank_n());
+//  }
+//  ptr2used = upcxx::broadcast(ptr2used, 0).wait();
+//  upcxx::global_ptr<int64_t*> localptr2used = ptr2used + upcxx::rank_me();
+  // default constructor of 
   HashMap hashmap(hash_table_size);
+
+  //Vector of global pointers to used and data
+  vector<upcxx::global_ptr<int> > ptr2used(upcxx::rank_n());
+  ptr2used[upcxx::rank_me()] = *hashmap.refused(); 
+  vector<upcxx::global_ptr<kmer_pair> > ptr2data(upcxx::rank_n());
+  ptr2data[upcxx::rank_me()] = *hashmap.refdata();
+  for (int j = 0; j<upcxx::rank_n(); j++)
+  {
+      ptr2data[i] = upcxx::broadcast(ptr2data[i], i).wait();
+      ptr2used[i] = upcxx::broadcast(ptr2used[i], i).wait();
+  }
+  hashmap.initPtrs(ptr2used, ptr2data);
+
+//Write ptr into array
+//  int64_t* myptr2used = *hashmap.refused(); 
+//  upcxx::rput(myptr2used, localptr2used);
 
   if (run_type == "verbose") {
     BUtil::print("Initializing hash table of size %d for %d kmers.\n",

@@ -66,16 +66,16 @@ int main(int argc, char **argv) {
   HashMap hashmap(hash_table_size);
 
   //Vector of global pointers to used and data
-  std::vector<upcxx::global_ptr<int> > ptr2used(upcxx::rank_n());
-  ptr2used[upcxx::rank_me()] = *hashmap.refused(); 
-  std::vector<upcxx::global_ptr<kmer_pair> > ptr2data(upcxx::rank_n());
-  ptr2data[upcxx::rank_me()] = *hashmap.refdata();
+  std::vector<upcxx::global_ptr<int> > ptrused(upcxx::rank_n());
+  ptrused[upcxx::rank_me()] = *hashmap.refused(); 
+  std::vector<upcxx::global_ptr<kmer_pair> > ptrdata(upcxx::rank_n());
+  ptrdata[upcxx::rank_me()] = *hashmap.refdata();
   for (int j = 0; j<upcxx::rank_n(); j++)
   {
-      ptr2data[i] = upcxx::broadcast(ptr2data[i], i).wait();
-      ptr2used[i] = upcxx::broadcast(ptr2used[i], i).wait();
+      ptr2data[i] = upcxx::broadcast(ptrdata[i], i).wait();
+      ptr2used[i] = upcxx::broadcast(ptrused[i], i).wait();
   }
-  hashmap.initPtrs(ptr2used, ptr2data);
+  hashmap.initPtrs(ptrused, ptrdata);
 
 //Write ptr into array
 //  int64_t* myptr2used = *hashmap.refused(); 

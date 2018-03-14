@@ -9,8 +9,8 @@ struct HashMap {
 
 //  // pointer to an array of pointers that point to local shared used
 //  global_ptr<int> ptr2used; 
-  std::vector<upcxx::global_ptr<int> > ptr2used;    
-  std::vector<upcxx::global_ptr<kmer_pair> > ptr2used;    
+  std::vector<upcxx::global_ptr<int> > ptrused;    
+  std::vector<upcxx::global_ptr<kmer_pair> > ptrused;    
   
   size_t my_size;
 
@@ -36,8 +36,8 @@ struct HashMap {
   bool HashMap::slot_used(int *slot);
  //bool slot_used(uint64_t slot);
   //My own added functions
-  int64_t HashMap::refdata();
-  int64_t HashMap::refused();
+  kmer_pair HashMap::refdata();
+  int HashMap::refused();
   int HashMap::initPtrs(std::vector<upcxx::global_ptr<int> > ptrInitused, std::vector<upcxx::global_ptr<kmer_pair> >ptrInitdata);
 
 };
@@ -56,9 +56,9 @@ bool HashMap::insert(const kmer_pair &kmer) {
     uint64_t slot = (hash + probe++) % size();
     uint64_t IndexRank = std::floor(slot/size);
     uint64_t IndexOnLocalVector = slot- IndexRank*size;
-    int *ptr2writeused = ptr2used[IndexRank] +  IndexOnLocalVector; 
+    upcxx::global_ptr<int> ptr2writeused = ptr2used[IndexRank] +  IndexOnLocalVector; 
     success = request_slot(ptr2writeused);
-    kmer_pair *ptr2writedata = ptr2data[IndexRank] +  IndexOnLocalVector; 
+    upcxx::global_ptr<kmer_pair> ptr2writedata = ptr2data[IndexRank] +  IndexOnLocalVector; 
     if (success) {
       write_slot(ptr2writedata, kmer);
     }
@@ -74,9 +74,9 @@ bool HashMap::find(const pkmer_t &key_kmer, kmer_pair &val_kmer) {
     uint64_t slot = (hash + probe++) % size();
     uint64_t IndexRank = std::floor(slot/size);
     uint64_t IndexOnLocalVector = slot- IndexRank*size;
-    int *ptr2writeused = ptr2used[IndexRank] +  IndexOnLocalVector; 
+    upcxx::global_ptr<int> ptr2writeused = ptr2used[IndexRank] +  IndexOnLocalVector; 
     if (slot_used(ptr2writeused)) {
-        kmer_pair *ptr2writedata = ptr2data[IndexRank] +  IndexOnLocalVector; 
+        upcxx::global_ptr<kmer_pair> ptr2writedata = ptr2data[IndexRank] +  IndexOnLocalVector; 
         val_kmer = read_slot(ptr2writedata);
       if (val_kmer.kmer == key_kmer) {
         success = true;
@@ -97,15 +97,15 @@ bool HashMap::find(const pkmer_t &key_kmer, kmer_pair &val_kmer) {
 //kmer_pair HashMap::read_slot(uint64_t slot) {
 //  return data[slot];
 //}
-bool HashMap::slot_used(int *slot) {
+bool HashMap::slot_used(upcxx::global_ptr<int> slot) {
   return *slot != 0;
 }
-
-void HashMap::write_slot(kmer_pair *slot, const kmer_pair &kmer) {
+// It might be complaining about this
+void HashMap::write_slot(upcxx::global_ptr<kmer_pair> slot, const kmer_pair &kmer) {
   *slot = kmer;
 }
 
-kmer_pair HashMap::read_slot(kmer_pair *slot) {
+kmer_pair HashMap::read_slot(upcxx::global_ptr<kmer_pair> slot) {
   return *slot;
 }
 //bool HashMap::request_slot(uint64_t slot) {
@@ -116,7 +116,7 @@ kmer_pair HashMap::read_slot(kmer_pair *slot) {
 //    return true;
 //  }
 //  }
-bool HashMap::request_slot(int *slot) {
+bool HashMap::request_slot(upcxx::global_ptr<int> slot) {
 int result = upcxx::atomic_fetch_add(slot, 1, memory_order_relaxed).wait()
 if (result == 0)
 {
@@ -141,7 +141,7 @@ kmer_pair HashMap::refdata()
 return data[0];
 }
 int HashMap::initPtrs(vector<upcxx::global_ptr<int> > ptrInitused, vector<upcxx::global_ptr<kmer_pair> > ptrInitdata) {
-    ptr2used = ptrInitused;    
-    ptr2data = ptrInitdata; 
+    ptrused = ptrInitused;    
+    ptrdata = ptrInitdata; 
     return 0; 
 }

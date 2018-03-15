@@ -14,4 +14,7 @@ kmer_hash: kmer_hash.cpp kmer_t.hpp pkmer_t.hpp packing.hpp read_kmers.hpp hash_
 	$(CXX) kmer_hash.cpp -o kmer_hash $(CXXFLAGS) $(LDFLAGS)
 
 clean:
-	@rm -fv kmer_hash
+	@rm -fv kmer_hash *.txt test*.dat
+
+dat_clean:
+	@rm -fv *.txt test*.dat

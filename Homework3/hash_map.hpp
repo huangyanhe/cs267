@@ -1,17 +1,23 @@
 #pragma once
 
 #include <upcxx/upcxx.hpp>
+#include <vector>
 #include "kmer_t.hpp"
 
 struct HashMap {
-  std::vector <kmer_pair> data;
-  std::vector <int> used;
+  //std::vector <kmer_pair> data;
+  //std::vector <int> used;
+  std::vector<upcxx::global_ptr<kmer_pair> > data;
+  std::vector<upcxx::global_ptr<int> > used;
 
   size_t my_size;
+  size_t total_size;
 
+  size_t local_size() const noexcept;
   size_t size() const noexcept;
 
   HashMap(size_t size);
+  ~HashMap();
 
   // Most important functions: insert and retrieve
   // k-mers from the hash table.
@@ -30,9 +36,29 @@ struct HashMap {
 };
 
 HashMap::HashMap(size_t size) {
-  my_size = size;
-  data.resize(size);
-  used.resize(size, 0);
+    total_size = size * upcxx::rank_n();
+    my_size = (total_size + upcxx::rank_n() - 1)/upcxx::rank_n();
+    total_size = my_size * upcxx::rank_n();
+    data.assign(upcxx::rank_n(), nullptr);
+    used.assign(upcxx::rank_n(), nullptr);
+    data[upcxx::rank_me()] = upcxx::new_array<kmer_pair>(my_size);
+    used[upcxx::rank_me()] = upcxx::new_array<int>(my_size);
+    upcxx::barrier();
+    int total_rank = upcxx::rank_n();
+    for(int i = 0; i < total_rank; i++){
+        data[i] = upcxx::broadcast(data[i], i).wait();
+        used[i] = upcxx::broadcast(used[i], i).wait();
+    }
+}
+
+HashMap::~HashMap(){
+    upcxx::delete_array(data[upcxx::rank_me()]);
+    upcxx::delete_array(used[upcxx::rank_me()]);
+    int total_rank = upcxx::rank_n();
+    for(int i = 0; i < total_rank; i++){
+        data[i] = nullptr;
+        used[i] = nullptr;
+    }
 }
 
 bool HashMap::insert(const kmer_pair &kmer) {
@@ -66,26 +92,44 @@ bool HashMap::find(const pkmer_t &key_kmer, kmer_pair &val_kmer) {
 }
 
 bool HashMap::slot_used(uint64_t slot) {
-  return used[slot] != 0;
+  //return used[slot] != 0;
+    int rank = slot/my_size, local_slot = slot%my_size;
+    upcxx::future<int> f = upcxx::rget(used[rank]+local_slot);
+    f.wait();
+    return f.result() != 0;
 }
 
 void HashMap::write_slot(uint64_t slot, const kmer_pair &kmer) {
-  data[slot] = kmer;
+  //data[slot] = kmer;
+    int rank = slot/my_size, local_slot = slot%my_size;
+    upcxx::rput(kmer, data[rank]+local_slot).wait();
 }
 
 kmer_pair HashMap::read_slot(uint64_t slot) {
-  return data[slot];
+  //return data[slot];
+    int rank = slot/my_size, local_slot = slot%my_size;
+    upcxx::future<kmer_pair> f = upcxx::rget(data[rank]+local_slot);
+    f.wait();
+    return f.result();
 }
 
 bool HashMap::request_slot(uint64_t slot) {
-  if (used[slot] != 0) {
-    return false;
-  } else {
-    used[slot] = 1;
-    return true;
-  }
+  //if (used[slot] != 0) {
+    //return false;
+  //} else {
+    //used[slot] = 1;
+    //return true;
+  //}
+    int rank = slot/my_size, local_slot = slot%my_size;
+    upcxx::future<int> f = upcxx::atomic_fetch_add(used[rank]+local_slot, 1, std::memory_order_relaxed);
+    f.wait();
+    return f.result() == 0;
 }
 
-size_t HashMap::size() const noexcept {
+size_t HashMap::local_size() const noexcept{
   return my_size;
+}
+
+size_t HashMap::size() const noexcept{
+  return total_size;
 }

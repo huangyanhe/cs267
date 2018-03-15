@@ -50,8 +50,7 @@ int main(int argc, char **argv) {
 //  size_t hash_table_size = n_kmers * (1.0 / 0.5);
 
 // Divides the hash table up between the processors.
-  size_t hash_table_size = std::ceil(n_kmers * (1.0 / 0.5)/upcxx::rank_n);
-
+  size_t hash_table_size = std::ceil(n_kmers * (1.0 / 0.5)/upcxx::rank_n());
 // pointer to an array of pointers that point to local shared used
 //  upcxx::global_ptr<int64_t*> ptr2used = nullptr;
 //  //upcxx::global_ptr<int64_t> ptr2used = new_array<int64_t>(upcxx::rank_n()); 
@@ -67,13 +66,13 @@ int main(int argc, char **argv) {
 
   //Vector of global pointers to used and data
   std::vector<upcxx::global_ptr<int> > ptrused(upcxx::rank_n());
-  ptrused[upcxx::rank_me()] = *hashmap.refused(); 
+  ptrused[upcxx::rank_me()] = &hashmap.refused(); 
   std::vector<upcxx::global_ptr<kmer_pair> > ptrdata(upcxx::rank_n());
-  ptrdata[upcxx::rank_me()] = *hashmap.refdata();
+  ptrdata[upcxx::rank_me()] = &hashmap.refdata();
   for (int j = 0; j<upcxx::rank_n(); j++)
   {
-      ptr2data[i] = upcxx::broadcast(ptrdata[i], i).wait();
-      ptr2used[i] = upcxx::broadcast(ptrused[i], i).wait();
+      ptrdata[j] = upcxx::broadcast(ptrdata[j], j).wait();
+      ptrused[j] = upcxx::broadcast(ptrused[j], j).wait();
   }
   hashmap.initPtrs(ptrused, ptrdata);
 

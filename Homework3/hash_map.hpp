@@ -1,6 +1,7 @@
 #pragma once
 
 #include <upcxx/upcxx.hpp>
+#include <iostream>
 #include <vector>
 #include "kmer_t.hpp"
 
@@ -36,7 +37,8 @@ struct HashMap {
 };
 
 HashMap::HashMap(size_t size) {
-    total_size = size * upcxx::rank_n();
+    //total_size = size * upcxx::rank_n();
+    total_size = size * 1;
     my_size = (total_size + upcxx::rank_n() - 1)/upcxx::rank_n();
     total_size = my_size * upcxx::rank_n();
     data.assign(upcxx::rank_n(), nullptr);

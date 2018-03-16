@@ -1,0 +1,46 @@
+\begin{thebibliography}{1}
+
+\bibitem{birdsall2004plasma}
+Charles~K Birdsall and A~Bruce Langdon.
+\newblock {\em Plasma physics via computer simulation}.
+\newblock CRC press, 2004.
+
+\bibitem{buyukkecceci2013portable}
+Ferit B{\"u}y{\"u}kke{\c{c}}eci, Omar Awile, and Ivo~F Sbalzarini.
+\newblock A portable opencl implementation of generic particle--mesh and
+  mesh--particle interpolation in 2d and 3d.
+\newblock {\em Parallel Computing}, 39(2):94--111, 2013.
+
+\bibitem{hockney1988computer}
+Roger~W Hockney and James~W Eastwood.
+\newblock {\em Computer simulation using particles}.
+\newblock crc Press, 1988.
+
+\bibitem{madduri2012optimization}
+Kamesh Madduri, Jimmy Su, Samuel Williams, Leonid Oliker, St{\'e}phane Ethier,
+  and Katherine Yelick.
+\newblock Optimization of parallel particle-to-grid interpolation on leading
+  multicore platforms.
+\newblock {\em IEEE Transactions on Parallel and Distributed Systems},
+  23(10):1915--1922, 2012.
+
+\bibitem{myers2016convergence}
+Andrew Myers, Phillip Colella, and Brian Van~Straalen.
+\newblock The convergence of particle-in-cell schemes for cosmological dark
+  matter simulations.
+\newblock {\em The Astrophysical Journal}, 816(2):56, 2016.
+
+\bibitem{stantchev2008fast}
+George Stantchev, William Dorland, and Nail Gumerov.
+\newblock Fast parallel particle-to-grid interpolation for plasma pic
+  simulations on the gpu.
+\newblock {\em Journal of Parallel and Distributed Computing},
+  68(10):1339--1349, 2008.
+
+\bibitem{wang2011particle}
+Bei Wang, Gregory~H Miller, and Phillip Colella.
+\newblock A particle-in-cell method with adaptive phase-space remapping for
+  kinetic plasmas.
+\newblock {\em SIAM Journal on Scientific Computing}, 33(6):3509--3537, 2011.
+
+\end{thebibliography}

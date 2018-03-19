@@ -132,6 +132,15 @@ int main(int argc, char **argv) {
     fout.close();
   }
 
+    if(run_type == "output"){
+        if(upcxx::rank_me()==0){
+            std::string result_fname = std::string(argv[3]);
+            std::ofstream resultout(result_fname, std::ios::app);
+            resultout << upcxx::rank_n() << " ranks, " << insert.count() << " insert, " << read.count() << " read, "<< total.count() << " total." << std::endl;
+            resultout.close();
+        }
+    }
+
   upcxx::finalize();
   return 0;
 }

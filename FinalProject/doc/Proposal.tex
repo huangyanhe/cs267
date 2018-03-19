@@ -1,7 +1,8 @@
 %\documentclass[aps,12pt,twoside,twocolumn,notitlepage]{article}
-\documentclass[aps,12pt]{revtex4-1}
+\documentclass[aps,12pt, notitlepage]{revtex4-1}
 \usepackage{epsfig,graphicx,amssymb,amsmath, amsthm,subeqnarray,rotating,color,float,wrapfig,fancyhdr, setspace, nopageno}
 \usepackage{natbib}
+
 
 \setlength\parindent{0pt}
 \linespread{1.0}
@@ -34,59 +35,65 @@
 \def\varepsilon{\epsilon}
 
 
-\title{CS 267 Final Project Proposal: High-Order Particle-in-Cell Method with Remapping using MPI and OpenMP}
-%\author{Colin Wahl}
+
 
 \begin{document}
+
+\title{CS 267 Final Project Proposal:\\
+ \large High-Order Hybrid Particle-in-Cell Method}
+\author{Yanhe Huang, Zixi Hu, Colin Wahl}
 
 \maketitle
 
 
-\section{Introduction}
+%
+%
+%\section{Introduction}
+%
+%Particle-in-cell (PIC) methods first gained popularity for plasma physics simulations in the 1950s and 1960s. 
+%For the Vlasov-type systems often considered, we are required to solve in phase-space which makes many common grid methods infeasible due to the large amount of memory that these methods use. 
+%Generally, PIC methods can be understood as having four distinct steps \cite{hockney1988computer, birdsall2004plasma}: 
+%\begin{enumerate}
+%\item \textbf{Deposition}: Deposit the particles charge on the real-space grid.\label{deposition}
+%\item \textbf{Grid Solve}: This step requires either solving Poisson's Equation for the field(s).\label{gridsolve}
+%\item \textbf{Interpolate}: Interpolate the field(s) back onto the particles.\label{interpolation}
+%\item \textbf{Integration}: Integrate the equations of motion.\label{interpolation} 
+%\end{enumerate}
+%Recent studies have shown the importance of a fifth step, 
+%\begin{enumerate}
+%\setcounter{enumi}{4}
+%\item \textbf{Remap}: Deposit the charge on a uniform phase-space grid that spawns new particles,\label{remap}
+%\end{enumerate}
+%to convergence for long-time simulations \cite{wang2011particle, myers2016convergence}. 
+%Current state-of-the-art PIC codes often neglect Step \ref{remap} and are only second-order accurate. We propose implementing a hybrid MPI-OpenMP implementation and investigating performance of a remapped, high-order PIC method.  
+%
+%\section{Implementation}
+%From a parallel implementation standpoint, the most costly steps are generally the particle-mesh interpolation steps (\ref{deposition} \& \ref{interpolation} above). 
+%Both shared-memory multicore \cite{madduri2012optimization} and GPU \cite{buyukkecceci2013portable, stantchev2008fast} implementations have been investigated. The difficulty in these steps has to do with the non-uniform memory access pattern of the $O(n)$ implementations. Specifically, race conditions between threads attempting to deposit charge on      
+%the same portion of the real-space grid makes parallelization difficult. \cite{madduri2012optimization} showed that good performance could be achieved via a coarse-grained locking strategy or through allowing each processor to operate on a local copy of the grid - which is memory intensive but easier from a programming standpoint. We hope to investigate the use of coarse-grained locks if time permits. Specifically, how the order of the method (and thus the size of the stencil of the interpolation kernel) effects the performance.
+%
+%The focus of this project will be on efficient remapping of the particle distribution to maintain convergence for long-times. \cite{2dwangpaper} has shown the importance of remapping to the convergence and addressed some aspects of implementing a PIC simulation with remapping in MPI. In this paper, the authors found remapping every five time steps was necessary for convergence. We plan to evolve the deformation gradient of the distribution and remap when the deformation is greater than $C/ h_x$.  
+%
+%We plan to use the same physical space domain decomposition strategy used in this paper. More complicated phase-space domain decompositions have the potentially for better performance but for linear Landau damping, a physical space decomposition is found to be satisfactory.   
+% 
+%
+%
+%\bigskip
+%The authors found that the most challenging stage to implement was the deposition step. The authors used a 4-point gyro-averaging method. One consequence of this method is that a particle may deposit charge onto as few as 8 grid points and as many as 32 grid points. This can cause data hazards for both shared memory machines and SIMD architectures and bandwidth-intensive MPI communication for distributed memory machines. The requirement to synchronize can be alleviated by constructing thread private copies of the grid at the cost of memory challenges. 
+%
+%To address these issues, the authors binned the particles on the real-space grid at a user defined frequency. Furthermore, for CPUs the grid replication strategy with a merge at the end was used to avoid data hazards. For GPUs the binned particles in each subregion are iteratively processed by the same CUDA thread and adjacent points are solved in consecutive CUDA threads. 
+%
+%
+%\bibliographystyle{plain}
+%\renewcommand{\refname}{\normalsize\textbf References}
+%{\bibliography{pic_bib}}
 
-Particle-in-cell (PIC) methods first gained popularity for plasma physics simulations in the 1950s and 1960s. 
-For the Vlasov-type systems often considered, we are required to solve in phase-space which makes many common grid methods infeasible due to the large amount of memory that these methods use. 
-Generally, PIC methods can be understood as having four distinct steps \cite{hockney1988computer, birdsall2004plasma}: 
-\begin{enumerate}
-\item \textbf{Deposition}: Deposit the particles charge on the real-space grid.\label{deposition}
-\item \textbf{Grid Solve}: This step requires either solving Poisson's Equation for the field(s).\label{gridsolve}
-\item \textbf{Interpolate}: Interpolate the field(s) back onto the particles.\label{interpolation}
-\item \textbf{Integration}: Integrate the equations of motion.\label{interpolation} 
-\end{enumerate}
-Recent studies have shown the importance of a fifth step, 
-\begin{enumerate}
-\setcounter{enumi}{4}
-\item \textbf{Remap}: Deposit the charge on a uniform phase-space grid that spawns new particles,\label{remap}
-\end{enumerate}
-to convergence for long-time simulations \cite{wang2011particle, myers2016convergence}. 
-Current state-of-the-art PIC codes often neglect Step \ref{remap} and are only second-order accurate. We propose implementing a hybrid MPI-OpenMP implementation and investigating performance of a remapped, high-order PIC method.  
 
-\section{Implementation}
-From a parallel implementation standpoint, the most costly steps are generally the particle-mesh interpolation steps (\ref{deposition} \& \ref{interpolation} above). 
-Both shared-memory multicore \cite{madduri2012optimization} and GPU \cite{buyukkecceci2013portable, stantchev2008fast} implementations have been investigated. The difficulty in these steps has to do with the non-uniform memory access pattern of the $O(n)$ implementations. Specifically, race conditions between threads attempting to deposit charge on      
-the same portion of the real-space grid makes parallelization difficult. \cite{madduri2012optimization} showed that good performance could be achieved via a coarse-grained locking strategy or through allowing each processor to operate on a local copy of the grid - which is memory intensive but easier from a programming standpoint. We hope to investigate the use of coarse-grained locks if time permits. Specifically, how the order of the method (and thus the size of the stencil of the interpolation kernel) effects the performance.
-
-The focus of this project will be on efficient remapping of the particle distribution to maintain convergence for long-times. \cite{2dwangpaper} has shown the importance of remapping to the convergence and addressed some aspects of implementing a PIC simulation with remapping in MPI. In this paper, the authors found remapping every five time steps was necessary for convergence. We plan to evolve the deformation gradient of the distribution and remap when the deformation is greater than $C/ h_x$.  
-
-We plan to use the same physical space domain decomposition strategy used in this paper. More complicated phase-space domain decompositions have the potentially for better performance but for linear Landau damping, a physical space decomposition is found to be satisfactory.   
- 
-
-
-\bigskip
-The authors found that the most challenging stage to implement was the deposition step. The authors used a 4-point gyro-averaging method. One consequence of this method is that a particle may deposit charge onto as few as 8 grid points and as many as 32 grid points. This can cause data hazards for both shared memory machines and SIMD architectures and bandwidth-intensive MPI communication for distributed memory machines. The requirement to synchronize can be alleviated by constructing thread private copies of the grid at the cost of memory challenges. 
-
-To address these issues, the authors binned the particles on the real-space grid at a user defined frequency. Furthermore, for CPUs the grid replication strategy with a merge at the end was used to avoid data hazards. For GPUs the binned particles in each subregion are iteratively processed by the same CUDA thread and adjacent points are solved in consecutive CUDA threads. 
-
-
-\bibliographystyle{plain}
-\renewcommand{\refname}{\normalsize\textbf References}
-{\bibliography{pic_bib}}
-
-
-\newpage
+%\newpage
 
 \section{Problem}
-We will solve the Vlasov-Poisson system using a Particle-in-Cell (PIC) method. The system can be written as
+We will solve the Vlasov-Poisson system using a Particle-in-Cell (PIC) method. 
+The system can be written as
 \begin{align*}
 \pder{f}{t} + \pmb{v} \cdot \pder{f}{\pmb{x}} - \pmb{E} \cdot \pder{f}{\pmb{v}} = 0
 \end{align*}
@@ -94,7 +101,8 @@ and
 \begin{align*}
 \nabla^2 \phi = -\rho
 \end{align*}
-with $\f(\pmb{x}, \pmb{v}, t)$ is the phase-space distribution, $\pmb{E}(\pmb{x}, t)$ is the electric field satisfying $\pmb{E} = -\nabla \phi(\pmb{x}, t)$, $\phi(\pmb{x}, t)$ is the potential, and $\rho(\pmb{x}, t)$ is the charge density. Under the assumptions that our distribution contains negatively charged particles and the ions form a fixed, neutralizing background field, the charge density and phase-space distribution can be related by 
+with $\f(\pmb{x}, \pmb{v}, t)$ is the phase-space distribution, $\pmb{E}(\pmb{x}, t)$ is the electric field satisfying $\pmb{E} = -\nabla \phi(\pmb{x}, t)$, $\phi(\pmb{x}, t)$ is the potential, and $\rho(\pmb{x}, t)$ is the charge density. 
+Under the assumptions that our distribution contains negatively charged particles and the ions form a fixed, neutralizing background field, the charge density and phase-space distribution can be related by 
 \begin{align*}
 \rho(\pmb{x}, t) = 1 - \int f(\pmb{x}, \pmb{v}, t) d\pmb{v}. 
 \end{align*}
@@ -102,13 +110,42 @@ By representing the distribution as a set of Lagrangian particles with charge
 \begin{align*}
 q_p = f(\pmb{x}_p^i, \pmb{v}_p^i, t = 0) h_x^D h_v^D
 \end{align*}
-we can express the PDE above as a set of ODE. Advancing these particles requires four steps: deposition of charge, a poisson solve, interpolation of the fields, and integration. We will use a finite difference method for the poisson solve (or could use some multigrid method like hpgmg), an explicit RK4 method for the integration, and do interpolation and deposition as described in \cite{myers2016convergence}. We will implement this method with high-order kernels and in a way that meets the requirements of existing convergence theory. 
-If time permits, we will also do phase-space remapping - which was shown in \cite{wang2011particle} to be important for long-time convergence. 
+we can express the PDE above as a set of ODEs. 
+Four steps are required to advance the Lagrangian particles: deposit charge, solve Poisson's equation, interpolate the fields, and integrate the equations of motion.  
+%We will use a finite difference method for the poisson solve (or could use a multigrid package like hpgmg), an explicit RK4 method for the integration, and do interpolation and deposition as described in \cite{myers2016convergence}. 
+We will implement the method with high-order kernels and in a way that meets the requirements of existing convergence theory. 
+If time permits, we will also implement phase-space remapping - which was shown in \cite{wang2011particle} to be important for long time convergence. 
 
 \section{Implementation}
 
-We propose implementing a hybrid MPI-OpenMP implementation and investigating performance of a remapped PIC method. To prescribe work to different nodes, we will decompose the physical domain. The OpenMP threads will then divide the work up in the phase-space slab of the physical space region associated with the node. Previous work has implemented the proposed physical space domain decomposition and found this to have good weak scaling results \cite{wang2011particle}. Others have focused solely on the particle-mesh steps (the deposition and interpolation) for shared-memory architectures \cite{madduri2012optimization} and GPUs \cite{stantchev2008fast, buyukkecceci2013portable} since these steps often are the most difficult to implement since they involve nonuniform memory access. We plan to take one of the two     
+We propose a hybrid MPI-OpenMP implementation and plan to investigate the performance of the high-order hybrid PIC method. 
+To prescribe work to different nodes, we will decompose the physical domain. Previous work has implemented a physical space domain decomposition and found this to have good weak scaling results \cite{wang2011particle}.
+We also hope to investigate other domain decompositions strategies if time permits. 
+%We will need to occasionally reshuffle what particles are controlled by which nodes sin
+The OpenMP threads will then divide the work up in the phase-space slab of the physical space region associated with the node.
+Since all of the steps including particles will be implemented by looping over the particles, we will allow each thread to work on a contiguous chunk of particles.  
+Previous work has focused solely on the particle-mesh steps (the deposition and interpolation) for shared-memory architectures \cite{madduri2012optimization} and GPUs \cite{stantchev2008fast, buyukkecceci2013portable} since these steps often are the most difficult to implement since they involve nonuniform memory access. 
+To avoid race conditions between different threads we plan to give each a local copy of the mesh and then aggregate the results once each is done. 
+Since the mesh is only two dimensional, it is relatively inexpensive for each thread to have a portion of this mesh. 
+Once the deposition step has been completed, we will implement a 4th-order finite difference scheme to solve for the potential.
+We plan to use a finite difference method since it is simple, local, and generally this stage of PIC methods accounts for $\sim 5\%$ of the total run time. 
+Once each node has solved for the region in space necessary for it to do the force interpolation, it will loop over the particles and interpolate the forces to each particle.
+This will again be a threaded operation; however, unlike the deposition stage, race conditions will not be an issue since each particle is only owned by a single thread. 
+Finally, we will advance the particles in time with an explicit 4th-order Runge-Kutta method.
+This will not require communication beforehand; however, if a particle leaves a processor's region of control, we will need to communicate this at the end of the step. 
+Since the particles will be stored in \texttt{std::vectors} we will initially allocate more space than needed and each particle will have a flag determining whether it exists. 
+Each node will add particles to the end of the list and change the flag on particles that leave its control.  
+Periodically, the \texttt{std::vector} will be copied and all the flagged particles will be deleted. 
 
+To test our implementation, we will examine the weak scaling performance for linear Landau damping - a standard test problem in this field. 
+We also hope to test the performance on a more difficult problem such as the two-stream instability. 
+For linear Linear landau damping, the distribution of particles will stay uniform through out the simulation. 
+The two-stream instability may provide insight into drawbacks of our domain decomposition strategy. 
+
+Finally, we hope to perform some form of remapping although implementing this in an efficient way is still an active area of research. 
+We are currently investigating using a local remapping that is done adaptively in time; however, implementing such a strategy in this project should be considered a reach goal that, if not completed, will be investigated during the summer. 
+
+-Explicitly state that this is novel because for high-order there are strict requirements on the number of particles per cell for convergence. 
 
 \bibliographystyle{plain}
 \renewcommand{\refname}{\normalsize\textbf References}

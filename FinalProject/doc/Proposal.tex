@@ -113,7 +113,8 @@ q_p = f(\pmb{x}_p^i, \pmb{v}_p^i, t = 0) h_x^D h_v^D
 we can express the PDE above as a set of ODEs. 
 Four steps are required to advance the Lagrangian particles: deposit charge, solve Poisson's equation, interpolate the fields, and integrate the equations of motion.  
 %We will use a finite difference method for the poisson solve (or could use a multigrid package like hpgmg), an explicit RK4 method for the integration, and do interpolation and deposition as described in \cite{myers2016convergence}. 
-We will implement the method with high-order kernels and in a way that meets the requirements of existing convergence theory. 
+We will implement this method with high-order kernels in a way that meets the requirements of existing convergence theory.
+Specifically, we will respect requirements on the number of particles per cell that are often ignored by state of the art PIC codes.    
 If time permits, we will also implement phase-space remapping - which was shown in \cite{wang2011particle} to be important for long time convergence. 
 
 \section{Implementation}
@@ -128,11 +129,11 @@ Previous work has focused solely on the particle-mesh steps (the deposition and 
 To avoid race conditions between different threads we plan to give each a local copy of the mesh and then aggregate the results once each is done. 
 Since the mesh is only two dimensional, it is relatively inexpensive for each thread to have a portion of this mesh. 
 Once the deposition step has been completed, we will implement a 4th-order finite difference scheme to solve for the potential.
-We plan to use a finite difference method since it is simple, local, and generally this stage of PIC methods accounts for $\sim 5\%$ of the total run time. 
+We plan to use a finite difference method since it is simple, local, and generally this stage accounts for $\sim 5\%$ of the total run time. 
 Once each node has solved for the region in space necessary for it to do the force interpolation, it will loop over the particles and interpolate the forces to each particle.
 This will again be a threaded operation; however, unlike the deposition stage, race conditions will not be an issue since each particle is only owned by a single thread. 
 Finally, we will advance the particles in time with an explicit 4th-order Runge-Kutta method.
-This will not require communication beforehand; however, if a particle leaves a processor's region of control, we will need to communicate this at the end of the step. 
+This will not require communication beforehand; however, if a particle leaves a processor's region of control, we will need to communicate this before moving on. 
 Since the particles will be stored in \texttt{std::vectors} we will initially allocate more space than needed and each particle will have a flag determining whether it exists. 
 Each node will add particles to the end of the list and change the flag on particles that leave its control.  
 Periodically, the \texttt{std::vector} will be copied and all the flagged particles will be deleted. 
@@ -143,9 +144,9 @@ For linear Linear landau damping, the distribution of particles will stay unifor
 The two-stream instability may provide insight into drawbacks of our domain decomposition strategy. 
 
 Finally, we hope to perform some form of remapping although implementing this in an efficient way is still an active area of research. 
-We are currently investigating using a local remapping that is done adaptively in time; however, implementing such a strategy in this project should be considered a reach goal that, if not completed, will be investigated during the summer. 
+We are currently investigating using local remapping done adaptively in time; however, implementing such a strategy in this project should be considered a reach goal that, if not completed, will be investigated during the summer. 
 
--Explicitly state that this is novel because for high-order there are strict requirements on the number of particles per cell for convergence. 
+%-Explicitly state that this is novel because for high-order there are strict requirements on the number of particles per cell for convergence. 
 
 \bibliographystyle{plain}
 \renewcommand{\refname}{\normalsize\textbf References}

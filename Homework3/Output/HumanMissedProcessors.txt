@@ -1,0 +1,7 @@
+interactive session starts
+==========================
+Initializing hash table of size 179421484 for 89710742 kmers.
+Finished reading kmers.
+Finished inserting in 119.374428
+Assembled in 235.729162 total
+Rank 0 reconstructed 860329 contigs with 89710742 nodes from 860329 start nodes. (116.354146 read, 119.374428 insert, 235.729162 total)

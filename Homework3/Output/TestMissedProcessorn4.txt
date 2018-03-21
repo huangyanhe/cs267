@@ -1,0 +1,12 @@
+interactive session starts
+==========================
+interactive session starts
+==========================
+Initializing hash table of size 9028394 for 4514197 kmers.
+Finished reading kmers.
+Finished inserting in 5.858926
+Assembled in 8.242512 total
+Rank 0 reconstructed 1385 contigs with 1054870 nodes from 1385 start nodes. (1.988651 read, 5.858926 insert, 8.242512 total)
+Rank 1 reconstructed 1420 contigs with 1121277 nodes from 1420 start nodes. (2.143452 read, 6.004690 insert, 8.242512 total)
+Rank 2 reconstructed 1462 contigs with 1185578 nodes from 1462 start nodes. (2.236734 read, 5.820811 insert, 8.242510 total)
+Rank 3 reconstructed 1469 contigs with 1152472 nodes from 1469 start nodes. (2.213096 read, 5.758516 insert, 8.242512 total)

@@ -1,0 +1,30 @@
+interactive session starts
+==========================
+Initializing hash table of size 54001088 for 27000544 kmers.
+Finished reading kmers.
+Finished inserting in 26.087343
+Assembled in 36.041603 total
+Rank 0 reconstructed 52841 contigs with 6718420 nodes from 52841 start nodes. (9.727755 read, 26.087343 insert, 36.041603 total)
+Rank 1 reconstructed 52877 contigs with 6843681 nodes from 52877 start nodes. (9.917229 read, 25.758482 insert, 36.041604 total)
+Rank 2 reconstructed 52591 contigs with 6781530 nodes from 52591 start nodes. (9.392686 read, 26.123569 insert, 36.041604 total)
+Rank 3 reconstructed 52241 contigs with 6656913 nodes from 52241 start nodes. (9.199547 read, 25.458692 insert, 36.041602 total)
+Initializing hash table of size 54001088 for 27000544 kmers.
+Finished reading kmers.
+Finished inserting in 11.534327
+Assembled in 15.673672 total
+Rank 0 reconstructed 13245 contigs with 1694281 nodes from 13245 start nodes. (3.713494 read, 11.534327 insert, 15.673672 total)
+Rank 1 reconstructed 13015 contigs with 1614148 nodes from 13015 start nodes. (3.594424 read, 11.100145 insert, 15.673645 total)
+Rank 2 reconstructed 13434 contigs with 1754490 nodes from 13434 start nodes. (3.960428 read, 11.296301 insert, 15.673642 total)
+Rank 3 reconstructed 13147 contigs with 1655501 nodes from 13147 start nodes. (3.626367 read, 11.471760 insert, 15.673645 total)
+Rank 4 reconstructed 13139 contigs with 1737208 nodes from 13139 start nodes. (3.819663 read, 11.128547 insert, 15.673678 total)
+Rank 5 reconstructed 13206 contigs with 1681658 nodes from 13206 start nodes. (3.699668 read, 10.936379 insert, 15.673678 total)
+Rank 6 reconstructed 13337 contigs with 1656059 nodes from 13337 start nodes. (3.601071 read, 10.622273 insert, 15.673678 total)
+Rank 7 reconstructed 13195 contigs with 1768756 nodes from 13195 start nodes. (3.933584 read, 10.881886 insert, 15.673642 total)
+Rank 8 reconstructed 13304 contigs with 1860947 nodes from 13304 start nodes. (4.138659 read, 11.094653 insert, 15.673678 total)
+Rank 9 reconstructed 13149 contigs with 1615404 nodes from 13149 start nodes. (3.516681 read, 10.865542 insert, 15.673676 total)
+Rank 10 reconstructed 13055 contigs with 1681780 nodes from 13055 start nodes. (3.691668 read, 11.053276 insert, 15.673677 total)
+Rank 11 reconstructed 13083 contigs with 1623399 nodes from 13083 start nodes. (3.626250 read, 11.016085 insert, 15.673678 total)
+Rank 12 reconstructed 13166 contigs with 1693725 nodes from 13166 start nodes. (3.766067 read, 10.427106 insert, 15.673662 total)
+Rank 13 reconstructed 13103 contigs with 1626809 nodes from 13103 start nodes. (3.622235 read, 10.341676 insert, 15.673678 total)
+Rank 14 reconstructed 12879 contigs with 1666332 nodes from 12879 start nodes. (3.646721 read, 10.487450 insert, 15.673678 total)
+Rank 15 reconstructed 13093 contigs with 1670047 nodes from 13093 start nodes. (3.738775 read, 10.802741 insert, 15.673677 total)

@@ -22,12 +22,12 @@ legend('Human Total', 'Large Total', 'Test Total', 'Human Insertion', 'Large Ins
 set(gcf, 'color', 'w')
 
 Processors = [1     2      4      8   16    32    64]; 
-timeHumanTotalP = [nan       199.620335     124.953682     70.877791     41.494250     22.670032       19.971469];
-timeHumanInsertP = [nan      137.511313     91.382668     52.296240     29.624552     16.628471       13.383914];
-timeLargeTotalP = [72.483718     59.794885     nan    21.277969      nan        8.670716     7.514075];
-timeLargeInsertP = [35.782025    41.186960     nan    15.621722      nan        6.228951     4.828977];
-timeTestTotalP = [17.292061     9.436486     nan    3.511923      nan        1.113242     1.036404];
-timeTestInsertP = [8.902240    6.563542     nan    2.615434      nan         0.756301    0.658039];
+timeHumanTotalP = [235.729162      199.620335     124.953682     70.877791     41.494250     22.670032       19.971469];
+timeHumanInsertP = [119.374428      137.511313     91.382668     52.296240     29.624552     16.628471       13.383914];
+timeLargeTotalP = [72.483718     59.794885     36.041603    21.277969      15.673672        8.670716     7.514075];
+timeLargeInsertP = [35.782025    41.186960     26.087343    15.621722      11.534327        6.228951     4.828977];
+timeTestTotalP = [17.292061     9.436486     8.242512     3.511923      2.635697        1.113242     1.036404];
+timeTestInsertP = [8.902240    6.563542     5.858926    2.615434      1.554115         0.756301    0.658039];
 
 figure(2)
 plot(Processors, timeHumanTotalP,'-o')
@@ -40,23 +40,23 @@ plot(Processors, timeTestInsertP,'-o')
 xlabel('Processors', 'Interpreter', 'LaTeX')
 ylabel('time', 'Interpreter', 'LaTeX')
 title('Processor Scaling (N=1)', 'Interpreter', 'LaTeX')
-axis([1 64 0 200])
+axis([1 64 0 250])
 legend('Human Total', 'Large Total', 'Test Total', 'Human Insertion', 'Large Insertion', 'Test Insertion')
 set(gcf, 'color', 'w')
 
 
 
 figure(3)
-semilogy(Processors, timeHumanTotalP,'-o')
+loglog(Processors, timeHumanTotalP,'-o')
 hold on
-semilogy(Processors, timeLargeTotalP,'-o')
-semilogy(Processors, timeTestTotalP,'-o')
-semilogy(Processors, timeHumanInsertP,'-o')
-semilogy(Processors, timeLargeInsertP,'-o')
-semilogy(Processors, timeTestInsertP,'-o')
-xlabel('Processors', 'Interpreter', 'LaTeX')
+loglog(Processors, timeLargeTotalP,'-o')
+loglog(Processors, timeTestTotalP,'-o')
+loglog(Processors, timeHumanInsertP,'-o')
+loglog(Processors, timeLargeInsertP,'-o')
+loglog(Processors, timeTestInsertP,'-o')
+xlabel('$\log$(Processors)', 'Interpreter', 'LaTeX')
 ylabel('$\log$(time)', 'Interpreter', 'LaTeX')
 title('Processor Scaling (N=1)', 'Interpreter', 'LaTeX')
-axis([1 64 0 200])
+axis([1 64 0 250])
 legend('Human Total', 'Large Total', 'Test Total', 'Human Insertion', 'Large Insertion', 'Test Insertion')
 set(gcf, 'color', 'w')

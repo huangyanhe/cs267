@@ -41,9 +41,27 @@ end
 
 avgslopempi = mean(slopempi)
 
-loglog(nmpi, sim_time_mpi, 'r-o')
+% loglog(nmpi, sim_time_mpi, 'r-o')
+% set(gcf, 'color', 'w')
+% xlabel('log(N)', 'Interpreter', 'LaTeX')
+% ylabel('log(Time) (s)', 'Interpreter', 'LaTeX')
+% title('Complexity', 'Interpreter', 'LaTeX')
+% hold on
+
+
+
+particles = [50000      100000      200000      400000      800000]; 
+sim_time_gpu = [0.407502, 0.9216, 1.96107, 4.08213, 8.35813];
+
+for j=2:length(sim_time_gpu)
+    slopegpu(j-1) = (log(sim_time_gpu(j)) - log(sim_time_gpu(j-1)))/(log(particles(j)) - log(particles(j-1)));
+end
+
+avgslopegpu = mean(slopegpu)
+
+loglog(particles, sim_time_gpu, 'r-o')
 set(gcf, 'color', 'w')
-xlabel('log(N)', 'Interpreter', 'LaTeX')
+xlabel('log(# particles)', 'Interpreter', 'LaTeX')
 ylabel('log(Time) (s)', 'Interpreter', 'LaTeX')
 title('Complexity', 'Interpreter', 'LaTeX')
 hold on

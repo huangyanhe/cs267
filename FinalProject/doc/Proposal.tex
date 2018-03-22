@@ -121,14 +121,14 @@ If time permits, we will also implement phase-space remapping - which was shown 
 
 We propose a hybrid MPI-OpenMP implementation and plan to investigate the performance of the high-order hybrid PIC method. 
 To prescribe work to different nodes, we will decompose the physical domain. Previous work has implemented a physical space domain decomposition and found this to have good weak scaling results \cite{wang2011particle}.
-We also hope to investigate other domain decompositions strategies if time permits. 
+We plan to implement a Z-order domain decomposition but hope to investigate other domain decompositions strategies if time permits. 
 %We will need to occasionally reshuffle what particles are controlled by which nodes sin
 The OpenMP threads will then divide the work up in the phase-space slab of the physical space region associated with the node.
 Since all of the steps including particles will be implemented by looping over the particles, we will allow each thread to work on a contiguous chunk of particles.  
 Previous work has focused solely on the particle-mesh steps (the deposition and interpolation) for shared-memory architectures \cite{madduri2012optimization} and GPUs \cite{stantchev2008fast, buyukkecceci2013portable} since these steps often are the most difficult to implement since they involve nonuniform memory access. 
 To avoid race conditions between different threads we plan to give each a local copy of the mesh and then aggregate the results once each is done. 
 Since the mesh is only two dimensional, it is relatively inexpensive for each thread to have a portion of this mesh. 
-Once the deposition step has been completed, we will implement a 4th-order finite difference scheme to solve for the potential.
+Once the deposition step has been completed, we will implement a 4th-order finite difference scheme with ghost regions to solve for the potential.
 We plan to use a finite difference method since it is simple, local, and generally this stage accounts for $\sim 5\%$ of the total run time. 
 Once each node has solved for the region in space necessary for it to do the force interpolation, it will loop over the particles and interpolate the forces to each particle.
 This will again be a threaded operation; however, unlike the deposition stage, race conditions will not be an issue since each particle is only owned by a single thread. 

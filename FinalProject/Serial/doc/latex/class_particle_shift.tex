@@ -1,0 +1,40 @@
+\hypertarget{class_particle_shift}{}\section{Particle\+Shift Class Reference}
+\label{class_particle_shift}\index{Particle\+Shift@{Particle\+Shift}}
+
+
+Represents an increment in a \hyperlink{class_particle_set}{Particle\+Set} conforming to the dX class in \hyperlink{class_r_k4}{R\+K4}.  
+
+
+
+
+{\ttfamily \#include $<$Particle\+Set.\+H$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_particle_shift_aa298bec75ebcd7a6d39285dcc734927c}\label{class_particle_shift_aa298bec75ebcd7a6d39285dcc734927c}} 
+void \hyperlink{class_particle_shift_aa298bec75ebcd7a6d39285dcc734927c}{init} (const \hyperlink{class_particle_set}{Particle\+Set} \&a\+\_\+particles)
+\begin{DoxyCompactList}\small\item\em Sets length of m\+\_\+particles, initializes to zero via default constructor of \hyperlink{class_d_x}{DX}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_particle_shift_a6f49ef57c1b4a140abacaca103572be3}\label{class_particle_shift_a6f49ef57c1b4a140abacaca103572be3}} 
+void \hyperlink{class_particle_shift_a6f49ef57c1b4a140abacaca103572be3}{increment} (double a\+\_\+scale, const \hyperlink{class_particle_shift}{Particle\+Shift} \&a\+\_\+rhs)
+\begin{DoxyCompactList}\small\item\em m\+\_\+particles\mbox{[}k\mbox{]} += a\+\_\+rhs.\+m\+\_\+particles\mbox{[}k\mbox{]}$\ast$a\+\_\+scale. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_particle_shift_a8ffb0054d1822d05793b68c5e874f3a0}\label{class_particle_shift_a8ffb0054d1822d05793b68c5e874f3a0}} 
+void \hyperlink{class_particle_shift_a8ffb0054d1822d05793b68c5e874f3a0}{operator$\ast$=} (double a\+\_\+scale)
+\begin{DoxyCompactList}\small\item\em m\+\_\+particles\mbox{[}k\mbox{]} $\ast$= a\+\_\+scale \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_particle_shift_a4931a6bc6358b26d5e5e48029540c6c5}\label{class_particle_shift_a4931a6bc6358b26d5e5e48029540c6c5}} 
+void \hyperlink{class_particle_shift_a4931a6bc6358b26d5e5e48029540c6c5}{set\+To\+Zero} ()
+\begin{DoxyCompactList}\small\item\em reinitializes the values m\+\_\+particles\mbox{[}k\mbox{]} to zero. Not used in \hyperlink{class_r_k4}{R\+K4}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_particle_shift_ace15f1432744690f40f43fe2a5016e64}\label{class_particle_shift_ace15f1432744690f40f43fe2a5016e64}} 
+vector$<$ \hyperlink{class_d_x}{DX} $>$ \hyperlink{class_particle_shift_ace15f1432744690f40f43fe2a5016e64}{m\+\_\+particles}
+\begin{DoxyCompactList}\small\item\em vector of increments of particles. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Represents an increment in a \hyperlink{class_particle_set}{Particle\+Set} conforming to the dX class in \hyperlink{class_r_k4}{R\+K4}. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/\+Particles/Particle\+Set.\+H\end{DoxyCompactItemize}

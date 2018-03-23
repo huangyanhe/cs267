@@ -1,0 +1,171 @@
+\hypertarget{class_rect_m_d_array}{}\section{Rect\+M\+D\+Array$<$ T, C $>$ Class Template Reference}
+\label{class_rect_m_d_array}\index{Rect\+M\+D\+Array$<$ T, C $>$@{Rect\+M\+D\+Array$<$ T, C $>$}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_rect_m_d_array_a03438c475f5d63c8322652c1ebe0da4b}\label{class_rect_m_d_array_a03438c475f5d63c8322652c1ebe0da4b}} 
+\hyperlink{class_rect_m_d_array_a03438c475f5d63c8322652c1ebe0da4b}{Rect\+M\+D\+Array} ()
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+\hyperlink{class_rect_m_d_array_ab35dbe45e315471e0fc10002b17e728d}{Rect\+M\+D\+Array} (const \hyperlink{class_d_box}{D\+Box} \&a\+\_\+box)
+\begin{DoxyCompactList}\small\item\em Constructs a \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array} over the Dbox a\+\_\+box. Data is U\+S\+U\+A\+L\+LY initialized as zero. \end{DoxyCompactList}\item 
+void \hyperlink{class_rect_m_d_array_a7d77761067bd63046fcb07e485d91954}{define} (const \hyperlink{class_d_box}{D\+Box} \&a\+\_\+box)
+\begin{DoxyCompactList}\small\item\em Defines a default-\/constructed \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_rect_m_d_array_a9966ff4fa894c7cf11a2c319b656403c}\label{class_rect_m_d_array_a9966ff4fa894c7cf11a2c319b656403c}} 
+\hyperlink{class_rect_m_d_array_a9966ff4fa894c7cf11a2c319b656403c}{$\sim$\+Rect\+M\+D\+Array} ()
+\begin{DoxyCompactList}\small\item\em Destructor. \end{DoxyCompactList}\item 
+void \hyperlink{class_rect_m_d_array_af84b04d2561605c230fef402b5df530e}{set\+Val} (const T \&a\+\_\+val)
+\begin{DoxyCompactList}\small\item\em Sets all values in a \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array} to a constant value. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_rect_m_d_array_aa57ff9b781e73d059f798868ed74a842}\label{class_rect_m_d_array_aa57ff9b781e73d059f798868ed74a842}} 
+\hyperlink{class_d_box}{D\+Box} \hyperlink{class_rect_m_d_array_aa57ff9b781e73d059f798868ed74a842}{get\+D\+Box} () const
+\begin{DoxyCompactList}\small\item\em Gets box over which array is defined. \end{DoxyCompactList}\item 
+void \hyperlink{class_rect_m_d_array_a19daaeb911b56032a2e3fe89717d8d27}{copy\+To} (\hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array}$<$ T, C $>$ \&a\+\_\+dest) const
+\begin{DoxyCompactList}\small\item\em Copy on Intersection. \end{DoxyCompactList}\item 
+T \& \hyperlink{class_rect_m_d_array_a19c1a43d52784a3b35e41fe1d7b70683}{operator\mbox{[}$\,$\mbox{]}} (const \hyperlink{class_point}{Point} \&a\+\_\+iv)
+\begin{DoxyCompactList}\small\item\em Indexing operator. only works for scalar \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array} objects. \end{DoxyCompactList}\item 
+const T \& \hyperlink{class_rect_m_d_array_a32c67948460269cd7472db8d089e1198}{operator\mbox{[}$\,$\mbox{]}} (const \hyperlink{class_point}{Point} \&a\+\_\+iv) const
+\begin{DoxyCompactList}\small\item\em Indexing operator for const Rect\+M\+D\+Arrays. only works for scalar \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array} objects. \end{DoxyCompactList}\item 
+T \& \hyperlink{class_rect_m_d_array_a362f76a454f2ec6455e5b7b78e51b04f}{operator()} (const \hyperlink{class_point}{Point} \&a\+\_\+iv, unsigned int a\+\_\+comp)
+\begin{DoxyCompactList}\small\item\em Indexing operator for vector-\/valued \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array} objects with a single index. Assertion failure if returned type is not scalar. \end{DoxyCompactList}\item 
+const T \& \hyperlink{class_rect_m_d_array_a9b2580f04b9b32089d04826aec554ff9}{operator()} (const \hyperlink{class_point}{Point} \&a\+\_\+iv, unsigned int a\+\_\+comp) const
+\begin{DoxyCompactList}\small\item\em Indexing operator for constant vector-\/valued \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array} objects with a single index. Assertion failure if returned type is not scalar. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_rect_m_d_array_aae493b00e6278af8f6864e90bf4e7120}\label{class_rect_m_d_array_aae493b00e6278af8f6864e90bf4e7120}} 
+unsigned int {\bfseries data\+Size} ()
+\item 
+\mbox{\Hypertarget{class_rect_m_d_array_ae2ec8b62ab54e28eaf152b3f63ddb914}\label{class_rect_m_d_array_ae2ec8b62ab54e28eaf152b3f63ddb914}} 
+bool {\bfseries defined} () const
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_rect_m_d_array_ab35dbe45e315471e0fc10002b17e728d}\label{class_rect_m_d_array_ab35dbe45e315471e0fc10002b17e728d}} 
+\index{Rect\+M\+D\+Array@{Rect\+M\+D\+Array}!Rect\+M\+D\+Array@{Rect\+M\+D\+Array}}
+\index{Rect\+M\+D\+Array@{Rect\+M\+D\+Array}!Rect\+M\+D\+Array@{Rect\+M\+D\+Array}}
+\subsubsection{\texorpdfstring{Rect\+M\+D\+Array()}{RectMDArray()}}
+{\footnotesize\ttfamily template$<$class T , unsigned int C$>$ \\
+\hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array}$<$ T, C $>$\+::\hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array} (\begin{DoxyParamCaption}\item[{const \hyperlink{class_d_box}{D\+Box} \&}]{a\+\_\+box }\end{DoxyParamCaption})}
+
+
+
+Constructs a \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array} over the Dbox a\+\_\+box. Data is U\+S\+U\+A\+L\+LY initialized as zero. 
+
+When using this constructor, it is recommended that the user initialize the data manually\+: 
+\begin{DoxyCode}
+Dbox B = Dbox(getZeros(),getOnes()*7);  \textcolor{comment}{//Domain}
+\hyperlink{class_rect_m_d_array}{RectMDArray<double>} R = \hyperlink{class_rect_m_d_array}{RectMDArray<double>}(B); \textcolor{comment}{//Construct array}
+R.\hyperlink{class_rect_m_d_array_af84b04d2561605c230fef402b5df530e}{setVal}(0);  \textcolor{comment}{//Initialize array values as 0. }
+\end{DoxyCode}
+ 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_rect_m_d_array_a19daaeb911b56032a2e3fe89717d8d27}\label{class_rect_m_d_array_a19daaeb911b56032a2e3fe89717d8d27}} 
+\index{Rect\+M\+D\+Array@{Rect\+M\+D\+Array}!copy\+To@{copy\+To}}
+\index{copy\+To@{copy\+To}!Rect\+M\+D\+Array@{Rect\+M\+D\+Array}}
+\subsubsection{\texorpdfstring{copy\+To()}{copyTo()}}
+{\footnotesize\ttfamily template$<$class T , unsigned int C$>$ \\
+void \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array}$<$ T, C $>$\+::copy\+To (\begin{DoxyParamCaption}\item[{\hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array}$<$ T, C $>$ \&}]{a\+\_\+dest }\end{DoxyParamCaption}) const}
+
+
+
+Copy on Intersection. 
+
+Copy the part of $\ast$this\textquotesingle{}s data which intersects with the domain of a\+\_\+dest\textquotesingle{}s domain. \mbox{\Hypertarget{class_rect_m_d_array_a7d77761067bd63046fcb07e485d91954}\label{class_rect_m_d_array_a7d77761067bd63046fcb07e485d91954}} 
+\index{Rect\+M\+D\+Array@{Rect\+M\+D\+Array}!define@{define}}
+\index{define@{define}!Rect\+M\+D\+Array@{Rect\+M\+D\+Array}}
+\subsubsection{\texorpdfstring{define()}{define()}}
+{\footnotesize\ttfamily template$<$class T , unsigned int C$>$ \\
+void \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array}$<$ T, C $>$\+::define (\begin{DoxyParamCaption}\item[{const \hyperlink{class_d_box}{D\+Box} \&}]{a\+\_\+box }\end{DoxyParamCaption})}
+
+
+
+Defines a default-\/constructed \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array}. 
+
+Called by Constructor \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array(const Dbox\& a\+\_\+box)}. Note that this can be called by an object that is already been defined. If that is the case, you need to delete the memory from the previous definition and allocate a new chunk of memory. This also means that the \mbox{\Hypertarget{class_rect_m_d_array_a362f76a454f2ec6455e5b7b78e51b04f}\label{class_rect_m_d_array_a362f76a454f2ec6455e5b7b78e51b04f}} 
+\index{Rect\+M\+D\+Array@{Rect\+M\+D\+Array}!operator()@{operator()}}
+\index{operator()@{operator()}!Rect\+M\+D\+Array@{Rect\+M\+D\+Array}}
+\subsubsection{\texorpdfstring{operator()()}{operator()()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$class T , unsigned int C$>$ \\
+T \& \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array}$<$ T, C $>$\+::operator() (\begin{DoxyParamCaption}\item[{const \hyperlink{class_point}{Point} \&}]{a\+\_\+iv,  }\item[{unsigned int}]{a\+\_\+comp }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Indexing operator for vector-\/valued \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array} objects with a single index. Assertion failure if returned type is not scalar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+\_\+iv} & A \hyperlink{class_point}{Point} in the domain of $\ast$this \\
+\hline
+{\em a\+\_\+comp} & Integer corresponding to the desired component of the data at a\+\_\+iv. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_rect_m_d_array_a9b2580f04b9b32089d04826aec554ff9}\label{class_rect_m_d_array_a9b2580f04b9b32089d04826aec554ff9}} 
+\index{Rect\+M\+D\+Array@{Rect\+M\+D\+Array}!operator()@{operator()}}
+\index{operator()@{operator()}!Rect\+M\+D\+Array@{Rect\+M\+D\+Array}}
+\subsubsection{\texorpdfstring{operator()()}{operator()()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$class T , unsigned int C$>$ \\
+const T \& \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array}$<$ T, C $>$\+::operator() (\begin{DoxyParamCaption}\item[{const \hyperlink{class_point}{Point} \&}]{a\+\_\+iv,  }\item[{unsigned int}]{a\+\_\+comp }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Indexing operator for constant vector-\/valued \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array} objects with a single index. Assertion failure if returned type is not scalar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+\_\+iv} & A \hyperlink{class_point}{Point} in the domain of $\ast$this \\
+\hline
+{\em a\+\_\+comp} & Integer corresponding to the desired component of the data at a\+\_\+iv. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_rect_m_d_array_a19c1a43d52784a3b35e41fe1d7b70683}\label{class_rect_m_d_array_a19c1a43d52784a3b35e41fe1d7b70683}} 
+\index{Rect\+M\+D\+Array@{Rect\+M\+D\+Array}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!Rect\+M\+D\+Array@{Rect\+M\+D\+Array}}
+\subsubsection{\texorpdfstring{operator[]()}{operator[]()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$class T , unsigned int C$>$ \\
+T \& \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array}$<$ T, C $>$\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{const \hyperlink{class_point}{Point} \&}]{a\+\_\+iv }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Indexing operator. only works for scalar \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array} objects. 
+
+Returns the data stored in $\ast$this corresponding to \hyperlink{class_point}{Point} a\+\_\+iv. Assertion error if a\+\_\+iv is not in the domain of $\ast$this. 
+\begin{DoxyParams}{Parameters}
+{\em a\+\_\+iv} & A \hyperlink{class_point}{Point} in the domain of $\ast$this \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_rect_m_d_array_a32c67948460269cd7472db8d089e1198}\label{class_rect_m_d_array_a32c67948460269cd7472db8d089e1198}} 
+\index{Rect\+M\+D\+Array@{Rect\+M\+D\+Array}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!Rect\+M\+D\+Array@{Rect\+M\+D\+Array}}
+\subsubsection{\texorpdfstring{operator[]()}{operator[]()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$class T , unsigned int C$>$ \\
+const T \& \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array}$<$ T, C $>$\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{const \hyperlink{class_point}{Point} \&}]{a\+\_\+iv }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Indexing operator for const Rect\+M\+D\+Arrays. only works for scalar \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array} objects. 
+
+Returns the data stored in $\ast$this corresponding to \hyperlink{class_point}{Point} a\+\_\+iv. Assertion error if a\+\_\+iv is not in the domain of $\ast$this. 
+\begin{DoxyParams}{Parameters}
+{\em a\+\_\+iv} & A \hyperlink{class_point}{Point} in the domain of $\ast$this \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_rect_m_d_array_af84b04d2561605c230fef402b5df530e}\label{class_rect_m_d_array_af84b04d2561605c230fef402b5df530e}} 
+\index{Rect\+M\+D\+Array@{Rect\+M\+D\+Array}!set\+Val@{set\+Val}}
+\index{set\+Val@{set\+Val}!Rect\+M\+D\+Array@{Rect\+M\+D\+Array}}
+\subsubsection{\texorpdfstring{set\+Val()}{setVal()}}
+{\footnotesize\ttfamily template$<$class T , unsigned int C$>$ \\
+void \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array}$<$ T, C $>$\+::set\+Val (\begin{DoxyParamCaption}\item[{const T \&}]{a\+\_\+val }\end{DoxyParamCaption})}
+
+
+
+Sets all values in a \hyperlink{class_rect_m_d_array}{Rect\+M\+D\+Array} to a constant value. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a\+\_\+val} & A constant value. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/\+Rect\+M\+D\+Array/Rect\+M\+D\+Array.\+H\item 
+src/\+Rect\+M\+D\+Array/Rect\+M\+D\+Array\+Implem.\+H\end{DoxyCompactItemize}

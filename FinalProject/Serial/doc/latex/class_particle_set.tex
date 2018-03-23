@@ -1,0 +1,58 @@
+\hypertarget{class_particle_set}{}\section{Particle\+Set Class Reference}
+\label{class_particle_set}\index{Particle\+Set@{Particle\+Set}}
+
+
+Represents a collection of particles, conforming to the X class in \hyperlink{class_r_k4}{R\+K4}. Also contains the persistent data required to compute the right-\/hand side in Particles\+Velocities.  
+
+
+
+
+{\ttfamily \#include $<$Particle\+Set.\+H$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_particle_set_a3963fc6e57575ff7702b96fa2b5f1ccb}{Particle\+Set} (shared\+\_\+ptr$<$ \hyperlink{class_conv_kernel}{Conv\+Kernel} $>$ \&a\+\_\+kerptr, \hyperlink{class_d_box}{D\+Box} \&a\+\_\+box, double \&a\+\_\+dx, array$<$ double, D\+IM $>$ \&a\+\_\+low\+Corner, int a\+\_\+M)
+\begin{DoxyCompactList}\small\item\em constructor. Called by main. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_particle_set_aa27ac22706a979dd57b6523254b27d83}\label{class_particle_set_aa27ac22706a979dd57b6523254b27d83}} 
+void \hyperlink{class_particle_set_aa27ac22706a979dd57b6523254b27d83}{increment} (const \hyperlink{class_particle_shift}{Particle\+Shift} \&a\+\_\+shift)
+\begin{DoxyCompactList}\small\item\em inplements increment function required for RK\$. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_particle_set_a6bb49eed6fe60ce44d9639cccc49d3fc}\label{class_particle_set_a6bb49eed6fe60ce44d9639cccc49d3fc}} 
+vector$<$ \hyperlink{class_particle}{Particle} $>$ \hyperlink{class_particle_set_a6bb49eed6fe60ce44d9639cccc49d3fc}{m\+\_\+particles}
+\begin{DoxyCompactList}\small\item\em Main container for particle data. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_particle_set_ab175df8fab554a1c069dc75330bd7ffb}\label{class_particle_set_ab175df8fab554a1c069dc75330bd7ffb}} 
+double \hyperlink{class_particle_set_ab175df8fab554a1c069dc75330bd7ffb}{m\+\_\+dx}
+\begin{DoxyCompactList}\small\item\em Mesh spacing. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_particle_set_ae965763dcc0f6bca9a0d5ed6864ba581}\label{class_particle_set_ae965763dcc0f6bca9a0d5ed6864ba581}} 
+\hyperlink{class_d_box}{D\+Box} \hyperlink{class_particle_set_ae965763dcc0f6bca9a0d5ed6864ba581}{m\+\_\+box}
+\begin{DoxyCompactList}\small\item\em P\+IC grid. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_particle_set_ae99b4064e3ee714f1d1e217c4fb519c6}\label{class_particle_set_ae99b4064e3ee714f1d1e217c4fb519c6}} 
+array$<$ double, D\+IM $>$ \hyperlink{class_particle_set_ae99b4064e3ee714f1d1e217c4fb519c6}{m\+\_\+low\+Corner}
+\begin{DoxyCompactList}\small\item\em Location in physical space of m\+\_\+box.\+m\+\_\+low\+Corner;. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_particle_set_a681f750458d3c20a5e8685f1521cdbf0}\label{class_particle_set_a681f750458d3c20a5e8685f1521cdbf0}} 
+\hyperlink{class_hockney}{Hockney} \hyperlink{class_particle_set_a681f750458d3c20a5e8685f1521cdbf0}{m\+\_\+hockney}
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_hockney}{Hockney} class that performs discrete convolution. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Represents a collection of particles, conforming to the X class in \hyperlink{class_r_k4}{R\+K4}. Also contains the persistent data required to compute the right-\/hand side in Particles\+Velocities. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_particle_set_a3963fc6e57575ff7702b96fa2b5f1ccb}\label{class_particle_set_a3963fc6e57575ff7702b96fa2b5f1ccb}} 
+\index{Particle\+Set@{Particle\+Set}!Particle\+Set@{Particle\+Set}}
+\index{Particle\+Set@{Particle\+Set}!Particle\+Set@{Particle\+Set}}
+\subsubsection{\texorpdfstring{Particle\+Set()}{ParticleSet()}}
+{\footnotesize\ttfamily Particle\+Set\+::\+Particle\+Set (\begin{DoxyParamCaption}\item[{shared\+\_\+ptr$<$ \hyperlink{class_conv_kernel}{Conv\+Kernel} $>$ \&}]{a\+\_\+kerptr,  }\item[{\hyperlink{class_d_box}{D\+Box} \&}]{a\+\_\+box,  }\item[{double \&}]{a\+\_\+dx,  }\item[{array$<$ double, D\+IM $>$ \&}]{a\+\_\+low\+Corner,  }\item[{int}]{a\+\_\+M }\end{DoxyParamCaption})}
+
+
+
+constructor. Called by main. 
+
+a\+\_\+kerptr\+: required to construct \hyperlink{class_hockney}{Hockney}. a\+\_\+box\+: \hyperlink{class_d_box}{D\+Box} over which convolution is performed. a\+\_\+dx\+: mesh spacing of P\+IC grid. a\+\_\+low\+Corner\+: D\+I\+M-\/tuple giving the location in physical space of the low\+Corner of the P\+IC grid. a\+\_\+M\+: N = 2$^\wedge$a\+\_\+M is the number of grid points in the P\+IC grid. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/\+Particles/Particle\+Set.\+H\end{DoxyCompactItemize}

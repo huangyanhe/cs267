@@ -1,0 +1,51 @@
+\hypertarget{class_d_x}{}\section{DX Class Reference}
+\label{class_d_x}\index{DX@{DX}}
+
+
+Class representing the increment of a single point.  
+
+
+
+
+{\ttfamily \#include $<$Particle.\+H$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_d_x_ade412c27480b5a80551093e29a538e4d}\label{class_d_x_ade412c27480b5a80551093e29a538e4d}} 
+\hyperlink{class_d_x_ade412c27480b5a80551093e29a538e4d}{DX} ()
+\begin{DoxyCompactList}\small\item\em Default contructor sets values to zero. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_x_a2c99e2bcc855b0a3bcd738f98a3ce4eb}\label{class_d_x_a2c99e2bcc855b0a3bcd738f98a3ce4eb}} 
+void \hyperlink{class_d_x_a2c99e2bcc855b0a3bcd738f98a3ce4eb}{increment} (double a\+\_\+scale, const \hyperlink{class_d_x}{DX} \&a\+\_\+rhs)
+\begin{DoxyCompactList}\small\item\em Increment is used to implement \hyperlink{class_particle_shift_a6f49ef57c1b4a140abacaca103572be3}{Particle\+Shift\+::increment}. \end{DoxyCompactList}\item 
+void \hyperlink{class_d_x_a04524b576388b047b07c36a9d2e6bcb4}{operator$\ast$=} (double a\+\_\+scale)
+\begin{DoxyCompactList}\small\item\em Used to implement Particle\+Shift\+::scale. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_d_x_acb8f71fa6e616bf4c15d5638846e667c}\label{class_d_x_acb8f71fa6e616bf4c15d5638846e667c}} 
+array$<$ double, D\+IM $>$ \hyperlink{class_d_x_acb8f71fa6e616bf4c15d5638846e667c}{m\+\_\+x}
+\begin{DoxyCompactList}\small\item\em Single data member is a D\+I\+M-\/tuple. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class representing the increment of a single point. 
+
+\hyperlink{class_particle_shift}{Particle\+Shift} is a vector of these, one for each particle. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_d_x_a04524b576388b047b07c36a9d2e6bcb4}\label{class_d_x_a04524b576388b047b07c36a9d2e6bcb4}} 
+\index{DX@{DX}!operator$\ast$=@{operator$\ast$=}}
+\index{operator$\ast$=@{operator$\ast$=}!DX@{DX}}
+\subsubsection{\texorpdfstring{operator$\ast$=()}{operator*=()}}
+{\footnotesize\ttfamily void D\+X\+::operator$\ast$= (\begin{DoxyParamCaption}\item[{double}]{a\+\_\+scale }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Used to implement Particle\+Shift\+::scale. 
+
+Does not have a data member corresponding to strength since the vorticity doesn\textquotesingle{}t change. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/\+Particles/Particle.\+H\end{DoxyCompactItemize}

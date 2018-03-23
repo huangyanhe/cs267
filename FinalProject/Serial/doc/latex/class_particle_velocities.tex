@@ -1,0 +1,40 @@
+\hypertarget{class_particle_velocities}{}\section{Particle\+Velocities Class Reference}
+\label{class_particle_velocities}\index{Particle\+Velocities@{Particle\+Velocities}}
+
+
+Class for computing the R\+HS in \hyperlink{class_r_k4}{R\+K4}, corresponding to the template parameter F.  
+
+
+
+
+{\ttfamily \#include $<$Particle\+Velocities.\+H$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_particle_velocities_a10b68a5a7868192c508bc2b4a492aa51}{Particle\+Velocities} ()
+\begin{DoxyCompactList}\small\item\em Member function that computes increment to solution.\+Conforms to the m\+\_\+f(...) interface in \hyperlink{class_r_k4}{R\+K4}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_particle_velocities_a72b8fd71b794e841c5f67dc2b728dec1}\label{class_particle_velocities_a72b8fd71b794e841c5f67dc2b728dec1}} 
+void {\bfseries operator()} (\hyperlink{class_particle_shift}{Particle\+Shift} \&a\+\_\+k, const double \&a\+\_\+time, const double \&dt, \hyperlink{class_particle_set}{Particle\+Set} \&a\+\_\+state)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class for computing the R\+HS in \hyperlink{class_r_k4}{R\+K4}, corresponding to the template parameter F. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_particle_velocities_a10b68a5a7868192c508bc2b4a492aa51}\label{class_particle_velocities_a10b68a5a7868192c508bc2b4a492aa51}} 
+\index{Particle\+Velocities@{Particle\+Velocities}!Particle\+Velocities@{Particle\+Velocities}}
+\index{Particle\+Velocities@{Particle\+Velocities}!Particle\+Velocities@{Particle\+Velocities}}
+\subsubsection{\texorpdfstring{Particle\+Velocities()}{ParticleVelocities()}}
+{\footnotesize\ttfamily Particle\+Velocities\+::\+Particle\+Velocities (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Member function that computes increment to solution.\+Conforms to the m\+\_\+f(...) interface in \hyperlink{class_r_k4}{R\+K4}. 
+
+Implements an operator that evaluates a\+\_\+dt$\ast$F(t,a\+\_\+\+X+a\+\_\+k), given the inputs (a\+\_\+k, a\+\_\+time, a\+\_\+dt, a\+\_\+X ). It first computes a temporary a\+\_\+X + a\+\_\+k, then evaluates the right-\/hand side, scales the result by a\+\_\+dt and stores it in a\+\_\+k. 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/\+Particles/Particle\+Velocities.\+H\end{DoxyCompactItemize}

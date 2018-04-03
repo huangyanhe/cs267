@@ -12,7 +12,7 @@ FFTWDIR = /usr/local
 VPATH= . $(IK) $(WRITERS) $(RMDA) $(PARTICLES) $(CONV) $(FFT) $(TIMER)
 
 
-DIM=2
+DIM=1
 CXX=clang++
 CFLAGS = -g -Wall
 CFLAGS += -std=c++11 -I$(IK) -I$(WRITERS) -I$(RMDA) -I$(PARTICLES) -I$(CONV) -I$(FFT) -I$(TIMER) -I$(FFTWDIR)/include

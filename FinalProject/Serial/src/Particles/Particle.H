@@ -49,7 +49,7 @@ public:
   /// m_x stores the spatial location of the particle, and strength the vorticity.
   array<double, DIM> m_x;
   double strength;
-  double EField;
+  array<double, DIM> EField;
   /// used to implement ParticleSet::increment.
   inline void increment(const DX& a_shift)
   {

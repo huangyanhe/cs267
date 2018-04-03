@@ -54,18 +54,24 @@ public:
               int a_M, int order=2, int smoothness=0);
   ParticleSet(){};
   ~ParticleSet(){};
+
+  //Data
   /// Main container for particle data.
   vector<Particle> m_particles;
   /// Mesh spacing.
   double m_dx;
-  /// PIC grid.
+  /// Spatial grid.
   DBox m_box;
+  /// Spatial Boundary
+  DBox m_bdry[2*DIM];
   /// Location in physical space of m_box.m_lowCorner;
   array<double,DIM> m_lowCorner;
   /// Hockney class that performs discrete convolution.
   Hockney m_hockney;
   //Interpolation Kernel used for deposition and interpolation
   InterpolationKernel m_W;
+
+  //Functions
   /// inplements increment function required for RK$.
   void increment(const ParticleShift& a_shift);
   /// Bin the particles by spatial location 
@@ -74,6 +80,7 @@ public:
   void deposit(RectMDArray<double>& a_Charge);
   /// Interpolates the force from the spatial grid onto the particles
   void InterpolateForce(RectMDArray<double>& a_Field);
+  /// Builds Ghost Cells for spatial grid.
   
   
 };

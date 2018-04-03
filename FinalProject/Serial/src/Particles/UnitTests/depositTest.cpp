@@ -28,10 +28,38 @@ int main(int argc, char* argv[])
   int smoothness;
   cin >> smoothness;  
   
-  // Grid Setup 
-  int intlowCorner[2] = {0, 0};
-  int inthighCorner[2] = {7, 7};
-  int inthighCornerX[2] = {4, 0};
+  // // Grid Setup 
+  // int intlowCorner[2] = {0, 0};
+  // int inthighCorner[2] = {7, 7};
+  // int inthighCornerX[2] = {4, 0};
+  // Point lowCorner(intlowCorner);
+  // Point highCorner(inthighCorner);
+  // Point highCornerX(inthighCornerX);
+  // DBox phaseGridBox(lowCorner, highCorner);
+  // DBox xGridBox(lowCorner, highCornerX);
+  // RectMDArray<double> Charge(xGridBox);
+  // Charge.setVal(0.0);
+  
+  // // ParticleSet build
+  // int M =3; //2^M on PIC grid
+  // array<double,2> lowCorn;
+  // lowCorn[0] = 0.0;
+  // lowCorn[1] = 0.0;
+  // double dx = 1.0/4.0;
+  // ParticleSet TestSet( phaseGridBox, dx, lowCorn, M, order, smoothness);
+
+
+
+  int intlowCorner[DIM];
+  int inthighCorner[DIM];
+  int inthighCornerX[DIM];
+  for (int j = 0; j<DIM; j++)
+    {
+      intlowCorner[j] = 0;
+      inthighCorner[j] = 7;
+      inthighCornerX[j] = 4;
+    }
+  
   Point lowCorner(intlowCorner);
   Point highCorner(inthighCorner);
   Point highCornerX(inthighCornerX);
@@ -42,9 +70,11 @@ int main(int argc, char* argv[])
   
   // ParticleSet build
   int M =3; //2^M on PIC grid
-  array<double,2> lowCorn;
-  lowCorn[0] = 0.0;
-  lowCorn[1] = 0.0;
+  array<double, DIM> lowCorn;
+  for (int j =0; j<DIM; j++)
+    {
+      lowCorn[j] = 0.0;
+    }
   double dx = 1.0/4.0;
   ParticleSet TestSet( phaseGridBox, dx, lowCorn, M, order, smoothness);
 
@@ -59,10 +89,19 @@ int main(int argc, char* argv[])
       Particle part;
       x[j] = j*dx/2.0 + 1.0/16.0;
       part.m_x[0] = j*dx/2.0 + 1.0/16.0;
-      part.m_x[1] = 0.0;
+      if (DIM == 1)
+	{
+	}
+      else if (DIM == 2)
+	{
+	  part.m_x[1] = 0.375;
+	}
       part.strength = 1.0;
       TestSet.m_particles.push_back(part);
-      TestSet.m_particles[j].EField = 0.0;
+      for (int j = 0; j<DIM; j++)
+	{
+	  TestSet.m_particles[j].EField[j] = 0.0;
+	}
     }
 
   for (int j =0; j<TestSet.m_particles.size(); j++)
@@ -74,7 +113,12 @@ int main(int argc, char* argv[])
   
   for (Point p=Charge.getDBox().getLowCorner(); Charge.getDBox().notDone(p); Charge.getDBox().increment(p))
      {
-       cout<< "x = "<< p[0]<< ", Charge = "<<Charge[p]<<endl;
+       cout<< "x = ";
+       for (int j =0; j<DIM; j++)
+	 {
+	   cout<<p[j]<<", ";
+	 }
+       cout<<" Charge = "<<Charge[p]<<endl;
        out[p[0]] = Charge[p];
      }
 
@@ -95,6 +139,21 @@ int main(int argc, char* argv[])
     {
       TestSet.InterpolateForce(Charge);
 
+      for (int it = 0; it < TestSet.m_particles.size(); it++)
+	{
+	  cout<< "x = ";
+	  for (int j =0; j<DIM; j++)
+	    {
+	      cout<<TestSet.m_particles[it].m_x[j]<<", ";
+	    }
+	  cout<<" Field = ";
+	  for (int j =0; j<DIM; j++)
+	    {
+	      cout<<TestSet.m_particles[it].EField[j]<<", ";
+	    }
+	  cout<<endl;
+	}
+      
        ofstream myfile;
       //Filenaming
       string filename = "plotDepositionForceW" + to_string(order) + "r" + to_string(smoothness);
@@ -110,7 +169,13 @@ int main(int argc, char* argv[])
 
       for (int j = 0; j < TestSet.m_particles.size(); j++)
 	{
-	  myfile<< TestSet.m_particles[j].m_x[0]<<" "<< TestSet.m_particles[j].EField<<endl;
+	  
+	  myfile<< TestSet.m_particles[j].m_x[0]<<" ";
+	  for (int l =0; l<DIM; l++)
+	    {
+	      myfile<< TestSet.m_particles[j].EField[l];
+	    }
+	  myfile<<endl;
 	}
       
       

@@ -62,14 +62,14 @@ public:
   double m_dx;
   /// Spatial grid.
   DBox m_box;
-  /// Spatial Boundary
-  DBox m_bdry[2*DIM];
   /// Location in physical space of m_box.m_lowCorner;
   array<double,DIM> m_lowCorner;
   /// Hockney class that performs discrete convolution.
   Hockney m_hockney;
-  //Interpolation Kernel used for deposition and interpolation
+  /// Interpolation Kernel used for deposition and interpolation
   InterpolationKernel m_W;
+  /// RMDA used as temporary for deposition and interpolation. It is defined on Dbox.grow(m_W.support)
+  //  RectMDArray<double, DIM> m_tempArray; 
 
   //Functions
   /// inplements increment function required for RK$.
@@ -77,11 +77,14 @@ public:
   /// Bin the particles by spatial location 
   //void bin();
   /// Deposit the particles on the spatial grid
+  void deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_particles);
   void deposit(RectMDArray<double>& a_Charge);
   /// Interpolates the force from the spatial grid onto the particles
+  void InterpolateForce(RectMDArray<double>& a_Field, vector<Particle>& t_particles);
   void InterpolateForce(RectMDArray<double>& a_Field);
-  /// Builds Ghost Cells for spatial grid.
-  
+  /// Wraps Particles that have (left) domain/crossed periodic boundary
+  void wrapParticles(vector<Particle>& t_particles);
+  void wrapParticles();
   
 };
 #endif

@@ -46,10 +46,15 @@ public:
 class Particle
 {
 public:
-  /// m_x stores the spatial location of the particle, and strength the vorticity.
+  /** m_x stores the spatial location of the particle,
+      m_v stores the velocity of the particle, 
+      EField stores the Field for each particle,
+      strength stores the charge for each particle.
+   */
   array<double, DIM> m_x;
-  double strength;
+  array<double, DIM> m_v;
   array<double, DIM> EField;
+  double strength;
   /// used to implement ParticleSet::increment.
   inline void increment(const DX& a_shift)
   {

@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
     {
       intlowCorner[j] = 0;
       inthighCorner[j] = 7;
-      inthighCornerX[j] = 4;
+      inthighCornerX[j] = 3;
     }
   
   Point lowCorner(intlowCorner);
@@ -65,8 +65,7 @@ int main(int argc, char* argv[])
   Point highCornerX(inthighCornerX);
   DBox phaseGridBox(lowCorner, highCorner);
   DBox xGridBox(lowCorner, highCornerX);
-  RectMDArray<double> Charge(xGridBox);
-  Charge.setVal(0.0);
+  
   
   // ParticleSet build
   int M =3; //2^M on PIC grid
@@ -78,6 +77,8 @@ int main(int argc, char* argv[])
   double dx = 1.0/4.0;
   ParticleSet TestSet( phaseGridBox, dx, lowCorn, M, order, smoothness);
 
+  RectMDArray<double> Charge(xGridBox.grow(TestSet.m_W.supportSize()));
+  Charge.setVal(0.0);
   
   int num_points = phaseGridBox.size(0);
 

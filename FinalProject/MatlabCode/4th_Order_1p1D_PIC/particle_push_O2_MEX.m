@@ -1,4 +1,4 @@
-function plotting_output = particle_push_MEX(particle, grid, T, dt, Remapping)
+function plotting_output = particle_push_O2_MEX(particle, grid, T, dt, Remapping)
 
 plotting_output(1).particle_time_series = particle;
 plotting_output(1).electric_field_amplitude = [0, 0];

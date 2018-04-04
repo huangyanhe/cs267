@@ -16,8 +16,23 @@ public:
   /// Member function that computes increment to solution.Conforms to the m_f(...) interface in RK4. 
   /** Implements an operator that evaluates a_dt*F(t,a_X+a_k), given the inputs (a_k, a_time, a_dt, a_X ). It first computes a temporary a_X + a_k, then evaluates the right-hand side, scales the result by  a_dt and stores it in  a_k. 
    */
-
+  /// Maximum support size (assumed to be set by the interpolation kernel)
+  int m_supportSize;
+  /// DomainSize (= highCorner+1). 0 is associated with N+1th point.
+  int m_domainSize[DIM];
+  /// Mesh spacing.
+  double m_dx;
+  /// Spatial grid (unenlarged).
+  DBox m_box;
+  /// Boundary intersection with ghost cells
+  DBox m_bdry[2*DIM];
   ParticleVelocities();
+  ParticleVelocities(ParticleSet& a_state);
+  /// Function that deals with Ghost Cells for deposition, fd, and interpolation 
+  void getGhostDeposition(RectMDArray<double>& enlargedGrid);
+  void setGhost(RectMDArray<double>& enlargedGrid);
+  void setGhost(RectMDArray<double, DIM>& enlargedGrid);
+  /// Main operator called by RK4
   void operator()(ParticleShift& a_k, 
                      const double& a_time, const double& dt, 
                      ParticleSet& a_state);

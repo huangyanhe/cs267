@@ -14,13 +14,7 @@ ParticleSet::ParticleSet(
   m_W{order, smoothness}
 {
   m_hockney.define(a_kerptr, a_dx, a_M);
-  for (int k = 0; k < DIM; k++)
-    {
-      m_bdry[2*k] = m_box.shift(getUnitv(k)*(-1))
-        &m_box.shift(getUnitv(k)*(-m_domainSize));
-      m_bdry[2*k+1] = m_box.shift(getUnitv(k))
-        &m_box.shift(getUnitv(k)*m_domainSize);
-    }
+  //  m_tempArray.define(a_box.grow(m_W.supportSize()));
 }
 ParticleSet::ParticleSet(
 	      DBox& a_box,
@@ -33,13 +27,7 @@ ParticleSet::ParticleSet(
   m_lowCorner{a_lowCorner},
   m_W{order, smoothness}
 {
-  for (int k = 0; k < DIM; k++)
-    {
-      m_bdry[2*k] = m_box.shift(getUnitv(k)*(-1))
-        &m_box.shift(getUnitv(k)*(-m_domainSize));
-      m_bdry[2*k+1] = m_box.shift(getUnitv(k))
-        &m_box.shift(getUnitv(k)*m_domainSize);
-    }
+  //  m_tempArray.define(a_box.grow(m_W.supportSize()));
 }
 // Functions
 void ParticleSet::increment(const ParticleShift& a_shift)
@@ -50,16 +38,16 @@ void ParticleSet::increment(const ParticleShift& a_shift)
     }
 }
 // Dimensionally Independent Deposition
-void  ParticleSet::deposit(RectMDArray<double>& a_Charge)
+void  ParticleSet::deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_particles)
 {
   array<double,DIM> pos;
   double interpcoeff;
-  for (int it = 0; it <m_particles.size(); it++)
+  for (int it = 0; it <t_particles.size(); it++)
     {
       array<int,DIM> iposLow, iposHigh;
       for (int l = 0; l < DIM; l++)
         {
-	  pos[l] = m_particles[it].m_x[l];
+	  pos[l] = t_particles[it].m_x[l];
 	  iposLow[l] = floor(pos[l]/m_dx);
 	  iposHigh[l] = ceil(pos[l]/m_dx); 
 	}
@@ -76,7 +64,7 @@ void  ParticleSet::deposit(RectMDArray<double>& a_Charge)
       Point LC = LowCorner - Shift;
       Point HC = HighCorner+ Shift;
       DBox SupportBox(LC, HC); 
-      interpcoeff = 1/m_dx*m_particles[it].strength;
+      interpcoeff = 1/m_dx*t_particles[it].strength;
       for (Point s = SupportBox.getLowCorner(); SupportBox.notDone(s); SupportBox.increment(s))
 	{
 	  double KernelProduct = 1.0;
@@ -90,17 +78,61 @@ void  ParticleSet::deposit(RectMDArray<double>& a_Charge)
 	}
     }
 }
-//Dimensionally Independent Deposition
-void  ParticleSet::InterpolateForce(RectMDArray<double>& a_Field)
+void  ParticleSet::deposit(RectMDArray<double>& a_Charge)
 {
-  
-  for (int it = 0; it <m_particles.size(); it++)
+ deposit( a_Charge, m_particles) 
+}
+// void  ParticleSet::deposit(RectMDArray<double>& a_Charge)
+// {
+//   array<double,DIM> pos;
+//   double interpcoeff;
+//   for (int it = 0; it <m_particles.size(); it++)
+//     {
+//       array<int,DIM> iposLow, iposHigh;
+//       for (int l = 0; l < DIM; l++)
+//         {
+// 	  pos[l] = m_particles[it].m_x[l];
+// 	  iposLow[l] = floor(pos[l]/m_dx);
+// 	  iposHigh[l] = ceil(pos[l]/m_dx); 
+// 	}
+
+//       Point Shift = getUnitv(0);
+//       Shift *= 0;
+//       for (int j =0; j<DIM; j++)
+// 	{
+// 	  Shift += getUnitv(j);
+// 	}
+//       Shift *= (m_W.supportSize() - 1);
+//       Point HighCorner(iposHigh);
+//       Point LowCorner(iposLow);
+//       Point LC = LowCorner - Shift;
+//       Point HC = HighCorner+ Shift;
+//       DBox SupportBox(LC, HC); 
+//       interpcoeff = 1/m_dx*m_particles[it].strength;
+//       for (Point s = SupportBox.getLowCorner(); SupportBox.notDone(s); SupportBox.increment(s))
+// 	{
+// 	  double KernelProduct = 1.0;
+// 	  for (int j =0; j<DIM; j++)
+// 	    {
+// 	      int region = min(abs(s[j] - LowCorner[j]), abs(s[j] - HighCorner[j]));
+// 	      double val = abs(s[j]*m_dx - pos[j])/m_dx; 
+// 	      KernelProduct *= m_W.apply(val, region);
+// 	    }
+// 	  a_Charge[s] += interpcoeff*KernelProduct;
+// 	}
+//     }
+// }
+
+//Dimensionally Independent Interpolation
+void  ParticleSet::InterpolateForce(RectMDArray<double>& a_Field, vector<Particle>& t_particles)
+{
+  for (int it = 0; it <t_particles.size(); it++)
     {
       array<int,DIM> iposLow, iposHigh;
       array<double,DIM> pos;
       for (int l = 0; l < DIM; l++)
         {
-	  pos[l] = m_particles[it].m_x[l];
+	  pos[l] = t_particles[it].m_x[l];
 	  iposLow[l] = floor(pos[l]/m_dx);
 	  iposHigh[l] = ceil(pos[l]/m_dx); 
 	}
@@ -128,27 +160,118 @@ void  ParticleSet::InterpolateForce(RectMDArray<double>& a_Field)
 	    }
 	  for (int j = 0; j<DIM; j++)
 	    {
-	      m_particles[it].EField[j] += a_Field(s, j)*KernelProduct;
+	      t_particles[it].EField[j] += a_Field(s, j)*KernelProduct;
 	    }
 	}
     }
 }
-// This function needs to be done carefully and might require changing how the boundary is computed.
-void ParticleSet::getGhost(RectMDArray<double >& a_phi )
+void  ParticleSet::InterpolateForce(RectMDArray<double>& a_Field)
 {
-  for (int k = 0; k < 2*DIM; k+=2)
-    {
-      DBox bx = m_bdry[k];
-      for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
-        {
-          int image[DIM];
-          for (int dir = 0; dir < DIM; dir++)
-            {
-              image[dir] = (pt[dir] + m_domainSize)%m_domainSize;
-            }
-          Point ptimage(image);
-          a_phi[pt] += a_phi[ptimage];
-	  a_phi[ptimage] = a_phi[pt];
-        }
+  InterpolateForce(a_Field, m_particles);
+}
+// void  ParticleSet::InterpolateForce(RectMDArray<double>& a_Field)
+// {
+  
+//   for (int it = 0; it <m_particles.size(); it++)
+//     {
+//       array<int,DIM> iposLow, iposHigh;
+//       array<double,DIM> pos;
+//       for (int l = 0; l < DIM; l++)
+//         {
+// 	  pos[l] = m_particles[it].m_x[l];
+// 	  iposLow[l] = floor(pos[l]/m_dx);
+// 	  iposHigh[l] = ceil(pos[l]/m_dx); 
+// 	}
+
+//       Point Shift = getUnitv(0);
+//       Shift *= 0;
+//       for (int j =0; j<DIM; j++)
+// 	{
+// 	  Shift += getUnitv(j);
+// 	}
+//       Shift *= (m_W.supportSize() - 1);
+//       Point HighCorner(iposHigh);
+//       Point LowCorner(iposLow);
+//       Point LC = LowCorner - Shift;
+//       Point HC = HighCorner+ Shift;
+//       DBox SupportBox(LC, HC); 
+//       for (Point s = SupportBox.getLowCorner(); SupportBox.notDone(s); SupportBox.increment(s))
+// 	{
+// 	  double KernelProduct = 1.0;
+// 	  for (int j =0; j<DIM; j++)
+// 	    {
+// 	      int region = min(abs(s[j] - LowCorner[j]), abs(s[j] - HighCorner[j]));
+// 	      double val = abs(s[j]*m_dx - pos[j])/m_dx; 
+// 	      KernelProduct *= m_W.apply(val, region);
+// 	    }
+// 	  for (int j = 0; j<DIM; j++)
+// 	    {
+// 	      m_particles[it].EField[j] += a_Field(s, j)*KernelProduct;
+// 	    }
+// 	}
+//     }
+// }
+
+//Wraps Particles that have crossed boundary.
+void ParticleSet::wrapParticles(vector<Particle>& t_particles)
+{
+  double highBoundary[DIM];
+  double lowBoundary[DIM];
+  double domainSpecs[DIM];
+  for (int j=0; j<DIM; j++)
+    {  
+      highBoundary[j] = (m_box.getHighCorner()[j]+1)*m_dx;
+      lowBoundary[j] = (m_box.getLowCorner()[j])*m_dx;
+      domainSpecs[j] = highBoundary[j] - lowBoundary[j];
     }
-};
+  //The ordering of this should be explored. Since it is a vector of particles this should be best.
+  for (int it = 0; it < t_particles.size(); it++)
+    {
+      for (int j =0; j<DIM; j++)
+	{
+	  //Determines if the marticles left the spatial domain.
+	  //Might be good to implement this for different 
+	  if (t_particles[it].m_x[j]>highBoundary[j])
+	    {
+	      t_particles[it].m_x[j] = t_particles[it].m_x[j] - domainSpecs[j];
+	    }
+	  else if (t_particles[it].m_x[j]<lowBoundary[j])
+	    {
+	      t_particles[it].m_x[j] = t_particles[it].m_x[j] + domainSpecs[j];
+	    }
+	}
+    }
+}
+void ParticleSet::wrapParticles()
+{
+  wrapParticles(m_particles)
+}
+// void ParticleSet::wrapParticles()
+// {
+//   double highBoundary[DIM];
+//   double lowBoundary[DIM];
+//   double domainSpecs[DIM];
+//   for (int j=0; j<DIM; j++)
+//     {  
+//       highBoundary[j] = (m_box.getHighCorner()[j]+1)*m_dx;
+//       lowBoundary[j] = (m_box.getLowCorner()[j])*m_dx;
+//       domainSpecs[j] = highBoundary[j] - lowBoundary[j];
+//     }
+//   //The ordering of this should be explored. Since it is a vector of particles this should be best.
+//   for (int it = 0; it < m_particles.size(); it++)
+//     {
+//       for (int j =0; j<DIM; j++)
+// 	{
+// 	  //Determines if the marticles left the spatial domain.
+// 	  //Might be good to implement this for different 
+// 	  if (m_particles[it].m_x[j]>highBoundary[j])
+// 	    {
+// 	      m_particles[it].m_x[j] = m_particles[it].m_x[j] - domainSpecs[j];
+// 	    }
+// 	  else if (m_particles[it].m_x[j]<lowBoundary[j])
+// 	    {
+// 	      m_particles[it].m_x[j] = m_particles[it].m_x[j] + domainSpecs[j];
+// 	    }
+// 	}
+//     }
+// }

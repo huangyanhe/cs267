@@ -1,7 +1,82 @@
 #include "ParticleVelocities.H"
 
-ParticleVelocities::ParticleVelocities()
-{}
+ParticleVelocities::ParticleVelocities():
+  m_box{},
+  m_dx{},
+{
+  m_supportSize = 0.0;
+}
+ParticleVelocities::ParticleVelocities(ParticleSet& a_state)
+{
+  m_box = a_state.m_box;
+  m_dx = a_state.m_dx;
+  m_supportSize = a_state.m_W.supportSize();
+  for (int j = 0; j<DIM; j++)
+    {
+      m_domainSize[j] = m_box.getHighCorner()[0] + 1;
+    }
+  for (int k = 0; k < DIM; k++)
+    {
+      m_bdry[2*k] = m_box.shift(getUnitv(k)*(-m_supportSize))
+        &m_box.shift(getUnitv(k)*(-m_domainSize));
+      m_bdry[2*k+1] = m_box.shift(getUnitv(k)*(m_supportSize))
+        &m_box.shift(getUnitv(k)*m_domainSize);
+    }
+}
+void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
+{
+  for (int k = 0; k < 2*DIM; k++)
+    {
+      DBox bx = m_bdry[k];
+      for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
+        {
+          int image[DIM];
+          for (int dir = 0; dir < DIM; dir++)
+            {
+              image[dir] = (pt[dir] + m_domainSize)%m_domainSize;
+            }
+          Point ptimage(image);
+          a_phi[pt] += a_phi[ptimage];
+        }
+    }
+}
+void ParticleVelocities::setGhost(RectMDArray<double>& enlargedGrid)
+{
+  for (int k = 0; k < 2*DIM; k++)
+    {
+      DBox bx = m_bdry[k];
+      for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
+        {
+          int image[DIM];
+          for (int dir = 0; dir < DIM; dir++)
+            {
+              image[dir] = (pt[dir] + m_domainSize)%m_domainSize;
+            }
+          Point ptimage(image);
+	  a_phi[ptimage] = a_phi[pt];
+        }
+    }
+}
+void ParticleVelocities::setGhost(RectMDArray<double, DIM>& enlargedGrid)
+{
+  for (int k = 0; k < 2*DIM; k++)
+    {
+      DBox bx = m_bdry[k];
+      for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
+        {
+          int image[DIM];
+          for (int dir = 0; dir < DIM; dir++)
+            {
+              image[dir] = (pt[dir] + m_domainSize)%m_domainSize;
+            }
+          Point ptimage(image);
+	  for (int j=0; j<DIM; j++)
+	    {
+	      a_phi(ptimage, j) = a_phi(pt, j);
+	    }
+        }
+    }
+}
 void ParticleVelocities::operator()(ParticleShift& a_k, 
                      const double& a_time, const double& dt, 
                      ParticleSet& a_state)
@@ -13,55 +88,48 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
       t_particles[j].increment(a_k.m_particles[j]);
     }
   //Then use interpolation made up of the interpolating function given
-  RectMDArray<double> omegaG(a_state.m_box);
-  omegaG.setVal(0.0);
-  DBox Ubox = a_state.m_box.grow(-1);
-  RectMDArray<double, DIM> UG(Ubox);
-  UG.setVal(0.0);
-  double h = a_state.m_dx;
-  Point e0 = getUnitv(0);
-  Point e1 = getUnitv(1);
-  for (int k =0; k<t_particles.size(); k++)
-    {
-      array<int,DIM> ipos;
-      array<double, DIM> sk;
-      for (int l = 0; l < DIM; l++)
+  RectMDArray<double> density(a_state.m_box.grow(m_W.supportSize()));
+  density.setVal(0.0);
+  DBox phiBox = a_state.m_box;
+  RectMDArray<double> phi(a_state.m_box.grow(m_W.supportSize()));
+  RectMDArray<double, DIM> EField(a_state.m_box.grow(m_W.supportSize()));
+  phi.setVal(0.0);
+  a_state.deposit(density);
+  // Deals with Ghost Cells 
+  getGhostDeposition(density);
+  setGhost(density);
+  // Solve Poisson's Equation with Periodic Boundary Conditions (either MG or just some LAPack solver)
+
+  // Finite Difference 4th order 
+  for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
         {
-	  double pos = t_particles[k].m_x[l];
-	  ipos[l] = floor(pos/h);
-	  sk[l] = (pos - ipos[l]*h)/h;
-	}
-      Point pt(ipos);
-      omegaG[pt] += t_particles[k].strength*(1 - sk[0])*(1 - sk[1]);  
-      omegaG[pt + e0] += t_particles[k].strength*sk[0]*(1 - sk[1]);
-      omegaG[pt + e1] += t_particles[k].strength*sk[1]*(1 - sk[0]);
-      omegaG[pt + e0 + e1] += t_particles[k].strength*sk[0]*sk[1];
-      }
-  //Call Hockney
-  a_state.m_hockney.convolve(omegaG);
-  //Finite Difference
-  for (Point p=Ubox.getLowCorner(); Ubox.notDone(p); Ubox.increment(p))
-        {
-	  UG( p, 0)=(omegaG[p+e1] - omegaG[p-e1])/(2*h);
-	  UG( p, 1)= -1.0*(omegaG[p+e0] - omegaG[p-e0])/(2*h);
+	  for (int j = 0; j<DIM; j++)
+	    {
+	      Point ej = getUnitv(j);
+	      Point ej2 = ej;
+	      ej2 *= 2;
+	      //Double check signs
+	      EField(p, j)= -(-phi[p+ej2] + 8*phi[p+ej] - 8*phi[p-ej] + phi[p- ej2])/(12*m_dx);
+	    }
 	}
   //Interpolate back and return particle fields in a_k
   a_k.setToZero();
-  for (int k =0; k<t_particles.size(); k++)
-    {
-      array<int,DIM> ipos;
-      array<double,DIM> sk;
-      for (int l = 0; l < DIM; l++)
-        {
-	  double pos = t_particles[k].m_x[l];
-	  ipos[l] = floor(pos/h);
-	  sk[l] = (pos - ipos[l]*h)/h;
-	}
-      Point pt(ipos);
-      for (int l = 0; l < DIM; l++)
-	{
-	  a_k.m_particles[k].m_x[l] = UG(pt, l)*(1-sk[0])*(1 - sk[1]) + UG(pt + e0, l)*sk[0]*(1 - sk[1]) + UG(pt + e1, l)*sk[1]*(1 - sk[0]) + UG(pt + e0 + e1, l)*sk[0]*sk[1];
-	}
-    }
+  a_state.InterpolateForce(EField, a_k.m_particles)
+  // for (int k =0; k<t_particles.size(); k++)
+  //   {
+  //     array<int,DIM> ipos;
+  //     array<double,DIM> sk;
+  //     for (int l = 0; l < DIM; l++)
+  //       {
+  // 	  double pos = t_particles[k].m_x[l];
+  // 	  ipos[l] = floor(pos/h);
+  // 	  sk[l] = (pos - ipos[l]*h)/h;
+  // 	}
+  //     Point pt(ipos);
+  //     for (int l = 0; l < DIM; l++)
+  // 	{
+  // 	  a_k.m_particles[k].m_x[l] = UG(pt, l)*(1-sk[0])*(1 - sk[1]) + UG(pt + e0, l)*sk[0]*(1 - sk[1]) + UG(pt + e1, l)*sk[1]*(1 - sk[0]) + UG(pt + e0 + e1, l)*sk[0]*sk[1];
+  // 	}
+  //   }
   a_k *= dt;
 }

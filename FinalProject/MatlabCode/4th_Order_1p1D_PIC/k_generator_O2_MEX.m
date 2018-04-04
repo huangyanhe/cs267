@@ -1,4 +1,4 @@
-function [k1, k2, particle, electric_field_amplitude, kF1, kF2, kG1, kG2] = k_generator_MEX(particle, grid, dt)
+function [k1, k2, particle, electric_field_amplitude, kF1, kF2, kG1, kG2] = k_generator_O2_MEX(particle, grid, dt)
     
     dx = grid.domain_specs(1,3);
     L = grid.domain_specs(1,2);

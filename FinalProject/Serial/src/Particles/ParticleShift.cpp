@@ -19,6 +19,25 @@ void ParticleShift::increment(
       m_particles[j].increment(a_scale, a_rhs.m_particles[j]);
     }
 }
+void ParticleShift::incrementVelocity(
+				      double a_scale,
+				      const ParticleShift& a_rhs)
+{
+ for (int j = 0; j<a_rhs.m_particles.size(); j++)
+    {
+      m_particles[j].incrementVelocity(a_scale, a_rhs.m_particles[j]);
+    } 
+}
+void ParticleShift::incrementPositionandVelocity(
+						 double a_scaleX,
+						 double a_scaleV,
+						 const ParticleShift& a_rhs)
+{
+ for (int j = 0; j<a_rhs.m_particles.size(); j++)
+    {
+      m_particles[j].incrementPositionandVelocity(a_scaleX,  a_scaleV, a_rhs.m_particles[j]);
+    } 
+}
   /// m_particles[k] *= a_scale
 void ParticleShift::operator*=(double a_scale)
 {

@@ -19,6 +19,9 @@ class RK4
 public:
   void advance(double a_time, double a_dt, X& a_state);
 protected:
+  //dX is ParticleShift
+  // F is ParticleVelocities
+  // X is ParticleSet
   dX m_k; 
   dX m_delta;
   F m_f;
@@ -29,27 +32,62 @@ protected:
 
 
 template <class X, class F, class dX>
+// void RK4<X, F, dX>::advance(double a_time, double a_dt, X& a_state)
+// {
+//   // this looks odd, but it is a common programming error
+//   //  you can't write "1/6* m_k"; and get what you want.  the first
+//   // term is evaluated as integer division, resulting in a zero.
+//   double sixth = 1, third=1, half = 1;
+//   sixth/=6; third/=3; half/=2;
+  
+//   m_delta.init(a_state);
+//   m_k.init(a_state);
+//   m_f(m_k, a_time, a_dt, a_state);  // compute k1
+//   m_delta.increment(sixth, m_k);
+//   m_k*=half;
+//   m_f(m_k, a_time+half*a_dt, a_dt, a_state); // compute k2
+//   m_delta.increment(third, m_k);
+//   m_k*=half;
+//   m_f(m_k, a_time+half*a_dt, a_dt, a_state);  // conpute k3
+//   m_delta.increment(third, m_k);
+//   m_f(m_k, a_time+a_dt, a_dt, a_state); // compute k4
+//   m_delta.increment(sixth, m_k);
+//   a_state.increment(m_delta);
+// }
+
+//Implementation of Andrews 4th order RK4 scheme 
 void RK4<X, F, dX>::advance(double a_time, double a_dt, X& a_state)
 {
   // this looks odd, but it is a common programming error
   //  you can't write "1/6* m_k"; and get what you want.  the first
   // term is evaluated as integer division, resulting in a zero.
-  double sixth = 1, third=1, half = 1;
-  sixth/=6; third/=3; half/=2;
-  
+  double sixth = 1, third=1, half = 1, eigth = 1.0;
+  sixth/=6; third/=3; half/=2; eigth/=8.0;
+
+  //m_k are the intermediate ks
+  //m_delta is the final one that needs to be incremented 
+  double dt2 = a_dt*a_dt; 
+  //Init
   m_delta.init(a_state);
   m_k.init(a_state);
-  m_f(m_k, a_time, a_dt, a_state);  // compute k1
-  m_delta.increment(sixth, m_k);
+  // Compute k1
+  m_f(m_k, a_time, 0.0, a_state); 
+  //Increment delta by k1
+  m_delta.incrementPositionandVelocity(sixth*a_dt*a_dt, sixth*a_dt, m_k);
+  //Update m_k to new position to compute k2
+  m_k*=eigth;
+  m_k*= dt2;
+  // Compute k2
+  m_f(m_k, a_time, half*a_dt, a_state);
+  //Increment delta by 
+  m_delta.incrementPositionandVelocity(  third*a_dt*a_dt, 2.0*third*a_dt, m_k);
   m_k*=half;
-  m_f(m_k, a_time+half*a_dt, a_dt, a_state); // compute k2
-  m_delta.increment(third, m_k);
-  m_k*=half;
-  m_f(m_k, a_time+half*a_dt, a_dt, a_state);  // conpute k3
-  m_delta.increment(third, m_k);
-  m_f(m_k, a_time+a_dt, a_dt, a_state); // compute k4
-  m_delta.increment(sixth, m_k);
-  a_state.increment(m_delta);
+  m_k*= dt2;
+  // Compute k3
+  m_f(m_k, a_time, a_dt, a_state);  
+  m_delta.incrementVelocity(sixth*a_dt, m_k);
+  // Final increment of both m_x and m_v
+  a_state.incrementPositionandVelocity(m_delta);
 }
   
 #endif 

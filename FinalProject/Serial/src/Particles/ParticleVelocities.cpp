@@ -81,10 +81,12 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
                      const double& a_time, const double& dt, 
                      ParticleSet& a_state)
 {
-  //First need to compute a_state + a_k
+  //First need to compute a_state.m_x + dt*a_state.m_v + a_k
+  //dt is used to control how much of the velocity is added since it isn't used anywhere else
   vector<Particle> t_particles = a_state.m_particles;
   for (int j = 0; j<a_k.m_particles.size(); j++)
     {
+      t_particles[j].addVelocity(dt);
       t_particles[j].increment(a_k.m_particles[j]);
     }
   //Then use interpolation made up of the interpolating function given
@@ -114,22 +116,5 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
 	}
   //Interpolate back and return particle fields in a_k
   a_k.setToZero();
-  a_state.InterpolateForce(EField, a_k.m_particles)
-  // for (int k =0; k<t_particles.size(); k++)
-  //   {
-  //     array<int,DIM> ipos;
-  //     array<double,DIM> sk;
-  //     for (int l = 0; l < DIM; l++)
-  //       {
-  // 	  double pos = t_particles[k].m_x[l];
-  // 	  ipos[l] = floor(pos/h);
-  // 	  sk[l] = (pos - ipos[l]*h)/h;
-  // 	}
-  //     Point pt(ipos);
-  //     for (int l = 0; l < DIM; l++)
-  // 	{
-  // 	  a_k.m_particles[k].m_x[l] = UG(pt, l)*(1-sk[0])*(1 - sk[1]) + UG(pt + e0, l)*sk[0]*(1 - sk[1]) + UG(pt + e1, l)*sk[1]*(1 - sk[0]) + UG(pt + e0 + e1, l)*sk[0]*sk[1];
-  // 	}
-  //   }
-  a_k *= dt;
+  a_state.InterpolateForce(EField, a_k.m_particles);
 }

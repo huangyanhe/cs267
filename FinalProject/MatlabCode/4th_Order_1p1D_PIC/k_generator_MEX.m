@@ -5,7 +5,7 @@ function [k1, k2, k3, particle, electric_field_amplitude, DE] = k_generator_MEX(
     
     %% Compute k1
     density = density_remapping_MEX(particle, grid);
-    phi = poisson_solver(density, grid);
+    phi = poisson_solver_FFT(density, grid);
     e_field = gradient(phi, grid);
     forces = force_remapping_MEX(particle, grid, e_field);
     k1 = forces;
@@ -18,7 +18,7 @@ function [k1, k2, k3, particle, electric_field_amplitude, DE] = k_generator_MEX(
     particle2 = particle_wrapping(particle2, grid);
     
     density2 = density_remapping_MEX(particle2, grid);
-    phi2 = poisson_solver(density2, grid);
+    phi2 = poisson_solver_FFT(density2, grid);
     e_field2 = gradient(phi2, grid);
     forces2 = force_remapping_MEX(particle2, grid, e_field2);
     k2 = forces2;
@@ -29,7 +29,7 @@ function [k1, k2, k3, particle, electric_field_amplitude, DE] = k_generator_MEX(
     particle3 = particle_wrapping(particle3, grid);
     
     density3 = density_remapping_MEX(particle3, grid);
-    phi3 = poisson_solver(density3, grid);
+    phi3 = poisson_solver_FFT(density3, grid);
     e_field3 = gradient(phi3, grid);
     forces3 = force_remapping_MEX(particle3, grid, e_field3);
     k3 = forces3;

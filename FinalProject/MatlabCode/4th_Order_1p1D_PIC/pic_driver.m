@@ -31,9 +31,9 @@ switch problem
         end
         
         figure(1);
-        semilogy(electric_energy(:,1), 0.011*exp(-0.1533*electric_energy(:,1)), 'r--')
-        hold on
-        semilogy(electric_energy(:,1), electric_energy(:,2), 'k-');
+        %semilogy(electric_energy(:,1), 0.011*exp(-0.1533*electric_energy(:,1)), 'r--')
+        %hold on
+        semilogy(electric_energy(:,1), electric_energy(:,2), 'b-');
         xlabel('time')
         ylabel('$\log(\xi_E)$', 'Interpreter', 'LaTex')
         title_str = sprintf('Grid Size = %f', Grid_Size);

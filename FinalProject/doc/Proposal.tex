@@ -129,7 +129,7 @@ Previous work has focused solely on the particle-mesh steps (the deposition and 
 To avoid race conditions between different threads we plan to give each a local copy of the mesh and then aggregate the results once each is done. 
 Since the mesh is only two dimensional, it is relatively inexpensive for each thread to have a portion of this mesh. 
 Once the deposition step has been completed, we will implement a 4th-order finite difference scheme with ghost regions to solve for the potential.
-We plan to use a finite difference method since it is simple, local, and generally this stage accounts for $\sim 5\%$ of the total run time. 
+We plan to use a finite difference method since it is simple and generally this stage accounts for $\sim 5\%$ of the total run time. 
 Once each node has solved for the region in space necessary for it to do the force interpolation, it will loop over the particles and interpolate the forces to each particle.
 This will again be a threaded operation; however, unlike the deposition stage, race conditions will not be an issue since each particle is only owned by a single thread. 
 Finally, we will advance the particles in time with an explicit 4th-order Runge-Kutta method.

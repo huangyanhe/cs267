@@ -100,9 +100,11 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   // Deals with Ghost Cells 
   getGhostDeposition(density);
   setGhost(density);
-  // Solve Poisson's Equation with Periodic Boundary Conditions (either MG or just some LAPack solver)
+  // Solve Poisson's Equation with Periodic Boundary Conditions 
 
-  // Finite Difference 4th order 
+  
+  
+  // Finite Difference 4th order first derivative 
   for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
         {
 	  for (int j = 0; j<DIM; j++)

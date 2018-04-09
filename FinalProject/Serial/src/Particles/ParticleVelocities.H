@@ -6,7 +6,6 @@
 #include <vector>
 #include "DBox.H"
 #include "RectMDArray.H"
-#include "Hockney.H"
 #include "ParticleSet.H"
 using namespace std;
 /// Class for computing the RHS in RK4, corresponding to the template parameter F.
@@ -30,7 +29,7 @@ public:
   ParticleVelocities(ParticleSet& a_state);
   /// Function that deals with Ghost Cells for deposition, fd, and interpolation 
   void getGhostDeposition(RectMDArray<double>& enlargedGrid);
-  void setGhost(RectMDArray<double>& enlargedGrid);
+  //void setGhost(RectMDArray<double>& enlargedGrid);
   void setGhost(RectMDArray<double, DIM>& enlargedGrid);
   /// Main operator called by RK4
   void operator()(ParticleShift& a_k, 

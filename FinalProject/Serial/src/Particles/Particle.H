@@ -23,6 +23,7 @@ public:
   /// Data members are a DIM-tuple. 
   array<double, DIM> m_x;
   array<double, DIM> m_v;
+  array<double, DIM> EField;
   /// Increment is used to implement ParticleShift::increment. 
   inline void increment(double a_scale, const DX& a_rhs)
   {

@@ -2,7 +2,7 @@
 
 ParticleVelocities::ParticleVelocities():
   m_box{},
-  m_dx{},
+  m_dx{}
 {
   m_supportSize = 0.0;
 }
@@ -17,10 +17,10 @@ ParticleVelocities::ParticleVelocities(ParticleSet& a_state)
     }
   for (int k = 0; k < DIM; k++)
     {
-      m_bdry[2*k] = m_box.shift(getUnitv(k)*(-m_supportSize))
-        &m_box.shift(getUnitv(k)*(-m_domainSize));
+      m_bdry[2*k] = m_box.shift(getUnitv(k)*(-1*m_supportSize))
+        &m_box.shift(getUnitv(k)*(-1*m_domainSize[k]));
       m_bdry[2*k+1] = m_box.shift(getUnitv(k)*(m_supportSize))
-        &m_box.shift(getUnitv(k)*m_domainSize);
+        &m_box.shift(getUnitv(k)*m_domainSize[k]);
     }
 }
 void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
@@ -33,30 +33,30 @@ void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
           int image[DIM];
           for (int dir = 0; dir < DIM; dir++)
             {
-              image[dir] = (pt[dir] + m_domainSize)%m_domainSize;
+              image[dir] = (pt[dir] + m_domainSize[dir])%m_domainSize[dir];
             }
           Point ptimage(image);
-          a_phi[pt] += a_phi[ptimage];
+          enlargedGrid[pt] += enlargedGrid[ptimage];
         }
     }
 }
-void ParticleVelocities::setGhost(RectMDArray<double>& enlargedGrid)
-{
-  for (int k = 0; k < 2*DIM; k++)
-    {
-      DBox bx = m_bdry[k];
-      for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
-        {
-          int image[DIM];
-          for (int dir = 0; dir < DIM; dir++)
-            {
-              image[dir] = (pt[dir] + m_domainSize)%m_domainSize;
-            }
-          Point ptimage(image);
-	  a_phi[ptimage] = a_phi[pt];
-        }
-    }
-}
+// void ParticleVelocities::setGhost(RectMDArray<double>& enlargedGrid)
+// {
+//   for (int k = 0; k < 2*DIM; k++)
+//     {
+//       DBox bx = m_bdry[k];
+//       for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
+//         {
+//           int image[DIM];
+//           for (int dir = 0; dir < DIM; dir++)
+//             {
+//               image[dir] = (pt[dir] + m_domainSize[dir])%m_domainSize[dir];
+//             }
+//           Point ptimage(image);
+// 	  enlargedGrid[ptimage] = enlargedGrid[pt];
+//         }
+//     }
+// }
 void ParticleVelocities::setGhost(RectMDArray<double, DIM>& enlargedGrid)
 {
   for (int k = 0; k < 2*DIM; k++)
@@ -67,12 +67,12 @@ void ParticleVelocities::setGhost(RectMDArray<double, DIM>& enlargedGrid)
           int image[DIM];
           for (int dir = 0; dir < DIM; dir++)
             {
-              image[dir] = (pt[dir] + m_domainSize)%m_domainSize;
+              image[dir] = (pt[dir] + m_domainSize[dir])%m_domainSize[dir];
             }
           Point ptimage(image);
 	  for (int j=0; j<DIM; j++)
 	    {
-	      a_phi(ptimage, j) = a_phi(pt, j);
+	      enlargedGrid(ptimage, j) = enlargedGrid(pt, j);
 	    }
         }
     }
@@ -90,11 +90,11 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
       t_particles[j].increment(a_k.m_particles[j]);
     }
   //Then use interpolation made up of the interpolating function given
-  RectMDArray<double> density(a_state.m_box.grow(m_W.supportSize()));
+  RectMDArray<double> density(a_state.m_box.grow(a_state.m_W.supportSize()));
   density.setVal(0.0);
   DBox phiBox = a_state.m_box;
-  RectMDArray<double> phi(a_state.m_box.grow(m_W.supportSize()));
-  RectMDArray<double, DIM> EField(a_state.m_box.grow(m_W.supportSize()));
+  RectMDArray<double> phi(a_state.m_box.grow(a_state.m_W.supportSize()));
+  RectMDArray<double, DIM> EField(a_state.m_box.grow(a_state.m_W.supportSize()));
   phi.setVal(0.0);
   a_state.deposit(density);
   // Deals with Ghost Cells 

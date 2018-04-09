@@ -4,7 +4,6 @@
 #include <vector>
 #include "Particle.H"
 #include "RectMDArray.H"
-#include "Hockney.H"
 #include "InterpolationKernel.H"
 
 using namespace std;
@@ -24,6 +23,13 @@ public:
   void increment(
                  double a_scale, 
                  const ParticleShift& a_rhs);
+  void incrementVelocity(
+			 double a_scale,
+			 const ParticleShift& a_rhs);
+  void incrementPositionandVelocity(
+				    double a_scaleX,
+				    double a_scaleV,
+				    const ParticleShift& a_rhs);
   /// m_particles[k] *= a_scale
   void operator*=(double a_scale);
   /// reinitializes the values m_particles[k] to zero. Not used in RK4.
@@ -41,12 +47,11 @@ public:
      a_lowCorner: DIM-tuple giving the location in physical space of the lowCorner of the PIC grid.
      a_M: N = 2^a_M is the number of grid points in the PIC grid.
    */
-  ParticleSet(
-              shared_ptr<ConvKernel>& a_kerptr,
-              DBox& a_box,
-              double& a_dx, 
-              array<double, DIM>& a_lowCorner,
-              int a_M, int order=2, int smoothness=0);
+  // ParticleSet(
+  //             DBox& a_box,
+  //             double& a_dx, 
+  //             array<double, DIM>& a_lowCorner,
+  //             int a_M, int order=2, int smoothness=0);
   ParticleSet(
               DBox& a_box,
               double& a_dx, 
@@ -64,8 +69,6 @@ public:
   DBox m_box;
   /// Location in physical space of m_box.m_lowCorner;
   array<double,DIM> m_lowCorner;
-  /// Hockney class that performs discrete convolution.
-  Hockney m_hockney;
   /// Interpolation Kernel used for deposition and interpolation
   InterpolationKernel m_W;
   /// RMDA used as temporary for deposition and interpolation. It is defined on Dbox.grow(m_W.support)
@@ -73,6 +76,7 @@ public:
 
   //Functions
   /// inplements increment function required for RK$.
+  void incrementPositionandVelocity(const ParticleShift& a_shift);
   void increment(const ParticleShift& a_shift);
   /// Bin the particles by spatial location 
   //void bin();
@@ -80,11 +84,13 @@ public:
   void deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_particles);
   void deposit(RectMDArray<double>& a_Charge);
   /// Interpolates the force from the spatial grid onto the particles
-  void InterpolateForce(RectMDArray<double>& a_Field, vector<Particle>& t_particles);
-  void InterpolateForce(RectMDArray<double>& a_Field);
+  void InterpolateForce(RectMDArray<double, DIM>& a_Field, vector<Particle>& t_particles);
+  void InterpolateForce(RectMDArray<double, DIM>& a_Field, vector<DX>& t_particles);
+  void InterpolateForce(RectMDArray<double, DIM>& a_Field);
   /// Wraps Particles that have (left) domain/crossed periodic boundary
   void wrapParticles(vector<Particle>& t_particles);
   void wrapParticles();
+  
   
 };
 #endif

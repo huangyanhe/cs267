@@ -57,7 +57,7 @@ void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
 //         }
 //     }
 // }
-void ParticleVelocities::setGhost(RectMDArray<double, DIM>& enlargedGrid)
+void ParticleVelocities::setGhost(RectMDArray<double>& enlargedGrid)
 {
   for (int k = 0; k < 2*DIM; k++)
     {

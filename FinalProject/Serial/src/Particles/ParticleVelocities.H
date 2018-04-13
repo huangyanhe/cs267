@@ -30,7 +30,7 @@ public:
   /// Function that deals with Ghost Cells for deposition, fd, and interpolation 
   void getGhostDeposition(RectMDArray<double>& enlargedGrid);
   //void setGhost(RectMDArray<double>& enlargedGrid);
-  void setGhost(RectMDArray<double, DIM>& enlargedGrid);
+  void setGhost(RectMDArray<double>& enlargedGrid);
   /// Main operator called by RK4
   void operator()(ParticleShift& a_k, 
                      const double& a_time, const double& dt, 

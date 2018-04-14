@@ -7,6 +7,7 @@
 #include "DBox.H"
 #include "RectMDArray.H"
 #include "ParticleSet.H"
+#include "PoissonSolver.H"
 using namespace std;
 /// Class for computing the RHS in RK4, corresponding to the template parameter F.
 class ParticleVelocities
@@ -25,6 +26,7 @@ public:
   DBox m_box;
   /// Boundary intersection with ghost cells
   DBox m_bdry[2*DIM];
+  PoissonSolver PS;
   ParticleVelocities();
   ParticleVelocities(ParticleSet& a_state);
   /// Function that deals with Ghost Cells for deposition, fd, and interpolation 

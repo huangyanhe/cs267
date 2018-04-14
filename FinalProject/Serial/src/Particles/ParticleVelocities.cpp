@@ -1,10 +1,7 @@
 #include "ParticleVelocities.H"
 
-ParticleVelocities::ParticleVelocities():
-  m_box{},
-  m_dx{}
+ParticleVelocities::ParticleVelocities()
 {
-  m_supportSize = 0.0;
 }
 ParticleVelocities::ParticleVelocities(ParticleSet& a_state)
 {
@@ -22,6 +19,8 @@ ParticleVelocities::ParticleVelocities(ParticleSet& a_state)
       m_bdry[2*k+1] = m_box.shift(getUnitv(k)*(m_supportSize))
         &m_box.shift(getUnitv(k)*m_domainSize[k]);
     }
+  int m = log2(m_box.getHighCorner()[0]);
+  PS.define(m_dx, m, m_box);
 }
 void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
 {
@@ -93,17 +92,28 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   RectMDArray<double> density(a_state.m_box.grow(a_state.m_W.supportSize()));
   density.setVal(0.0);
   DBox phiBox = a_state.m_box;
-  RectMDArray<double> phi(a_state.m_box.grow(a_state.m_W.supportSize()));
+  RectMDArray<double> phi(phiBox);
   RectMDArray<double, DIM> EField(a_state.m_box.grow(a_state.m_W.supportSize()));
-  phi.setVal(0.0);
+  //phi.setVal(0.0);
   a_state.deposit(density);
   // Deals with Ghost Cells 
   getGhostDeposition(density);
-  setGhost(density);
+  //setGhost(density);
   // Solve Poisson's Equation with Periodic Boundary Conditions 
-
-  
-  
+  //write density into phu
+  for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
+    {
+      phi[p] = density[p];
+    }
+  //Poisson solve
+  PS.Solve( phi);
+  //Write Phi values out back into dbox with ghost cells
+  for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
+  {
+   density[p] = phi[p];
+  }
+  //Set ghost cells for computing the gradient
+  setGhost(density);
   // Finite Difference 4th order first derivative 
   for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
         {

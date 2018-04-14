@@ -22,7 +22,7 @@ dx = abs(grid.poisson_grid(1) - grid.poisson_grid(2));
 %dx = 1/NumCells;
 grid.domain_specs = [0, L, dx, NaN; 0, L, hx, 2; -vmax, vmax, hv, 3];
 
-density = (2*pi/L)^2*sin(2*pi*grid.poisson_grid/L)+3;
+density = (2*pi/L)^2*sin(2*pi*grid.poisson_grid/L);
 
 phi = poisson_solver_FFT(density, grid);
 phi

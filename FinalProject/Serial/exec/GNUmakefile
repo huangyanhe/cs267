@@ -3,20 +3,21 @@
 HOME = ./..
 WRITERS = $(HOME)/utils/Writers
 RMDA = $(HOME)/src/RectMDArray
-FFT = $(HOME)/src/fftTools
-CONV = $(HOME)/src/Hockney
+FFT = $(HOME)/src/FFT
+PS = $(HOME)/src/PoissonSolver
 PARTICLES = $(HOME)/src/Particles
+IK = $(HOME)/src/InterpolationKernel/
 TIMER = $(HOME)/utils/timer
-VPATH= . $(HOME) $(PARTICLES) $(RMDA) $(FFT) $(CONV) $(TIMER) $(WRITERS)
+VPATH= . $(HOME) $(PARTICLES) $(RMDA) $(FFT) $(PS) $(TIMER) $(WRITERS) $(IK)
 ANIMATION = 1
 
-DIM=2
+DIM=1
 #CXX=g++
 CXX=clang++
-FFTWDIR = /usr/local
-#CFLAGS = -g -Wall
-CFLAGS = -O3
-CFLAGS += -std=c++11 -I$(PARTICLES) -I$(RMDA) -I$(FFT) -I$(CONV) -I$(TIMER) -I$(WRITERS) -I$(FFTWDIR)/include
+FFTWDIR = /usr/local/Cellar/fftw/3.3.6-pl2
+CFLAGS = -g -Wall
+#CFLAGS = -O3
+CFLAGS += -std=c++11 -I$(PARTICLES) -I$(RMDA) -I$(IK) -I$(PS) -I$(FFT) -I$(TIMER) -I$(WRITERS) -I$(FFTWDIR)/include
 
 odir = ./o.$(DIM)d
 ddir = ./d.$(DIM)d
@@ -24,7 +25,7 @@ ddir = ./d.$(DIM)d
 CFLAGS += -DDIM=$(DIM) -D ANIMATION=$(ANIMATION)
 LIBS:=  -L$(FFTWDIR)/lib -lfftw3 
 
-SRCFILES:= $(notdir $(wildcard $(TIMER)/*.cpp $(RMDA)/*.cpp $(WRITERS)/*.cpp $(FFT)/*.cpp ./*.cpp $(CONV)/*.cpp $(PARTICLES)/*.cpp))
+SRCFILES:= $(notdir $(wildcard $(TIMER)/*.cpp $(RMDA)/*.cpp $(IK)/*.cpp $(PS)/*.cpp $(WRITERS)/*.cpp $(FFT)/*.cpp $(PARTICLES)/*.cpp ./*.cpp))
 
 OBJS:=$(patsubst %.cpp,$(odir)/%.o,$(SRCFILES))
 
@@ -36,8 +37,8 @@ $(odir)/%.o:%.cpp GNUmakefile
 #	mkdir -p $(ddir);$(CXX) -MM $(CFLAGS) $<  > $*.d;mv $*.d $(ddir)
 	mkdir -p $(ddir);$(CXX) -MM $(CFLAGS) $< | sed '1s/^/o.$(DIM)d\//' > $*.d;mv $*.d $(ddir)
 
-vortex2D: GNUmakefile $(OBJS) 
-	$(CXX) $(CFLAGS) $(OBJS) $(LIBS) -o vortex$(DIM)D.exe
+PICLLD: GNUmakefile $(OBJS) 
+	$(CXX) $(CFLAGS) $(OBJS) $(LIBS) -o PIC$(DIM)p$(DIM)D.exe
 
 -include $(DEPS)
 

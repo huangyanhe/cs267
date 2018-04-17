@@ -74,7 +74,6 @@ Point::Point(const int a_tuple[DIM])
       m_tuple[j]=a_tuple[j];
     }
 }
-
 Point::Point(const array<int,DIM> a_tuple)
 {
   for (int j = 0; j < DIM; j++)

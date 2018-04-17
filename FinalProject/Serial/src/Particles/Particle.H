@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cassert>
 #include <array>
+#include <iostream>
 using namespace std;
 /// Class representing the increment of a single point.
 /**
@@ -86,6 +87,15 @@ public:
   array<double, DIM> m_v;
   array<double, DIM> EField;
   double strength;
+  Particle()
+  {
+    for( int k=0; k<DIM; k++)
+      {
+	m_x[k] = 0.0;
+	m_v[k] = 0.0;
+	EField[k] = 0.0;
+      }
+  }
   /// used to implement ParticleSet::increment.
   inline void increment(const DX& a_shift)
   {
@@ -108,6 +118,26 @@ public:
 	m_x[i]+=a_shift.m_x[i];
 	m_v[i]+=a_shift.m_v[i];
       }
+  }
+  void print()
+  {
+    cout<<"strength= "<< strength<<", ";
+    cout<< "x= ";
+      for (int k=0; k<DIM; k++)
+        {
+      cout<<m_x[k] <<", ";
+        }
+      cout<<"v=";
+      for (int k=0; k<DIM; k++)
+        {
+	  cout<<m_v[k] <<", ";
+        }
+      cout<<"E=";
+      for (int k=0; k<DIM; k++)
+        {
+	  cout<<EField[k] <<", ";
+        }
+      cout<<" "<<std::endl;
   }
 };
 

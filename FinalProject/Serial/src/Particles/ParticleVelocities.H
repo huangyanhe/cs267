@@ -22,6 +22,7 @@ public:
   int m_domainSize[DIM];
   /// Mesh spacing.
   double m_dx;
+  double m_L;
   /// Spatial grid (unenlarged).
   DBox m_box;
   /// Boundary intersection with ghost cells

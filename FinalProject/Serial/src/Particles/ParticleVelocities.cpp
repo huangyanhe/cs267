@@ -32,6 +32,7 @@ void ParticleVelocities::define(ParticleSet& a_state)
 {
   m_box = a_state.m_box;
   m_dx = a_state.m_dx;
+  m_L = a_state.m_L;
   m_supportSize = max(a_state.m_W.supportSize(), 2);
   cout<<"m_box print: ";
   m_box.print();
@@ -50,8 +51,11 @@ void ParticleVelocities::define(ParticleSet& a_state)
       m_bdry[2*k+1] = m_box.shift(getUnitv(k)*(m_supportSize))
         &m_box.shift(getUnitv(k)*m_domainSize[k]);
     }
-  int m = log2(m_box.getHighCorner()[0]);
-  PS.define(m_dx, m, m_box);
+  //Need the plus 1 to be correct.
+  int m = log2(m_box.getHighCorner()[0] + 1);
+  //cout<<"In PV  m_box.getHighCorner = " <<m_box.getHighCorner()[0]<<endl;
+  //cout<<"In PV define m = "<< m<<endl;
+  PS.define(m_dx, m, m_L, m_box);
 }
 void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
 {

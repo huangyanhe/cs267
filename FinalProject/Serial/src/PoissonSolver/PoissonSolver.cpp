@@ -31,7 +31,7 @@ void PoissonSolver::buildEigenvalues()
   for (int j=0; j<DIM; j++)
     {
       //scale[j]= 2*M_PI/((highCorner[j]+1)*m_h);
-      scale[j]= 2*M_PI/(m_N*m_h);
+      scale[j]= 2*M_PI/(m_L);
     }
   
   for (Point pt= m_box.getLowCorner(); m_box.notDone(pt); m_box.increment(pt))
@@ -73,7 +73,7 @@ PoissonSolver::PoissonSolver():
   m_box{},
   m_eigenvalues{}
 {};
-PoissonSolver::PoissonSolver(double a_h, int a_M, DBox a_box)
+PoissonSolver::PoissonSolver(double a_h, int a_M, double a_L, DBox a_box)
 {
   //This line was used because it was on a grid twice the size I think in hockney
   //shared_ptr<FFT1DW> p_fftw1d = shared_ptr<FFT1DW>(new FFT1DW(a_M+1));
@@ -96,8 +96,9 @@ PoissonSolver::PoissonSolver(double a_h, int a_M, DBox a_box)
   m_eigenvalues.define(m_box);
   buildEigenvalues();
 };
-void PoissonSolver::define(double a_h,int a_M,  DBox a_box)
-{ 
+void PoissonSolver::define(double a_h, int a_M, double a_L, DBox a_box)
+{
+  cout<<"In PS define."<<endl;
   //shared_ptr<FFT1DW> p_fftw1d = shared_ptr<FFT1DW>(new FFT1DW(a_M+1));
   shared_ptr<FFT1DW> p_fftw1d = shared_ptr<FFT1DW>(new FFT1DW(a_M));
   shared_ptr<FFT1D> p_fft = dynamic_pointer_cast<FFT1D>(p_fftw1d);
@@ -112,8 +113,11 @@ void PoissonSolver::define(double a_h,int a_M,  DBox a_box)
   //     m_N[j] = Power(2,a_M[j]);
   //   }
   m_h = a_h;
+  m_L = a_L;
   m_M = a_M;
+  cout<<"In define m_M = "<<m_M<<endl;
   m_N = Power(2, a_M);
+  cout<<"In define m_N = "<<m_N<<endl;
   m_box = a_box;
   m_eigenvalues.define(m_box);
   buildEigenvalues();
@@ -141,8 +145,9 @@ void PoissonSolver::Solve( RectMDArray<double>& a_rhs)
   for (Point pt = m_box.getLowCorner(); m_box.notDone(pt); m_box.increment(pt))
     {
       rhsDouble[pt].real(a_rhs[pt]);
+      cout<<"rhsdouble[";
       pt.print();
-      cout<<"rhsdouble[^] = "<<rhsDouble[pt]<<endl;
+      cout<<"] = "<<rhsDouble[pt]<<endl;
     }
   //RectMDArray<complex<double> > kernel(ddomain);
   RectMDArray<double > realOut(m_box);
@@ -153,10 +158,17 @@ void PoissonSolver::Solve( RectMDArray<double>& a_rhs)
   cout<<"made it to multiplying eigenvalues"<<endl;
   for (Point pt = m_box.getLowCorner(); m_box.notDone(pt); m_box.increment(pt))
     {
-      cout<<"eval["<< pt[0]<<"]= "<<m_eigenvalues[pt]<<endl;
+      
+      //cout<<"eval["<< pt[0]<<"]= "<<m_eigenvalues[pt]<<endl;
       rhsDouble[pt] *= m_eigenvalues[pt];
+      cout<<"rhsdouble[";
       pt.print();
-      cout<<"rhsdouble[^] = "<<rhsDouble[pt]<<endl;
+      cout<<"] = "<<rhsDouble[pt]<<endl;
+      cout<<"m_eigenvalues[";
+      pt.print();
+      cout<<"] = "<<m_eigenvalues[pt]<<endl;
+      //pt.print();
+      //cout<<"rhsdouble[^] = "<<rhsDouble[pt]<<endl;
     }
   cout<<"made it to inverse FFT"<<endl;
   m_fftmd.inverseCC(rhsDouble);

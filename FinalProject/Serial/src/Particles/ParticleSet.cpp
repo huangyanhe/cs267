@@ -18,12 +18,13 @@ ParticleSet::ParticleSet(
 	      DBox& a_box,
               double& a_dx, 
               array<double, DIM>& a_lowCorner,
-              int a_M, int order, int smoothness):
+              int a_M, double a_L, int order, int smoothness):
   m_particles{},
   m_dx{a_dx},
   m_box{a_box},
   m_lowCorner{a_lowCorner},
-  m_W{order, smoothness}
+  m_W{order, smoothness},
+  m_L{a_L}
 {
   //  m_tempArray.define(a_box.grow(m_W.supportSize()));
 }
@@ -47,13 +48,13 @@ void  ParticleSet::deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_pa
 {
   array<double,DIM> pos;
   double interpcoeff;
-  for (auto it= t_particles.begin(); it!= t_particles.end(); ++it)
-    {
-      it->print();
-    }
-  cout<<"m_dx = "<< m_dx<<endl;
-  m_box.print();
-  a_Charge.getDBox().print();
+  // for (auto it= t_particles.begin(); it!= t_particles.end(); ++it)
+  //   {
+  //     it->print();
+  //   }
+  // cout<<"m_dx = "<< m_dx<<endl;
+  // m_box.print();
+  // a_Charge.getDBox().print();
   for (int it = 0; it <t_particles.size(); it++)
     {
       array<int,DIM> iposLow, iposHigh;
@@ -77,14 +78,16 @@ void  ParticleSet::deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_pa
       Point HC = (HighCorner+ Shift);
       DBox SupportBox(LC, HC);
       //SupportBox.print();
-      interpcoeff = 1/m_dx*t_particles[it].strength;
+      interpcoeff = 1/pow(m_dx*m_L, DIM)*t_particles[it].strength;
       for (Point s = SupportBox.getLowCorner(); SupportBox.notDone(s); SupportBox.increment(s))
 	{
 	  double KernelProduct = 1.0;
 	  for (int j =0; j<DIM; j++)
 	    {
 	      int region = min(abs(s[j] - LowCorner[j]), abs(s[j] - HighCorner[j]));
-	      double val = abs(s[j]*m_dx - pos[j])/m_dx; 
+	      double val = abs(s[j]*m_dx - pos[j])/m_dx;
+	      //cout<<"s[j] = "<<s[j]<<endl;
+	      //cout<<"val = "<<val<<endl;
 	      KernelProduct *= m_W.apply(val, region);
 	    }
 	  a_Charge[s] += interpcoeff*KernelProduct;

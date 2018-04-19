@@ -56,7 +56,7 @@ public:
               DBox& a_box,
               double& a_dx, 
               array<double, DIM>& a_lowCorner,
-              int a_M, int order=2, int smoothness=0);
+              int a_M, double a_L, int order=2, int smoothness=0);
   ParticleSet(){};
   ~ParticleSet(){};
 
@@ -65,6 +65,7 @@ public:
   vector<Particle> m_particles;
   /// Mesh spacing.
   double m_dx;
+  double m_L;
   /// Spatial grid.
   DBox m_box;
   /// Location in physical space of m_box.m_lowCorner;

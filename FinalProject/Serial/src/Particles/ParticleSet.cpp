@@ -47,6 +47,13 @@ void  ParticleSet::deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_pa
 {
   array<double,DIM> pos;
   double interpcoeff;
+  for (auto it= t_particles.begin(); it!= t_particles.end(); ++it)
+    {
+      it->print();
+    }
+  cout<<"m_dx = "<< m_dx<<endl;
+  m_box.print();
+  a_Charge.getDBox().print();
   for (int it = 0; it <t_particles.size(); it++)
     {
       array<int,DIM> iposLow, iposHigh;
@@ -66,9 +73,10 @@ void  ParticleSet::deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_pa
       Shift *= (m_W.supportSize() - 1);
       Point HighCorner(iposHigh);
       Point LowCorner(iposLow);
-      Point LC = LowCorner - Shift;
-      Point HC = HighCorner+ Shift;
-      DBox SupportBox(LC, HC); 
+      Point LC = (LowCorner - Shift);
+      Point HC = (HighCorner+ Shift);
+      DBox SupportBox(LC, HC);
+      //SupportBox.print();
       interpcoeff = 1/m_dx*t_particles[it].strength;
       for (Point s = SupportBox.getLowCorner(); SupportBox.notDone(s); SupportBox.increment(s))
 	{

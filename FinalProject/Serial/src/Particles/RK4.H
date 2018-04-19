@@ -18,6 +18,7 @@ class RK4
 {
 public:
   void advance(double a_time, double a_dt, X& a_state);
+  void define(X& a_state);
 protected:
   //dX is ParticleShift
   // F is ParticleVelocities
@@ -32,6 +33,10 @@ protected:
 
 
 template <class X, class F, class dX>
+void RK4<X, F, dX>::define( X& a_state)
+{
+  m_f.define(a_state);
+}
 // void RK4<X, F, dX>::advance(double a_time, double a_dt, X& a_state)
 // {
 //   // this looks odd, but it is a common programming error
@@ -55,7 +60,8 @@ template <class X, class F, class dX>
 //   a_state.increment(m_delta);
 // }
 
-//Implementation of Andrews 4th order RK4 scheme 
+//Implementation of Andrews 4th order RK4 scheme
+template <class X, class F, class dX>
 void RK4<X, F, dX>::advance(double a_time, double a_dt, X& a_state)
 {
   // this looks odd, but it is a common programming error

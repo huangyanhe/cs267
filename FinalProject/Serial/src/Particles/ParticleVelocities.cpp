@@ -5,13 +5,44 @@ ParticleVelocities::ParticleVelocities()
 }
 ParticleVelocities::ParticleVelocities(ParticleSet& a_state)
 {
+  // m_box = a_state.m_box;
+  // m_dx = a_state.m_dx;
+  // m_supportSize = a_state.m_W.supportSize();
+  // cout<<"m_box print: ";
+  // m_box.print();
+  // for (int j = 0; j<DIM; j++)
+  //   {
+  //     //m_domainSize[j] = m_box.getHighCorner()[0] + 1;
+  //     m_domainSize[j] = m_box.getHighCorner()[0];
+  //     cout<<"domain size = " <<m_domainSize[j]<<endl; 
+  //   }
+  
+  // for (int k = 0; k < DIM; k++)
+  //   {
+  //     m_bdry[2*k] = m_box.shift(getUnitv(k)*(-1*m_supportSize))
+  //       &m_box.shift(getUnitv(k)*(-1*m_domainSize[k]));
+  //     m_bdry[2*k+1] = m_box.shift(getUnitv(k)*(m_supportSize))
+  //       &m_box.shift(getUnitv(k)*m_domainSize[k]);
+  //   }
+  // int m = log2(m_box.getHighCorner()[0]);
+  // PS.define(m_dx, m, m_box);
+  define(a_state);
+}
+void ParticleVelocities::define(ParticleSet& a_state)
+{
   m_box = a_state.m_box;
   m_dx = a_state.m_dx;
   m_supportSize = a_state.m_W.supportSize();
+  cout<<"m_box print: ";
+  m_box.print();
   for (int j = 0; j<DIM; j++)
     {
+      //correct for ghost stuff to work.
       m_domainSize[j] = m_box.getHighCorner()[0] + 1;
+      //m_domainSize[j] = m_box.getHighCorner()[0];
+      cout<<"domain size = " <<m_domainSize[j]<<endl; 
     }
+  
   for (int k = 0; k < DIM; k++)
     {
       m_bdry[2*k] = m_box.shift(getUnitv(k)*(-1*m_supportSize))
@@ -24,9 +55,16 @@ ParticleVelocities::ParticleVelocities(ParticleSet& a_state)
 }
 void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
 {
+  cout<<"m_domainSize =";
+  for (int dir = 0; dir < DIM; dir++)
+    cout<<m_domainSize[dir];
+  cout<<endl;
+
+  cout<<"At getGhostDeposition"<<endl;
   for (int k = 0; k < 2*DIM; k++)
     {
       DBox bx = m_bdry[k];
+      bx.print();
       for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
         {
           int image[DIM];
@@ -35,7 +73,12 @@ void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
               image[dir] = (pt[dir] + m_domainSize[dir])%m_domainSize[dir];
             }
           Point ptimage(image);
-          enlargedGrid[pt] += enlargedGrid[ptimage];
+	  cout<<"pt =";
+	  pt.print();
+	  cout<<"ptimage =";
+	  ptimage.print();
+	  cout<<"value ="<< enlargedGrid[pt]<<endl;
+          enlargedGrid[ptimage] += enlargedGrid[pt];
         }
     }
 }
@@ -95,9 +138,20 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   RectMDArray<double> phi(phiBox);
   RectMDArray<double, DIM> EField(a_state.m_box.grow(a_state.m_W.supportSize()));
   //phi.setVal(0.0);
+  cout<<"At Deposit"<<endl;
   a_state.deposit(density);
+  for (Point p=density.getDBox().getLowCorner(); density.getDBox().notDone(p); density.getDBox().increment(p))
+    {
+      p.print();
+      cout<<density[p]<<endl;
+    }
   // Deals with Ghost Cells 
   getGhostDeposition(density);
+  for (Point p=density.getDBox().getLowCorner(); density.getDBox().notDone(p); density.getDBox().increment(p))
+    {
+      p.print();
+      cout<<density[p]<<endl;
+    }
   //setGhost(density);
   // Solve Poisson's Equation with Periodic Boundary Conditions 
   //write density into phu

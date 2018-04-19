@@ -49,7 +49,6 @@ void PoissonSolver::buildEigenvalues()
 	}
 
       double K;
-      cout<<k<<endl;
       if (k <= pow(10.0, -14.0))
 	{
 	  cout<<"k = 0"<<endl;
@@ -61,6 +60,8 @@ void PoissonSolver::buildEigenvalues()
 	  K = 1/k;
 	  cout<<real(K)<<endl;
 	}
+      cout<<"Point: ";
+      pt.print();
       m_eigenvalues[pt] = K;
     }
 };
@@ -113,6 +114,7 @@ void PoissonSolver::define(double a_h,int a_M,  DBox a_box)
   m_M = a_M;
   m_N = Power(2, a_M);
   m_box = a_box;
+  m_eigenvalues.define(m_box);
   buildEigenvalues();
 };
 void PoissonSolver::Solve( RectMDArray<double>& a_rhs)

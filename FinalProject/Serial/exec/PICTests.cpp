@@ -103,8 +103,8 @@ int main(int argc, char* argv[])
   Point lowCorner(intlowCorner);
   Point highCorner(inthighCorner);
   DBox domain(lowCorner, highCorner);
-  //domain.print();
-  ParticleSet p(domain, hp, lowCorn, M, order, smoothness );
+  domain.print();
+  ParticleSet p(domain, h, lowCorn, M, order, smoothness );
 
   //Assumes equally spaced grids in x and v.
   //Changing this is pretty easy.
@@ -146,16 +146,20 @@ int main(int argc, char* argv[])
 	    //p.m_particles.push_back();
 	    for(int k=0; k<DIM; k++)
 	      {
-		p.m_particles[j].m_x[k] = ptX[k]*hp*L;
-		p.m_particles[j].m_v[k] = ptV[k]*hp*vmax;
+		//p.m_particles[j].m_x[k] = ptX[k]*hp*L;
+		//p.m_particles[j].m_v[k] = ptV[k]*hp*vmax;
+		p.m_particles[j].m_x[k] = ptX[k]*hp;
+		p.m_particles[j].m_v[k] = ptV[k]*hp;
 		p.m_particles[j].EField[k] = 0.0;
 	      }
 	    double fFirstTerm= 1.0;
 	    double fSecondTerm =1.0;
 	    for(int k=0; k<DIM; k++)
 	      {
-		fFirstTerm *= exp(-p.m_particles[j].m_v[k]*p.m_particles[j].m_v[k]/2.0);
-		fSecondTerm *= exp(-p.m_particles[j].m_v[k]*p.m_particles[j].m_v[k]/2.0)*cos(Modes[k]*p.m_particles[j].m_x[k]);
+		//fFirstTerm *= exp(-p.m_particles[j].m_v[k]*p.m_particles[j].m_v[k]/2.0);
+		//fSecondTerm *= exp(-p.m_particles[j].m_v[k]*p.m_particles[j].m_v[k]/2.0)*cos(Modes[k]*p.m_particles[j].m_x[k]);
+		fFirstTerm *= exp(-p.m_particles[j].m_v[k]*vmax*p.m_particles[j].m_v[k]*vmax/2.0);
+		fSecondTerm *= exp(-p.m_particles[j].m_v[k]*vmax*p.m_particles[j].m_v[k]*vmax/2.0)*cos(Modes[k]*p.m_particles[j].m_x[k]*L);
 	      }
 	    p.m_particles[j].strength = 1/sqrt(2.0*M_PI)*(fFirstTerm + alpha*fSecondTerm)*pow(hp*L,DIM)*pow(hp*vmax,DIM);
 	  }
@@ -176,12 +180,15 @@ int main(int argc, char* argv[])
   kIn.init(p);
   kOut.init(p);
   kIn.setToZero();
-  ParticleVelocities pv; 
+  //cout<<"In Particle Velocities"<<endl;
+  //ParticleVelocities pv(p); 
+  //cout<<"Out Particle Velocities"<<endl;
   double time = 0.;
   double dt = 2.0/N;
   int m = 5000;
-  
+
   RK4<ParticleSet,ParticleVelocities,ParticleShift> integrator;
+  integrator.define(p);
 // #if ANIMATION
 //   outField(p,pcfactor);
 //   PWrite(&p);

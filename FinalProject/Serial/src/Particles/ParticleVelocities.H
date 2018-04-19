@@ -29,6 +29,7 @@ public:
   PoissonSolver PS;
   ParticleVelocities();
   ParticleVelocities(ParticleSet& a_state);
+  void define(ParticleSet& a_state);
   /// Function that deals with Ghost Cells for deposition, fd, and interpolation 
   void getGhostDeposition(RectMDArray<double>& enlargedGrid);
   //void setGhost(RectMDArray<double>& enlargedGrid);

@@ -32,7 +32,7 @@ void ParticleVelocities::define(ParticleSet& a_state)
 {
   m_box = a_state.m_box;
   m_dx = a_state.m_dx;
-  m_supportSize = a_state.m_W.supportSize();
+  m_supportSize = max(a_state.m_W.supportSize(), 2);
   cout<<"m_box print: ";
   m_box.print();
   for (int j = 0; j<DIM; j++)
@@ -132,11 +132,11 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
       t_particles[j].increment(a_k.m_particles[j]);
     }
   //Then use interpolation made up of the interpolating function given
-  RectMDArray<double> density(a_state.m_box.grow(a_state.m_W.supportSize()));
+  RectMDArray<double> density(a_state.m_box.grow(m_supportSize));
   density.setVal(0.0);
   DBox phiBox = a_state.m_box;
   RectMDArray<double> phi(phiBox);
-  RectMDArray<double, DIM> EField(a_state.m_box.grow(a_state.m_W.supportSize()));
+  RectMDArray<double, DIM> EField(a_state.m_box.grow(m_supportSize));
   //phi.setVal(0.0);
   cout<<"At Deposit"<<endl;
   a_state.deposit(density);
@@ -147,20 +147,24 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
     }
   // Deals with Ghost Cells 
   getGhostDeposition(density);
-  for (Point p=density.getDBox().getLowCorner(); density.getDBox().notDone(p); density.getDBox().increment(p))
-    {
-      p.print();
-      cout<<density[p]<<endl;
-    }
   //setGhost(density);
   // Solve Poisson's Equation with Periodic Boundary Conditions 
   //write density into phu
   for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
     {
       phi[p] = density[p];
+      cout<<"phi[ ";
+      p.print();
+      cout<< "]"<<phi[p]<<endl;
     }
   //Poisson solve
   PS.Solve( phi);
+  cout<<"Made it out of solve"<<endl;
+      for (Point p=phi.getDBox().getLowCorner(); phi.getDBox().notDone(p); phi.getDBox().increment(p))
+    {
+      p.print();
+      cout<<phi[p]<<endl;
+    }
   //Write Phi values out back into dbox with ghost cells
   for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
   {
@@ -168,19 +172,22 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   }
   //Set ghost cells for computing the gradient
   setGhost(density);
-  // Finite Difference 4th order first derivative 
-  for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
+  // Finite Difference 4th order first derivative
+  cout<<"Made it to FD step"<<endl;
+  for (Point p=m_box.getLowCorner(); m_box.notDone(p); m_box.increment(p))
         {
+	  p.print();
 	  for (int j = 0; j<DIM; j++)
 	    {
 	      Point ej = getUnitv(j);
 	      Point ej2 = ej;
 	      ej2 *= 2;
 	      //Double check signs
-	      EField(p, j)= -(-phi[p+ej2] + 8*phi[p+ej] - 8*phi[p-ej] + phi[p- ej2])/(12*m_dx);
+	      EField(p, j)= -(-density[p+ej2] + 8*density[p+ej] - 8*density[p-ej] + density[p- ej2])/(12*m_dx);
 	    }
 	}
   //Interpolate back and return particle fields in a_k
+  cout<<"Made it out of FD step"<<endl;
   a_k.setToZero();
   a_state.InterpolateForce(EField, a_k.m_particles);
 }

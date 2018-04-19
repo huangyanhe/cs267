@@ -78,6 +78,7 @@ void  ParticleSet::deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_pa
       Point HC = (HighCorner+ Shift);
       DBox SupportBox(LC, HC);
       //SupportBox.print();
+      //Only place that it seems like the scaling needs to be taken into account.
       interpcoeff = 1/pow(m_dx*m_L, DIM)*t_particles[it].strength;
       for (Point s = SupportBox.getLowCorner(); SupportBox.notDone(s); SupportBox.increment(s))
 	{

@@ -25,16 +25,19 @@ void copyReal(RectMDArray<complex<double> >& a_cxarray,RectMDArray<double >& a_r
 };
 void PoissonSolver::buildEigenvalues()
 {
+  cout<<"m_N = "<<m_N<<endl;
   double scale[DIM];
   Point highCorner = m_box.getHighCorner();
   for (int j=0; j<DIM; j++)
     {
-      //scale[j]= 2*M_PI/((highCorner[j]+1)*m_h[j]);
+      //scale[j]= 2*M_PI/((highCorner[j]+1)*m_h);
       scale[j]= 2*M_PI/(m_N*m_h);
     }
   
   for (Point pt= m_box.getLowCorner(); m_box.notDone(pt); m_box.increment(pt))
     {
+      cout<<"Point: ";
+      pt.print();
       double k = 0.0;
       for (int j=0; j<DIM; j++)
 	{
@@ -60,8 +63,6 @@ void PoissonSolver::buildEigenvalues()
 	  K = 1/k;
 	  cout<<real(K)<<endl;
 	}
-      cout<<"Point: ";
-      pt.print();
       m_eigenvalues[pt] = K;
     }
 };
@@ -140,6 +141,8 @@ void PoissonSolver::Solve( RectMDArray<double>& a_rhs)
   for (Point pt = m_box.getLowCorner(); m_box.notDone(pt); m_box.increment(pt))
     {
       rhsDouble[pt].real(a_rhs[pt]);
+      pt.print();
+      cout<<"rhsdouble[^] = "<<rhsDouble[pt]<<endl;
     }
   //RectMDArray<complex<double> > kernel(ddomain);
   RectMDArray<double > realOut(m_box);
@@ -150,7 +153,7 @@ void PoissonSolver::Solve( RectMDArray<double>& a_rhs)
   cout<<"made it to multiplying eigenvalues"<<endl;
   for (Point pt = m_box.getLowCorner(); m_box.notDone(pt); m_box.increment(pt))
     {
-      
+      cout<<"eval["<< pt[0]<<"]= "<<m_eigenvalues[pt]<<endl;
       rhsDouble[pt] *= m_eigenvalues[pt];
       pt.print();
       cout<<"rhsdouble[^] = "<<rhsDouble[pt]<<endl;

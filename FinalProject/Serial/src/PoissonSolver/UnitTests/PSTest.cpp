@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
   
   
   // Build grid
-  int M =4; //2^M on PIC grid
+  int M =1; //2^M on PIC grid
   double N = pow(2.0, M);
   double h = 2*M_PI*1.0/N;
 

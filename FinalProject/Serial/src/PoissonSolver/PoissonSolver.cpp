@@ -25,7 +25,7 @@ void copyReal(RectMDArray<complex<double> >& a_cxarray,RectMDArray<double >& a_r
 };
 void PoissonSolver::buildEigenvalues()
 {
-  cout<<"m_N = "<<m_N<<endl;
+  //cout<<"m_N = "<<m_N<<endl;
   double scale[DIM];
   Point highCorner = m_box.getHighCorner();
   for (int j=0; j<DIM; j++)
@@ -36,8 +36,8 @@ void PoissonSolver::buildEigenvalues()
   
   for (Point pt= m_box.getLowCorner(); m_box.notDone(pt); m_box.increment(pt))
     {
-      cout<<"Point: ";
-      pt.print();
+      //cout<<"Point: ";
+      //pt.print();
       double k = 0.0;
       for (int j=0; j<DIM; j++)
 	{
@@ -54,14 +54,14 @@ void PoissonSolver::buildEigenvalues()
       double K;
       if (k <= pow(10.0, -14.0))
 	{
-	  cout<<"k = 0"<<endl;
+	  //cout<<"k = 0"<<endl;
 	  K =0.0;
 	}
       else
 	{
-	  cout<<"in other case"<<endl;
+	  //cout<<"in other case"<<endl;
 	  K = 1/k;
-	  cout<<real(K)<<endl;
+	  //cout<<real(K)<<endl;
 	}
       m_eigenvalues[pt] = K;
     }
@@ -90,6 +90,7 @@ PoissonSolver::PoissonSolver(double a_h, int a_M, double a_L, DBox a_box)
   //     m_N[j] = Power(2,a_M[j]);
   //   }
   m_h = a_h;
+  m_L = a_L;
   m_M = a_M;
   m_N = Power(2, a_M);
   m_box = a_box;
@@ -98,7 +99,7 @@ PoissonSolver::PoissonSolver(double a_h, int a_M, double a_L, DBox a_box)
 };
 void PoissonSolver::define(double a_h, int a_M, double a_L, DBox a_box)
 {
-  cout<<"In PS define."<<endl;
+  //cout<<"In PS define."<<endl;
   //shared_ptr<FFT1DW> p_fftw1d = shared_ptr<FFT1DW>(new FFT1DW(a_M+1));
   shared_ptr<FFT1DW> p_fftw1d = shared_ptr<FFT1DW>(new FFT1DW(a_M));
   shared_ptr<FFT1D> p_fft = dynamic_pointer_cast<FFT1D>(p_fftw1d);
@@ -115,9 +116,9 @@ void PoissonSolver::define(double a_h, int a_M, double a_L, DBox a_box)
   m_h = a_h;
   m_L = a_L;
   m_M = a_M;
-  cout<<"In define m_M = "<<m_M<<endl;
+  //cout<<"In define m_M = "<<m_M<<endl;
   m_N = Power(2, a_M);
-  cout<<"In define m_N = "<<m_N<<endl;
+  //cout<<"In define m_N = "<<m_N<<endl;
   m_box = a_box;
   m_eigenvalues.define(m_box);
   buildEigenvalues();
@@ -141,36 +142,36 @@ void PoissonSolver::Solve( RectMDArray<double>& a_rhs)
   //Hence the scale factor is 1/array size.
   double scale = 1./pow(m_N*1.,DIM);
   //Copy the double RMDA into a complex RMDA
-  cout<<"made it to writing rhs double"<<endl;
+  //cout<<"made it to writing rhs double"<<endl;
   for (Point pt = m_box.getLowCorner(); m_box.notDone(pt); m_box.increment(pt))
     {
       rhsDouble[pt].real(a_rhs[pt]);
-      cout<<"rhsdouble[";
-      pt.print();
-      cout<<"] = "<<rhsDouble[pt]<<endl;
+      // cout<<"rhsdouble[";
+      // pt.print();
+      // cout<<"] = "<<rhsDouble[pt]<<endl;
     }
   //RectMDArray<complex<double> > kernel(ddomain);
   RectMDArray<double > realOut(m_box);
   //m_kerPtr->getKernel(kernel,m_h);
   //need to determine if this is the correct transform to be using.
-  cout<<"made it to fft"<<endl;
+  //cout<<"made it to fft"<<endl;
   m_fftmd.forwardCC(rhsDouble);
-  cout<<"made it to multiplying eigenvalues"<<endl;
+  //cout<<"made it to multiplying eigenvalues"<<endl;
   for (Point pt = m_box.getLowCorner(); m_box.notDone(pt); m_box.increment(pt))
     {
       
       //cout<<"eval["<< pt[0]<<"]= "<<m_eigenvalues[pt]<<endl;
       rhsDouble[pt] *= m_eigenvalues[pt];
-      cout<<"rhsdouble[";
-      pt.print();
-      cout<<"] = "<<rhsDouble[pt]<<endl;
-      cout<<"m_eigenvalues[";
-      pt.print();
-      cout<<"] = "<<m_eigenvalues[pt]<<endl;
+      // cout<<"rhsdouble[";
+      // pt.print();
+      // cout<<"] = "<<rhsDouble[pt]<<endl;
+      // cout<<"m_eigenvalues[";
+      // pt.print();
+      // cout<<"] = "<<m_eigenvalues[pt]<<endl;
       //pt.print();
       //cout<<"rhsdouble[^] = "<<rhsDouble[pt]<<endl;
     }
-  cout<<"made it to inverse FFT"<<endl;
+  //cout<<"made it to inverse FFT"<<endl;
   m_fftmd.inverseCC(rhsDouble);
   a_rhs.setVal(0.);
   // DBox bx(m_box.getLowCorner(),m_box.getHighCorner() - getOnes());

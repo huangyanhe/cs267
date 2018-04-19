@@ -44,8 +44,8 @@ void FFTMD::forwardCC(RectMDArray<complex<double> > & a_f) const
       DBox base(lo,hi);
       int offset = Power(m_N+1,dir);
       Point edir = getUnitv(dir);
-      edir.print();
-      cout<<"Into dbox iter"<<endl;
+      //edir.print();
+      //cout<<"Into dbox iter"<<endl;
       for (Point pt=base.getLowCorner();base.notDone(pt);base.increment(pt))
         {
           //cout<<"made it to l loop"<<endl;
@@ -55,7 +55,7 @@ void FFTMD::forwardCC(RectMDArray<complex<double> > & a_f) const
             {
 	      //cout<< "l ="<< l<<endl;
               f1d[l] = a_f[pt + edir*l];
-	      cout<<"f1d["<<l<<"]= "<< f1d[l]<<endl;
+	      //cout<<"f1d["<<l<<"]= "<< f1d[l]<<endl;
             }
           //CH_START(t1);
 	  //cout<<"at 1d fft"<<endl;
@@ -64,7 +64,7 @@ void FFTMD::forwardCC(RectMDArray<complex<double> > & a_f) const
           for (int l = 0 ; l < m_N;l++)
             {
               a_f[pt + edir*l] = fHat1d[l];
-	      cout<<"fHat1d["<<l<<"]= "<< fHat1d[l]<<endl;
+	      //cout<<"fHat1d["<<l<<"]= "<< fHat1d[l]<<endl;
             }
           //cout << "In FFTMD: " << ztot 
           //   << " , " << a_f[pt] << " , dir = " << dir << endl;

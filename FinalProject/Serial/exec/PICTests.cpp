@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
   Point lowCorner(intlowCorner);
   Point highCorner(inthighCorner);
   DBox domain(lowCorner, highCorner);
-  domain.print();
+  //domain.print();
   ParticleSet p(domain, h, lowCorn, M, L, order, smoothness );
 
   //Assumes equally spaced grids in x and v.

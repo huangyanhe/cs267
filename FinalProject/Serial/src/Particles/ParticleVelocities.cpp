@@ -34,14 +34,14 @@ void ParticleVelocities::define(ParticleSet& a_state)
   m_dx = a_state.m_dx;
   m_L = a_state.m_L;
   m_supportSize = max(a_state.m_W.supportSize(), 2);
-  cout<<"m_box print: ";
-  m_box.print();
+  //cout<<"m_box print: ";
+  //m_box.print();
   for (int j = 0; j<DIM; j++)
     {
       //correct for ghost stuff to work.
       m_domainSize[j] = m_box.getHighCorner()[0] + 1;
       //m_domainSize[j] = m_box.getHighCorner()[0];
-      cout<<"domain size = " <<m_domainSize[j]<<endl; 
+      //cout<<"domain size = " <<m_domainSize[j]<<endl; 
     }
   
   for (int k = 0; k < DIM; k++)
@@ -59,16 +59,16 @@ void ParticleVelocities::define(ParticleSet& a_state)
 }
 void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
 {
-  cout<<"m_domainSize =";
-  for (int dir = 0; dir < DIM; dir++)
-    cout<<m_domainSize[dir];
-  cout<<endl;
+  // cout<<"m_domainSize =";
+  // for (int dir = 0; dir < DIM; dir++)
+  //   cout<<m_domainSize[dir];
+  // cout<<endl;
 
-  cout<<"At getGhostDeposition"<<endl;
+  //cout<<"At getGhostDeposition"<<endl;
   for (int k = 0; k < 2*DIM; k++)
     {
       DBox bx = m_bdry[k];
-      bx.print();
+      //bx.print();
       for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
         {
           int image[DIM];
@@ -77,11 +77,11 @@ void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
               image[dir] = (pt[dir] + m_domainSize[dir])%m_domainSize[dir];
             }
           Point ptimage(image);
-	  cout<<"pt =";
-	  pt.print();
-	  cout<<"ptimage =";
-	  ptimage.print();
-	  cout<<"value ="<< enlargedGrid[pt]<<endl;
+	  // cout<<"pt =";
+	  // pt.print();
+	  // cout<<"ptimage =";
+	  // ptimage.print();
+	  // cout<<"value ="<< enlargedGrid[pt]<<endl;
           enlargedGrid[ptimage] += enlargedGrid[pt];
         }
     }
@@ -118,7 +118,7 @@ void ParticleVelocities::setGhost(RectMDArray<double>& enlargedGrid)
           Point ptimage(image);
 	  for (int j=0; j<DIM; j++)
 	    {
-	      enlargedGrid(ptimage, j) = enlargedGrid(pt, j);
+	      enlargedGrid(pt, j) = enlargedGrid(ptimage, j);
 	    }
         }
     }
@@ -142,13 +142,13 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   RectMDArray<double> phi(phiBox);
   RectMDArray<double, DIM> EField(a_state.m_box.grow(m_supportSize));
   //phi.setVal(0.0);
-  cout<<"At Deposit"<<endl;
-  a_state.deposit(density);
-  for (Point p=density.getDBox().getLowCorner(); density.getDBox().notDone(p); density.getDBox().increment(p))
-    {
-      p.print();
-      cout<<density[p]<<endl;
-    }
+  //cout<<"At Deposit"<<endl;
+  a_state.deposit(density,  t_particles);
+  // for (Point p=density.getDBox().getLowCorner(); density.getDBox().notDone(p); density.getDBox().increment(p))
+  //   {
+  //     p.print();
+  //     cout<<density[p]<<endl;
+  //   }
   // Deals with Ghost Cells 
   getGhostDeposition(density);
   //setGhost(density);
@@ -157,41 +157,68 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
     {
       phi[p] = density[p];
-      cout<<"phi[ ";
-      p.print();
-      cout<< "]"<<phi[p]<<endl;
+      // cout<<"phi[ ";
+      // p.print();
+      // cout<< "]"<<phi[p]<<endl;
     }
   //Poisson solve
   PS.Solve( phi);
-  cout<<"Made it out of solve"<<endl;
-      for (Point p=phi.getDBox().getLowCorner(); phi.getDBox().notDone(p); phi.getDBox().increment(p))
-    {
-      p.print();
-      cout<<phi[p]<<endl;
-    }
+  // cout<<"Made it out of solve"<<endl;
+  //     for (Point p=phi.getDBox().getLowCorner(); phi.getDBox().notDone(p); phi.getDBox().increment(p))
+  //   {
+  //     p.print();
+  //     cout<<phi[p]<<endl;
+  //   }
   //Write Phi values out back into dbox with ghost cells
   for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
   {
    density[p] = phi[p];
+   cout<<"phi[ ";
+   p.print();
+   cout<< "]"<<phi[p]<<endl;
   }
   //Set ghost cells for computing the gradient
+  //cout<<"Set Ghost"<<endl;
   setGhost(density);
+  // for (Point p=density.getDBox().getLowCorner(); density.getDBox().notDone(p); density.getDBox().increment(p))
+  // {
+  //   cout<<"density[ ";
+  //   p.print();
+  //   cout<< "]"<<density[p]<<endl;
+  // }
   // Finite Difference 4th order first derivative
-  cout<<"Made it to FD step"<<endl;
+  //cout<<"Made it to FD step"<<endl;
   for (Point p=m_box.getLowCorner(); m_box.notDone(p); m_box.increment(p))
-        {
-	  p.print();
-	  for (int j = 0; j<DIM; j++)
-	    {
-	      Point ej = getUnitv(j);
-	      Point ej2 = ej;
-	      ej2 *= 2;
-	      //Double check signs
-	      EField(p, j)= -(-density[p+ej2] + 8*density[p+ej] - 8*density[p-ej] + density[p- ej2])/(12*m_dx);
-	    }
+    {
+      //p.print();
+      for (int j = 0; j<DIM; j++)
+	{
+	  Point ej = getUnitv(j);
+	  Point ej2 = ej;
+	  ej2 *= 2;
+	  //Double check signs
+	  EField(p, j)= -(-density[p+ej2] + 8*density[p+ej] - 8*density[p-ej] + density[p- ej2])/(12*m_dx*m_L);
+	  // cout<<"EField[ ";
+	  // p.print();
+	  // cout<< "] ="<<EField(p, j)<<endl;
+	      
 	}
+    }
+  //Computes Electric Field Energy for plotting in LLD case.
+  double EField_Amplitude = 0.0;
+   for (Point p=m_box.getLowCorner(); m_box.notDone(p); m_box.increment(p))
+    {
+      for (int j = 0; j<DIM; j++)
+  	{
+  	  EField_Amplitude += pow(EField(p, j), 2);    
+  	}
+    }
+   EField_Amplitude*=m_dx;
+   EField_Amplitude = sqrt(EField_Amplitude);
+   cout<< EField_Amplitude<<endl;
+  
   //Interpolate back and return particle fields in a_k
-  cout<<"Made it out of FD step"<<endl;
+  //cout<<"Made it out of FD step"<<endl;
   a_k.setToZero();
   a_state.InterpolateForce(EField, a_k.m_particles);
 }

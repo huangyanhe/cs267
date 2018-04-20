@@ -6,8 +6,7 @@
 #include "PowerItoI.H"
 #include "FFT1D.H"
 #include "FFT1DW.H"
-#include "fftw3.h"
-
+#include <fftw3.h>
 FFT1DW::FFT1DW(const unsigned int& a_M):
   FFT1D(a_M)
 {

@@ -12,9 +12,9 @@ VPATH= . $(HOME) $(PARTICLES) $(RMDA) $(FFT) $(PS) $(TIMER) $(WRITERS) $(IK)
 ANIMATION = 1
 
 DIM=1
-#CXX=g++
-CXX=clang++
-FFTWDIR = /usr/local/Cellar/fftw/3.3.6-pl2
+CXX = CC
+#CXX=clang++
+FFTWDIR = /opt/cray/pe/fftw/3.3.4.6/haswell
 CFLAGS = -g -Wall
 #CFLAGS = -O3
 CFLAGS += -std=c++11 -I$(PARTICLES) -I$(RMDA) -I$(IK) -I$(PS) -I$(FFT) -I$(TIMER) -I$(WRITERS) -I$(FFTWDIR)/include
@@ -23,7 +23,7 @@ odir = ./o.$(DIM)d
 ddir = ./d.$(DIM)d
 
 CFLAGS += -DDIM=$(DIM) -D ANIMATION=$(ANIMATION)
-LIBS:=  -L$(FFTWDIR)/lib -lfftw3 
+LIBS:=  -L$(FFTWDIR)/lib -lfftw3
 
 SRCFILES:= $(notdir $(wildcard $(TIMER)/*.cpp $(RMDA)/*.cpp $(IK)/*.cpp $(PS)/*.cpp $(WRITERS)/*.cpp $(FFT)/*.cpp $(PARTICLES)/*.cpp ./*.cpp))
 

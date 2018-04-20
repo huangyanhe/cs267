@@ -7,7 +7,8 @@
 #include <iostream>
 #include "PowerItoI.H"
 #include "FFT1D.H"
-#include "fftw3.h"
+#include <fftw3.h>
+//#include "fftw3.h"
 class FFT1DW:public FFT1D
 {
 public:  

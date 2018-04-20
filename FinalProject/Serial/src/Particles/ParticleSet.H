@@ -81,6 +81,7 @@ public:
   /// inplements increment function required for RK$.
   void incrementPositionandVelocity(const ParticleShift& a_shift);
   void increment(const ParticleShift& a_shift);
+  void incrementDelta(const ParticleShift& a_shift, double a_dt);
   /// Bin the particles by spatial location 
   //void bin();
   /// Deposit the particles on the spatial grid

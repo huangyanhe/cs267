@@ -84,6 +84,9 @@ void RK4<X, F, dX>::advance(double a_time, double a_dt, X& a_state)
   //Update m_k to new position to compute k2
   m_k*=eigth;
   m_k*= dt2;
+  //Not 100% sure scaling by m_dx/m_L is correct
+  //m_k*=a_state.m_dx;
+  m_k*=1/a_state.m_L;
   // Compute k2
   cout<<"Compute k2"<<endl;
   m_f(m_k, a_time, half*a_dt, a_state);
@@ -91,12 +94,17 @@ void RK4<X, F, dX>::advance(double a_time, double a_dt, X& a_state)
   m_delta.incrementPositionandVelocity(  third*a_dt*a_dt, 2.0*third*a_dt, m_k);
   m_k*=half;
   m_k*= dt2;
+  //Not 100% sure scaling by m_dx/m_L is correct
+  //m_k*=a_state.m_dx;
+  m_k*=1/a_state.m_L;
   // Compute k3
   cout<<"Compute k3"<<endl;
-  m_f(m_k, a_time, a_dt, a_state);  
+  m_f(m_k, a_time, a_dt, a_state);
+  //m_k*=a_state.m_dx;
+  m_k*=1/a_state.m_L;
   m_delta.incrementVelocity(sixth*a_dt, m_k);
   // Final increment of both m_x and m_v
-  a_state.incrementPositionandVelocity(m_delta);
+  a_state.incrementDelta(m_delta, a_dt);
 }
   
 #endif 

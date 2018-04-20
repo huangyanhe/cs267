@@ -19,6 +19,7 @@ public:
   ~ParticleShift(){};
   /// Sets length of m_particles, initializes to zero via default constructor of DX.
   void init(const ParticleSet& a_particles);
+  void initDelta(const ParticleSet& a_particles);
   /// m_particles[k] += a_rhs.m_particles[k]*a_scale.
   void increment(
                  double a_scale, 
@@ -34,6 +35,7 @@ public:
   void operator*=(double a_scale);
   /// reinitializes the values m_particles[k] to zero. Not used in RK4.
   void setToZero();
+  void zeroEField();
 };
 /// Represents a collection of particles, conforming to the X class in RK4. Also contains the persistent data required to compute the right-hand side in ParticlesVelocities.
 class ParticleSet

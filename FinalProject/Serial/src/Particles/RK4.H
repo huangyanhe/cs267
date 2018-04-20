@@ -74,7 +74,7 @@ void RK4<X, F, dX>::advance(double a_time, double a_dt, X& a_state)
   //m_delta is the final one that needs to be incremented 
   double dt2 = a_dt*a_dt; 
   //Init
-  m_delta.init(a_state);
+  m_delta.initDelta(a_state);
   m_k.init(a_state);
   // Compute k1
   cout<<"Compute k1"<<endl;

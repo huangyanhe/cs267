@@ -51,8 +51,8 @@ public:
   {
     for(unsigned int i=0; i<DIM; i++) 
       {
-	m_x[i]+=a_scaleX*a_rhs.m_x[i];
-	m_v[i]+=a_scaleV*a_rhs.m_v[i];
+	m_x[i]+=a_scaleX*a_rhs.EField[i];
+	m_v[i]+=a_scaleV*a_rhs.EField[i];
       }
   }
   /// Used to implement ParticleShift::scale.
@@ -63,8 +63,27 @@ public:
   {
     for(unsigned int i=0; i<DIM; i++) 
       {
-	m_x[i]*=a_scale;
+	EField[i]*=a_scale;
       }
+  }
+  void print()
+  {
+    cout<< "x= ";
+      for (int k=0; k<DIM; k++)
+        {
+      cout<<m_x[k] <<", ";
+        }
+      cout<<"v=";
+      for (int k=0; k<DIM; k++)
+        {
+	  cout<<m_v[k] <<", ";
+        }
+      cout<<"E=";
+      for (int k=0; k<DIM; k++)
+        {
+	  cout<<EField[k] <<", ";
+        }
+      cout<<" "<<std::endl;
   }
 };
 
@@ -101,7 +120,7 @@ public:
   {
     for(unsigned int i=0; i<DIM; i++) 
       {
-	m_x[i]+=a_shift.m_x[i];
+	m_x[i]+=a_shift.EField[i];
       }
   }
   inline void addVelocity(double a_scale)

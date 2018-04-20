@@ -35,6 +35,7 @@ public:
   void getGhostDeposition(RectMDArray<double>& enlargedGrid);
   //void setGhost(RectMDArray<double>& enlargedGrid);
   void setGhost(RectMDArray<double>& enlargedGrid);
+  void setGhostMD(RectMDArray<double, DIM>& enlargedGrid);
   /// Main operator called by RK4
   void operator()(ParticleShift& a_k, 
                      const double& a_time, const double& dt, 

@@ -182,15 +182,16 @@ void  ParticleSet::InterpolateForce(RectMDArray<double, DIM>& a_Field, vector<Pa
 	}
     }
 }
+//Uses member particle positions to interpolate the electric field onto a ParticleShift.
 void  ParticleSet::InterpolateForce(RectMDArray<double, DIM>& a_Field, vector<DX>& t_particles)
 {
-  for (int it = 0; it <t_particles.size(); it++)
+  for (int it = 0; it <m_particles.size(); it++)
     {
       array<int,DIM> iposLow, iposHigh;
       array<double,DIM> pos;
       for (int l = 0; l < DIM; l++)
         {
-	  pos[l] = t_particles[it].m_x[l];
+	  pos[l] = m_particles[it].m_x[l];
 	  iposLow[l] = floor(pos[l]/m_dx);
 	  iposHigh[l] = ceil(pos[l]/m_dx); 
 	}

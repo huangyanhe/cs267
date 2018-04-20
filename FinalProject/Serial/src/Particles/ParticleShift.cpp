@@ -9,6 +9,19 @@ void ParticleShift::init(const ParticleSet& a_particles)
       m_particles[j] *= 0.0;
     }
 }
+void ParticleShift::initDelta(const ParticleSet& a_particles)
+{
+  int sizeOfa_particle = a_particles.m_particles.size();
+  m_particles.resize(sizeOfa_particle);
+  for (int dir =0; dir<DIM;dir++)
+    {
+      for (int j = 0; j<m_particles.size(); j++)
+	{
+	  m_particles[j].m_x[dir] *= 0.0;
+	  m_particles[j].m_v[dir] *= 0.0;
+	}
+    }
+}
   /// m_particles[k] += a_rhs.m_particles[k]*a_scale.
 void ParticleShift::increment(
                  double a_scale, 
@@ -52,5 +65,15 @@ void ParticleShift::setToZero()
   for (int j = 0; j<m_particles.size(); j++)
     {
       m_particles[j] *= 0.0;
+    }
+}
+void ParticleShift::zeroEField()
+{
+  for (int j = 0; j<m_particles.size(); j++)
+    {
+      for (int dir=0; dir<DIM; dir++)
+	{
+	  m_particles[j].EField[dir] *= 0.0;
+	}
     }
 }

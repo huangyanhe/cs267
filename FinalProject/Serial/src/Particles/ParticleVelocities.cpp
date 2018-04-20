@@ -123,6 +123,26 @@ void ParticleVelocities::setGhost(RectMDArray<double>& enlargedGrid)
         }
     }
 }
+void ParticleVelocities::setGhostMD(RectMDArray<double, DIM>& enlargedGrid)
+{
+  for (int k = 0; k < 2*DIM; k++)
+    {
+      DBox bx = m_bdry[k];
+      for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
+        {
+          int image[DIM];
+          for (int dir = 0; dir < DIM; dir++)
+            {
+              image[dir] = (pt[dir] + m_domainSize[dir])%m_domainSize[dir];
+            }
+          Point ptimage(image);
+	  for (int j=0; j<DIM; j++)
+	    {
+	      enlargedGrid(pt, j) = enlargedGrid(ptimage, j);
+	    }
+        }
+    }
+}
 void ParticleVelocities::operator()(ParticleShift& a_k, 
                      const double& a_time, const double& dt, 
                      ParticleSet& a_state)
@@ -135,6 +155,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
       t_particles[j].addVelocity(dt);
       t_particles[j].increment(a_k.m_particles[j]);
     }
+  a_state.wrapParticles(t_particles);
   //Then use interpolation made up of the interpolating function given
   RectMDArray<double> density(a_state.m_box.grow(m_supportSize));
   density.setVal(0.0);
@@ -173,9 +194,9 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
   {
    density[p] = phi[p];
-   cout<<"phi[ ";
-   p.print();
-   cout<< "]"<<phi[p]<<endl;
+   // cout<<"phi[ ";
+   // p.print();
+   // cout<< "]"<<phi[p]<<endl;
   }
   //Set ghost cells for computing the gradient
   //cout<<"Set Ghost"<<endl;
@@ -204,6 +225,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
 	      
 	}
     }
+  setGhostMD(EField);
   //Computes Electric Field Energy for plotting in LLD case.
   double EField_Amplitude = 0.0;
    for (Point p=m_box.getLowCorner(); m_box.notDone(p); m_box.increment(p))
@@ -219,6 +241,12 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   
   //Interpolate back and return particle fields in a_k
   //cout<<"Made it out of FD step"<<endl;
-  a_k.setToZero();
+  a_k.zeroEField();
   a_state.InterpolateForce(EField, a_k.m_particles);
+
+  // for (auto iter = a_k.m_particles.begin(); iter!= a_k.m_particles.end(); ++iter)
+  //   {
+  //     iter->print();
+  //   }
+  
 }

@@ -134,7 +134,7 @@ int main(int argc, char* argv[])
       Modes[j] = 1.0/2.0;
     }
   
-  cout<<"Num Particles = "<<Power(Np, DIM)*Power(2*Np, DIM) <<endl;
+  //cout<<"Num Particles = "<<Power(Np, DIM)*Power(2*Np, DIM) <<endl;
   if (test == 1)
   {
     p.m_particles.resize(Power(Np, DIM)*Power(2*Np, DIM));
@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
   
   //Need to check on some of these parameters.
   double dx = 1./N;
-  cout << "number of particles = " << p.m_particles.size() << endl;
+  //cout << "number of particles = " << p.m_particles.size() << endl;
   ParticleShift kIn,kOut;
   kIn.init(p);
   kOut.init(p);
@@ -197,7 +197,8 @@ int main(int argc, char* argv[])
     {
       integrator.advance(time, dt, p);
       time = time + dt;
-      cout << "time = " << time << "  dt " << dt << endl;
+      cout<<time<<endl;
+      //cout << "time = " << time << "  dt " << dt << endl;
 // #if ANIMATION
 //       outField(p,pcfactor);
 //       PWrite(&p);

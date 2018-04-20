@@ -227,18 +227,20 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
     }
   setGhostMD(EField);
   //Computes Electric Field Energy for plotting in LLD case.
-  double EField_Amplitude = 0.0;
-   for (Point p=m_box.getLowCorner(); m_box.notDone(p); m_box.increment(p))
+  if (abs(dt) <=pow(10.0, -16))
     {
-      for (int j = 0; j<DIM; j++)
-  	{
-  	  EField_Amplitude += pow(EField(p, j), 2);    
-  	}
+      double EField_Amplitude = 0.0;
+      for (Point p=m_box.getLowCorner(); m_box.notDone(p); m_box.increment(p))
+	{
+	  for (int j = 0; j<DIM; j++)
+	    {
+	      EField_Amplitude += pow(EField(p, j), 2);    
+	    }
+	}
+      EField_Amplitude*=m_dx;
+      EField_Amplitude = sqrt(EField_Amplitude);
+      cout<< EField_Amplitude<<endl;
     }
-   EField_Amplitude*=m_dx;
-   EField_Amplitude = sqrt(EField_Amplitude);
-   cout<< EField_Amplitude<<endl;
-  
   //Interpolate back and return particle fields in a_k
   //cout<<"Made it out of FD step"<<endl;
   a_k.zeroEField();

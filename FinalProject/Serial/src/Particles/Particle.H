@@ -44,7 +44,7 @@ public:
   {
     for(unsigned int i=0; i<DIM; i++) 
       {
-	m_v[i]+=a_scale*a_rhs.m_v[i];
+	m_v[i]+=a_scale*a_rhs.EField[i];
       }
   }
   inline void incrementPositionandVelocity(double a_scaleX, double a_scaleV,const DX& a_rhs)

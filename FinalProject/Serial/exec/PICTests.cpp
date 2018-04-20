@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 
   //N = 2*Grid_Size in Matlab
   N = Power(2,M);
-  double alpha = 0.01;
+  double alpha = 0.05;
   double vmax = 10.0;
   double L = 4*M_PI;
   int cfactor = 2;

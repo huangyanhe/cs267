@@ -123,6 +123,14 @@ public:
 	m_x[i]+=a_shift.EField[i];
       }
   }
+  inline void incrementDelta(const DX& a_shift)
+  {
+    for(unsigned int i=0; i<DIM; i++) 
+      {
+	m_x[i]+=a_shift.m_x[i];
+	m_v[i]+=a_shift.m_v[i];
+      }
+  }
   inline void addVelocity(double a_scale)
   {
     for(unsigned int i=0; i<DIM; i++) 

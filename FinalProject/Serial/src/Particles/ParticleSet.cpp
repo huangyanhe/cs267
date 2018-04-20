@@ -40,9 +40,24 @@ void ParticleSet::incrementPositionandVelocity(const ParticleShift& a_shift)
 {
   for (int j = 0; j<a_shift.m_particles.size(); j++)
     {
-      m_particles[j].increment(a_shift.m_particles[j]);
+      m_particles[j].incrementDelta(a_shift.m_particles[j]);
     }
 }
+void ParticleSet::incrementDelta(const ParticleShift& a_shift, double a_dt)
+{
+  for (int j = 0; j<a_shift.m_particles.size(); j++)
+    {
+      m_particles[j].addVelocity(a_dt);
+      m_particles[j].incrementDelta(a_shift.m_particles[j]);
+    }
+}
+// void ParticleSet::incrementPositionandVelocity(const ParticleShift& a_shift)
+// {
+//   for (int j = 0; j<a_shift.m_particles.size(); j++)
+//     {
+//       m_particles[j].incrementDelta(a_shift.m_particles[j]);
+//     }
+// }
 // Dimensionally Independent Deposition
 void  ParticleSet::deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_particles)
 {

@@ -1,9 +1,9 @@
 %type LLD1p1pDTestEnergy
-%clear;
-fileID = fopen('LLD2p2DTestEnergyM4alpha0p05', 'r');
+clear;
+fileID = fopen('LLD1p1DTestEnergyM4W40', 'r');
 j=0;
-%endline = 245;
-endline = 485;
+endline = 245;
+%endline = 485;
 %endline = 965;
 for i=1:endline
     c= fgetl(fileID);
@@ -21,7 +21,7 @@ end
 fclose(fileID);
 
 %semilogy(time(:,1), 0.011*exp(-0.1533*time(:,1)), 'r--')
-%semilogy(time(:,1), electric_energy(1,1)*exp(-0.394*time(:,1)), 'r--')
+semilogy(time(:,1), electric_energy(1,1)*exp(-0.394*time(:,1)), 'r--')
 hold on
 semilogy(time(:,1), electric_energy(:,1), 'k-');
 xlabel('time')

@@ -8,6 +8,7 @@
 #include "RectMDArray.H"
 #include "ParticleSet.H"
 #include "PoissonSolver.H"
+#include "mpi.h"
 using namespace std;
 /// Class for computing the RHS in RK4, corresponding to the template parameter F.
 class ParticleVelocities

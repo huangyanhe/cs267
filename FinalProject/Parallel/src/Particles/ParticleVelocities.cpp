@@ -69,8 +69,11 @@ void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
     {
       DBox bx = m_bdry[k];
       //bx.print();
-      for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
-        {
+      //      for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
+#pragma omp parallel for reduction (+:enlargedGrid)
+      for (int i = 0; i < bx.sizeOf(); i++)
+	{
+	  Point pt = bx.getPoint(i);
           int image[DIM];
           for (int dir = 0; dir < DIM; dir++)
             {
@@ -82,7 +85,7 @@ void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
 	  // cout<<"ptimage =";
 	  // ptimage.print();
 	  // cout<<"value ="<< enlargedGrid[pt]<<endl;
-          enlargedGrid[ptimage] += enlargedGrid[pt];
+          enlargedGrid[ptimage] = enlargedGrid[ptimage] + enlargedGrid[pt];
         }
     }
 }

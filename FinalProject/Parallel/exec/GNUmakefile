@@ -10,12 +10,12 @@ IK = $(HOME)/src/InterpolationKernel/
 TIMER = $(HOME)/utils/timer
 VPATH= . $(HOME) $(PARTICLES) $(RMDA) $(FFT) $(PS) $(TIMER) $(WRITERS) $(IK)
 ANIMATION = 1
+OPENMP = -qopenmp
 
 DIM=2
-#CXX = CC
-CXX=clang++
-#FFTWDIR = /opt/cray/pe/fftw/3.3.4.6/haswell
-FFTWDIR = /usr/local/Cellar/fftw/3.3.6-pl2
+CXX = CC
+FFTWDIR = /opt/cray/pe/fftw/3.3.4.6/haswell
+#FFTWDIR = /usr/local/Cellar/fftw/3.3.6-pl2
 CFLAGS = -g -Wall
 #CFLAGS = -O3
 CFLAGS += -std=c++11 -I$(PARTICLES) -I$(RMDA) -I$(IK) -I$(PS) -I$(FFT) -I$(TIMER) -I$(WRITERS) -I$(FFTWDIR)/include
@@ -25,6 +25,8 @@ ddir = ./d.$(DIM)d
 
 CFLAGS += -DDIM=$(DIM) -D ANIMATION=$(ANIMATION)
 LIBS:=  -L$(FFTWDIR)/lib -lfftw3
+
+CFLAGS += $(OPENMP)
 
 SRCFILES:= $(notdir $(wildcard $(TIMER)/*.cpp $(RMDA)/*.cpp $(IK)/*.cpp $(PS)/*.cpp $(WRITERS)/*.cpp $(FFT)/*.cpp $(PARTICLES)/*.cpp ./*.cpp))
 

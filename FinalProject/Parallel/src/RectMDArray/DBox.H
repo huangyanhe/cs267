@@ -193,7 +193,7 @@ public:
   unsigned int size(unsigned char a_dim) const
   {
     return m_highCorner[a_dim]-m_lowCorner[a_dim] + 1;
-  }
+  };
 
   /// iteration through the points in a DBox. a_pt is incremented to the next point in the DBox.
   /**
@@ -243,6 +243,8 @@ inline unsigned int DBox::getIndex(const Point& a_pt) const
     }
   return linIndex;
 }
+
+
 inline int mymod(int i,int j) 
 {
   if (i < 0)

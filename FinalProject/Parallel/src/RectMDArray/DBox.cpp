@@ -26,7 +26,7 @@ DBox::DBox(const Box& a_box)
     {
       m_lowCorner[dir] = a_box.smallEnd(dir);
       m_highCorner[dir] = a_box.bigEnd(dir);
-      m_size = a_box.numPts();
+      recomputeSize();
     }
 }
 #endif

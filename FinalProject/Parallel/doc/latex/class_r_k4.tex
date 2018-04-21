@@ -1,0 +1,46 @@
+\hypertarget{class_r_k4}{}\section{R\+K4$<$ X, F, dX $>$ Class Template Reference}
+\label{class_r_k4}\index{R\+K4$<$ X, F, d\+X $>$@{R\+K4$<$ X, F, d\+X $>$}}
+
+
+generic explicit \hyperlink{class_r_k4}{R\+K4} algorithm  
+
+
+
+
+{\ttfamily \#include $<$R\+K4.\+H$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_r_k4_af0486f7e162b0a935b390bb7fc1a9f02}\label{class_r_k4_af0486f7e162b0a935b390bb7fc1a9f02}} 
+void {\bfseries advance} (double a\+\_\+time, double a\+\_\+dt, X \&a\+\_\+state)
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_r_k4_a92f523886ca69913832d9efae83579ac}\label{class_r_k4_a92f523886ca69913832d9efae83579ac}} 
+dX {\bfseries m\+\_\+k}
+\item 
+\mbox{\Hypertarget{class_r_k4_ab79f59c90025ff0f04fa3391fd0a6e4b}\label{class_r_k4_ab79f59c90025ff0f04fa3391fd0a6e4b}} 
+dX {\bfseries m\+\_\+delta}
+\item 
+\mbox{\Hypertarget{class_r_k4_a8708d55158344f113a14ec23fec25a91}\label{class_r_k4_a8708d55158344f113a14ec23fec25a91}} 
+F {\bfseries m\+\_\+f}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\subsubsection*{template$<$class X, class F, class dX$>$\newline
+class R\+K4$<$ X, F, d\+X $>$}
+
+generic explicit \hyperlink{class_r_k4}{R\+K4} algorithm 
+
+class X is the type of your state data. class F provides an evaluation of the X\textquotesingle{} for a specified state of X and the time. If your X\textquotesingle{} is determined entirely from the current state values then F can ignore. F implements the function\+: void operator(\+X\& k, double a\+\_\+time, double a\+\_\+dt, const X\& a\+\_\+state, const X\& a\+\_\+shift);
+
+F interprets the real state as a\+\_\+state+a\+\_\+shift
+
+Note that F includes the customary factor of dT in the \hyperlink{class_r_k4}{R\+K4} algorithm. (i.\+e. this algorithm assumes k\+\_\+i = F(...) N\+OT k\+\_\+i = dt$\ast$F(...) 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/\+Particles/R\+K4.\+H\end{DoxyCompactItemize}

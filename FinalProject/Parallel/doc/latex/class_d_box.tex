@@ -1,0 +1,320 @@
+\hypertarget{class_d_box}{}\section{D\+Box Class Reference}
+\label{class_d_box}\index{D\+Box@{D\+Box}}
+
+
+An interval in D\+IM dimensional space.  
+
+
+
+
+{\ttfamily \#include $<$D\+Box.\+H$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_d_box_a8a8c5c7cf3bbfee6ecd3372ced15a540}{D\+Box} ()
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_box_a5e18be35e68713b75e3b938e1d7929fd}\label{class_d_box_a5e18be35e68713b75e3b938e1d7929fd}} 
+\hyperlink{class_d_box_a5e18be35e68713b75e3b938e1d7929fd}{D\+Box} (const \hyperlink{class_point}{Point} \&a\+\_\+low\+Corner, const \hyperlink{class_point}{Point} \&a\+\_\+high\+Corner)
+\begin{DoxyCompactList}\small\item\em Constructor for nontrivial \hyperlink{class_d_box}{D\+Box} using two Points. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_box_a1b1fa391c33d6fed5f6b0766dc64190b}\label{class_d_box_a1b1fa391c33d6fed5f6b0766dc64190b}} 
+\hyperlink{class_d_box_a1b1fa391c33d6fed5f6b0766dc64190b}{D\+Box} (const \hyperlink{class_d_box}{D\+Box} \&a\+\_\+\+D\+Box)
+\begin{DoxyCompactList}\small\item\em Copy constructor. \end{DoxyCompactList}\item 
+\hyperlink{class_d_box}{D\+Box} \hyperlink{class_d_box_a80e097ac4ec5b019d138e07f2d5c22a3}{operator \&} (const \hyperlink{class_d_box}{D\+Box} \&a\+\_\+right\+D\+Box) const
+\begin{DoxyCompactList}\small\item\em Computes the intersection of the \hyperlink{class_d_box}{D\+Box} with a\+\_\+right\+D\+Box. \hyperlink{class_d_box}{D\+Box} A\+ND operation. \end{DoxyCompactList}\item 
+void \hyperlink{class_d_box_a98da582f742e5e82bdbb740533cc959b}{operator \&=} (const \hyperlink{class_d_box}{D\+Box} \&a\+\_\+right\+D\+Box)
+\begin{DoxyCompactList}\small\item\em Computes intersection of \hyperlink{class_d_box}{D\+Box} and a\+\_\+right\+D\+Box in place. \end{DoxyCompactList}\item 
+\hyperlink{class_d_box}{D\+Box} \hyperlink{class_d_box_a62403e537be588d0af273cb9d84e089c}{shift} (int a\+\_\+direction, int a\+\_\+offset) const
+\begin{DoxyCompactList}\small\item\em Computes shifted \hyperlink{class_d_box}{D\+Box} by a\+\_\+offset in direction a\+\_\+direction. \end{DoxyCompactList}\item 
+\hyperlink{class_d_box}{D\+Box} \hyperlink{class_d_box_ad01e33bf0839296a79a315c4dc17f97c}{shift} (const \hyperlink{class_point}{Point} \&a\+\_\+pt) const
+\begin{DoxyCompactList}\small\item\em Computes a \hyperlink{class_d_box}{D\+Box} shifted according to the vector a\+\_\+pt. \end{DoxyCompactList}\item 
+\hyperlink{class_d_box}{D\+Box} \hyperlink{class_d_box_a390a8b999c556c217cb1f0297691180a}{grow} (int a\+\_\+numpoints) const
+\begin{DoxyCompactList}\small\item\em Grow in all of the coordinate directions by a\+\_\+numpoints. \end{DoxyCompactList}\item 
+\hyperlink{class_d_box}{D\+Box} \hyperlink{class_d_box_aa764549d6adab28f06409cd769c6b07e}{grow} (const \hyperlink{class_point}{Point} \&a\+\_\+pt) const
+\begin{DoxyCompactList}\small\item\em Grow in each coordinate direction by an amount given by the component of a\+\_\+pt. \end{DoxyCompactList}\item 
+\hyperlink{class_d_box}{D\+Box} \hyperlink{class_d_box_a0c5ff6539cfad2c35554507a4094a663}{coarsen} (int a\+\_\+numpoints) const
+\begin{DoxyCompactList}\small\item\em coarsen in all of the coordinate directions by a\+\_\+numpoints. \end{DoxyCompactList}\item 
+\hyperlink{class_d_box}{D\+Box} \hyperlink{class_d_box_aa8b06b12dfb6853ea4a84d03339969dc}{coarsen} (const \hyperlink{class_point}{Point} \&a\+\_\+pt) const
+\begin{DoxyCompactList}\small\item\em coarsen in each coordinate direction by an amount given by the component of a\+\_\+pt. \end{DoxyCompactList}\item 
+\hyperlink{class_d_box}{D\+Box} \hyperlink{class_d_box_aa7a5dc0dac5dc889b86f6014771c4f56}{refine} (int a\+\_\+numpoints) const
+\begin{DoxyCompactList}\small\item\em refine in all of the coordinate directions by a\+\_\+numpoints. \end{DoxyCompactList}\item 
+\hyperlink{class_d_box}{D\+Box} \hyperlink{class_d_box_a8452a7fb054283c0ed4488decd86cfda}{refine} (const \hyperlink{class_point}{Point} \&a\+\_\+pt) const
+\begin{DoxyCompactList}\small\item\em refine in each coordinate direction by an amount given by the component of a\+\_\+pt. \end{DoxyCompactList}\item 
+\hyperlink{class_d_box}{D\+Box} \hyperlink{class_d_box_ad36875d6c989bb3d4c8baaad9a5476ff}{refine\+CC} (const \hyperlink{class_point}{Point} \&a\+\_\+pt) const
+\begin{DoxyCompactList}\small\item\em refine in each coordinate direction by an amount given by the component of a\+\_\+pt. \end{DoxyCompactList}\item 
+\hyperlink{class_d_box}{D\+Box} \hyperlink{class_d_box_af4826905ec8e333891898b129c8c4951}{refine\+CC} (int a\+\_\+nref) const
+\item 
+const \hyperlink{class_point}{Point} \& \hyperlink{class_d_box_a15d019841f673b3c170d641706ee07d3}{get\+Low\+Corner} () const
+\begin{DoxyCompactList}\small\item\em Access a \hyperlink{class_d_box}{D\+Box}\textquotesingle{}s low\+Corner. \end{DoxyCompactList}\item 
+const \hyperlink{class_point}{Point} \& \hyperlink{class_d_box_ab86dcdb4cc7e04d2d2b4208d53d8b446}{get\+High\+Corner} () const
+\begin{DoxyCompactList}\small\item\em Access a \hyperlink{class_d_box}{D\+Box}\textquotesingle{}s high\+Corner. \end{DoxyCompactList}\item 
+const \hyperlink{class_point}{Point} \& \hyperlink{class_d_box_ab83ccd62bdb4c44e60027c6e745813f2}{get\+Low\+Corner} ()
+\begin{DoxyCompactList}\small\item\em Access a \hyperlink{class_d_box}{D\+Box}\textquotesingle{}s low\+Corner. \end{DoxyCompactList}\item 
+const \hyperlink{class_point}{Point} \& \hyperlink{class_d_box_a6737c8ca1c7b13a6a08e9488ae05dff9}{get\+High\+Corner} ()
+\begin{DoxyCompactList}\small\item\em Access a \hyperlink{class_d_box}{D\+Box}\textquotesingle{}s high\+Corner. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_box_ae72c9edef6e3a49bd69fa3071990f5af}\label{class_d_box_ae72c9edef6e3a49bd69fa3071990f5af}} 
+const unsigned int \& \hyperlink{class_d_box_ae72c9edef6e3a49bd69fa3071990f5af}{size\+Of} () const
+\begin{DoxyCompactList}\small\item\em Computes the size, or \char`\"{}volume\char`\"{}, of the \hyperlink{class_d_box}{D\+Box}. \end{DoxyCompactList}\item 
+bool \hyperlink{class_d_box_ae4b6aec5cb444f68cc8273d5629296c4}{operator==} (const \hyperlink{class_d_box}{D\+Box} \&a\+\_\+rhs\+D\+Box) const
+\begin{DoxyCompactList}\small\item\em Defines equality between D\+Boxes. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_box_aade93ec5c32f93b79f45c11e39d4a546}\label{class_d_box_aade93ec5c32f93b79f45c11e39d4a546}} 
+bool \hyperlink{class_d_box_aade93ec5c32f93b79f45c11e39d4a546}{contains} (const \hyperlink{class_point}{Point} \&a\+\_\+pt) const
+\begin{DoxyCompactList}\small\item\em Checks if the \hyperlink{class_d_box}{D\+Box} contains the \hyperlink{class_point}{Point} a\+\_\+pt. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_box_a73a7267ce2a7c8aba068a9c165605ad8}\label{class_d_box_a73a7267ce2a7c8aba068a9c165605ad8}} 
+bool \hyperlink{class_d_box_a73a7267ce2a7c8aba068a9c165605ad8}{contains} (const \hyperlink{class_d_box}{D\+Box} \&a\+\_\+rhs) const
+\begin{DoxyCompactList}\small\item\em Checks if the \hyperlink{class_d_box}{D\+Box} contains another \hyperlink{class_d_box}{D\+Box} a\+\_\+rhs. \end{DoxyCompactList}\item 
+\hyperlink{class_point}{Point} \hyperlink{class_d_box_a60558669bcb1b761aab592c0d70b64ce}{mod} (const \hyperlink{class_point}{Point} \&a\+\_\+pt) const
+\begin{DoxyCompactList}\small\item\em Finds periodic image of input that is contained in the \hyperlink{class_d_box}{D\+Box}. \end{DoxyCompactList}\item 
+unsigned int \hyperlink{class_d_box_a396f1e736d888714c2016307511427e1}{get\+Index} (const \hyperlink{class_point}{Point} \&a\+\_\+pt) const
+\begin{DoxyCompactList}\small\item\em Get linear index of a \hyperlink{class_point}{Point} in a \hyperlink{class_d_box}{D\+Box}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_box_a665640a1cbeb53323c821167f0038a93}\label{class_d_box_a665640a1cbeb53323c821167f0038a93}} 
+bool \hyperlink{class_d_box_a665640a1cbeb53323c821167f0038a93}{not\+Done} (const \hyperlink{class_point}{Point} \&a\+\_\+pt) const
+\begin{DoxyCompactList}\small\item\em Returns false if a\+\_\+pt(k) $>$ m\+\_\+high\+Corner(k) for k in \mbox{[}0,Dim) \end{DoxyCompactList}\item 
+unsigned int \hyperlink{class_d_box_a9f3523e560c447da80e405afbcb5b0ea}{size} (unsigned char a\+\_\+dim) const
+\begin{DoxyCompactList}\small\item\em Returns the number of points that lie along a \hyperlink{class_d_box}{D\+Box}\textquotesingle{}s edge in direction a\+\_\+dim. \end{DoxyCompactList}\item 
+void \hyperlink{class_d_box_a311d4205afe6a3454874f6e07ea1e935}{increment} (\hyperlink{class_point}{Point} \&a\+\_\+pt) const
+\begin{DoxyCompactList}\small\item\em iteration through the points in a \hyperlink{class_d_box}{D\+Box}. a\+\_\+pt is incremented to the next point in the \hyperlink{class_d_box}{D\+Box}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_box_a4a8ff11e785cc9cffda3db6df356756a}\label{class_d_box_a4a8ff11e785cc9cffda3db6df356756a}} 
+\hyperlink{class_point}{Point} \hyperlink{class_d_box_a4a8ff11e785cc9cffda3db6df356756a}{get\+Point} (unsigned int k) const
+\begin{DoxyCompactList}\small\item\em Get \hyperlink{class_point}{Point} corresponding to a linear index in \mbox{[}0, ... \hyperlink{class_d_box_ae72c9edef6e3a49bd69fa3071990f5af}{size\+Of()}-\/1\mbox{]} inside the \hyperlink{class_d_box}{D\+Box}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_box_a544c09543505750ef70a00ca286ccc45}\label{class_d_box_a544c09543505750ef70a00ca286ccc45}} 
+void \hyperlink{class_d_box_a544c09543505750ef70a00ca286ccc45}{print} () const
+\begin{DoxyCompactList}\small\item\em Prints the \hyperlink{class_d_box}{D\+Box} to the command line. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_d_box_a45b77dcfdb5b4bf178b7b15389b6bc60}\label{class_d_box_a45b77dcfdb5b4bf178b7b15389b6bc60}} 
+bool \hyperlink{class_d_box_a45b77dcfdb5b4bf178b7b15389b6bc60}{is\+Empty} () const
+\begin{DoxyCompactList}\small\item\em Returns True if the \hyperlink{class_d_box}{D\+Box} has non-\/positive \char`\"{}volume\char`\"{}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+An interval in D\+IM dimensional space. 
+
+A \hyperlink{class_d_box}{D\+Box} is a region specified by two corners, high\+Corner and low\+Corner. In 2 dimensions, a \hyperlink{class_d_box}{D\+Box} is a rectangular region. In 3 dimensions, a \hyperlink{class_d_box}{D\+Box} is a rectangular prism, etc. 
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_d_box_a8a8c5c7cf3bbfee6ecd3372ced15a540}\label{class_d_box_a8a8c5c7cf3bbfee6ecd3372ced15a540}} 
+\index{D\+Box@{D\+Box}!D\+Box@{D\+Box}}
+\index{D\+Box@{D\+Box}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{D\+Box()}{DBox()}}
+{\footnotesize\ttfamily D\+Box\+::\+D\+Box (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Default constructor. 
+
+The \hyperlink{class_d_box}{D\+Box}\textquotesingle{}s upper and lower corner default to (-\/1,-\/1,...,-\/1) and (0,0,...,0) respectively. The default size is -\/1 (empty). 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_d_box_a0c5ff6539cfad2c35554507a4094a663}\label{class_d_box_a0c5ff6539cfad2c35554507a4094a663}} 
+\index{D\+Box@{D\+Box}!coarsen@{coarsen}}
+\index{coarsen@{coarsen}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{coarsen()}{coarsen()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \hyperlink{class_d_box}{D\+Box} D\+Box\+::coarsen (\begin{DoxyParamCaption}\item[{int}]{a\+\_\+numpoints }\end{DoxyParamCaption}) const}
+
+
+
+coarsen in all of the coordinate directions by a\+\_\+numpoints. 
+
+does not change $\ast$this. returns the coarsened box \mbox{\Hypertarget{class_d_box_aa8b06b12dfb6853ea4a84d03339969dc}\label{class_d_box_aa8b06b12dfb6853ea4a84d03339969dc}} 
+\index{D\+Box@{D\+Box}!coarsen@{coarsen}}
+\index{coarsen@{coarsen}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{coarsen()}{coarsen()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \hyperlink{class_d_box}{D\+Box} D\+Box\+::coarsen (\begin{DoxyParamCaption}\item[{const \hyperlink{class_point}{Point} \&}]{a\+\_\+pt }\end{DoxyParamCaption}) const}
+
+
+
+coarsen in each coordinate direction by an amount given by the component of a\+\_\+pt. 
+
+does not change $\ast$this. returns the coarsened box \mbox{\Hypertarget{class_d_box_ab86dcdb4cc7e04d2d2b4208d53d8b446}\label{class_d_box_ab86dcdb4cc7e04d2d2b4208d53d8b446}} 
+\index{D\+Box@{D\+Box}!get\+High\+Corner@{get\+High\+Corner}}
+\index{get\+High\+Corner@{get\+High\+Corner}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{get\+High\+Corner()}{getHighCorner()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const \hyperlink{class_point}{Point}\& D\+Box\+::get\+High\+Corner (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Access a \hyperlink{class_d_box}{D\+Box}\textquotesingle{}s high\+Corner. 
+
+Called by a constant \hyperlink{class_d_box}{D\+Box}. Returned object cannot be changed. \mbox{\Hypertarget{class_d_box_a6737c8ca1c7b13a6a08e9488ae05dff9}\label{class_d_box_a6737c8ca1c7b13a6a08e9488ae05dff9}} 
+\index{D\+Box@{D\+Box}!get\+High\+Corner@{get\+High\+Corner}}
+\index{get\+High\+Corner@{get\+High\+Corner}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{get\+High\+Corner()}{getHighCorner()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily const \hyperlink{class_point}{Point}\& D\+Box\+::get\+High\+Corner (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Access a \hyperlink{class_d_box}{D\+Box}\textquotesingle{}s high\+Corner. 
+
+Called by a non-\/constant \hyperlink{class_d_box}{D\+Box}. Returned object can be changed. \mbox{\Hypertarget{class_d_box_a396f1e736d888714c2016307511427e1}\label{class_d_box_a396f1e736d888714c2016307511427e1}} 
+\index{D\+Box@{D\+Box}!get\+Index@{get\+Index}}
+\index{get\+Index@{get\+Index}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{get\+Index()}{getIndex()}}
+{\footnotesize\ttfamily unsigned int D\+Box\+::get\+Index (\begin{DoxyParamCaption}\item[{const \hyperlink{class_point}{Point} \&}]{a\+\_\+pt }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get linear index of a \hyperlink{class_point}{Point} in a \hyperlink{class_d_box}{D\+Box}. 
+
+Indices have values from 0 to m\+\_\+size-\/1. \mbox{\Hypertarget{class_d_box_a15d019841f673b3c170d641706ee07d3}\label{class_d_box_a15d019841f673b3c170d641706ee07d3}} 
+\index{D\+Box@{D\+Box}!get\+Low\+Corner@{get\+Low\+Corner}}
+\index{get\+Low\+Corner@{get\+Low\+Corner}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{get\+Low\+Corner()}{getLowCorner()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const \hyperlink{class_point}{Point}\& D\+Box\+::get\+Low\+Corner (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Access a \hyperlink{class_d_box}{D\+Box}\textquotesingle{}s low\+Corner. 
+
+Called by a constant \hyperlink{class_d_box}{D\+Box}. Returned object cannot be changed. \mbox{\Hypertarget{class_d_box_ab83ccd62bdb4c44e60027c6e745813f2}\label{class_d_box_ab83ccd62bdb4c44e60027c6e745813f2}} 
+\index{D\+Box@{D\+Box}!get\+Low\+Corner@{get\+Low\+Corner}}
+\index{get\+Low\+Corner@{get\+Low\+Corner}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{get\+Low\+Corner()}{getLowCorner()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily const \hyperlink{class_point}{Point}\& D\+Box\+::get\+Low\+Corner (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Access a \hyperlink{class_d_box}{D\+Box}\textquotesingle{}s low\+Corner. 
+
+Called by a non-\/constant \hyperlink{class_d_box}{D\+Box}. Returned object can be changed. \mbox{\Hypertarget{class_d_box_a390a8b999c556c217cb1f0297691180a}\label{class_d_box_a390a8b999c556c217cb1f0297691180a}} 
+\index{D\+Box@{D\+Box}!grow@{grow}}
+\index{grow@{grow}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{grow()}{grow()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \hyperlink{class_d_box}{D\+Box} D\+Box\+::grow (\begin{DoxyParamCaption}\item[{int}]{a\+\_\+numpoints }\end{DoxyParamCaption}) const}
+
+
+
+Grow in all of the coordinate directions by a\+\_\+numpoints. 
+
+Does not change $\ast$this. Returns the grown box. Returned \hyperlink{class_d_box}{D\+Box} satisfies\+: m\+\_\+upper\+Corner\+\_\+new = m\+\_\+upper\+Corner\+\_\+old + get\+Ones()$\ast$a\+\_\+numpoints, m\+\_\+lower\+Corner\+\_\+new = m\+\_\+lower\+Corner\+\_\+old -\/ get\+Ones()$\ast$a\+\_\+numpoints. \mbox{\Hypertarget{class_d_box_aa764549d6adab28f06409cd769c6b07e}\label{class_d_box_aa764549d6adab28f06409cd769c6b07e}} 
+\index{D\+Box@{D\+Box}!grow@{grow}}
+\index{grow@{grow}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{grow()}{grow()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \hyperlink{class_d_box}{D\+Box} D\+Box\+::grow (\begin{DoxyParamCaption}\item[{const \hyperlink{class_point}{Point} \&}]{a\+\_\+pt }\end{DoxyParamCaption}) const}
+
+
+
+Grow in each coordinate direction by an amount given by the component of a\+\_\+pt. 
+
+Does not change $\ast$this. Returns the grown box. Returned \hyperlink{class_d_box}{D\+Box} satisfies\+: m\+\_\+upper\+Corner\+\_\+new = m\+\_\+upper\+Corner\+\_\+old + a\+\_\+pt, m\+\_\+lower\+Corner\+\_\+new = m\+\_\+lower\+Corner\+\_\+old -\/ a\+\_\+pt. \mbox{\Hypertarget{class_d_box_a311d4205afe6a3454874f6e07ea1e935}\label{class_d_box_a311d4205afe6a3454874f6e07ea1e935}} 
+\index{D\+Box@{D\+Box}!increment@{increment}}
+\index{increment@{increment}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{increment()}{increment()}}
+{\footnotesize\ttfamily void D\+Box\+::increment (\begin{DoxyParamCaption}\item[{\hyperlink{class_point}{Point} \&}]{a\+\_\+pt }\end{DoxyParamCaption}) const}
+
+
+
+iteration through the points in a \hyperlink{class_d_box}{D\+Box}. a\+\_\+pt is incremented to the next point in the \hyperlink{class_d_box}{D\+Box}. 
+
+Currently, increment only works when D\+IM $<$= 3. When calling increment on m\+\_\+high\+Corner, the resulting \hyperlink{class_point}{Point} will no longer be inside $\ast$this (\hyperlink{class_d_box_aade93ec5c32f93b79f45c11e39d4a546}{contains()} will return F\+A\+L\+SE). \mbox{\Hypertarget{class_d_box_a60558669bcb1b761aab592c0d70b64ce}\label{class_d_box_a60558669bcb1b761aab592c0d70b64ce}} 
+\index{D\+Box@{D\+Box}!mod@{mod}}
+\index{mod@{mod}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{mod()}{mod()}}
+{\footnotesize\ttfamily \hyperlink{class_point}{Point} D\+Box\+::mod (\begin{DoxyParamCaption}\item[{const \hyperlink{class_point}{Point} \&}]{a\+\_\+pt }\end{DoxyParamCaption}) const}
+
+
+
+Finds periodic image of input that is contained in the \hyperlink{class_d_box}{D\+Box}. 
+
+This function will test if the \hyperlink{class_d_box}{D\+Box} with low\+Corner = a\+\_\+rhs.\+m\+\_\+lower\+Corner + a\+\_\+extent.\+m\+\_\+lower\+Corner and high\+Corner = // a\+\_\+rhs.\+m\+\_\+high\+Corner + a\+\_\+extent.\+m\+\_\+high\+Corner resides within $\ast$this.\begin{DoxyRefDesc}{Todo}
+\item[\hyperlink{todo__todo000001}{Todo}]Determine the purpose of this function \end{DoxyRefDesc}
+\mbox{\Hypertarget{class_d_box_a80e097ac4ec5b019d138e07f2d5c22a3}\label{class_d_box_a80e097ac4ec5b019d138e07f2d5c22a3}} 
+\index{D\+Box@{D\+Box}!operator \&@{operator \&}}
+\index{operator \&@{operator \&}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{operator \&()}{operator \&()}}
+{\footnotesize\ttfamily \hyperlink{class_d_box}{D\+Box} D\+Box\+::operator\& (\begin{DoxyParamCaption}\item[{const \hyperlink{class_d_box}{D\+Box} \&}]{a\+\_\+right\+D\+Box }\end{DoxyParamCaption}) const}
+
+
+
+Computes the intersection of the \hyperlink{class_d_box}{D\+Box} with a\+\_\+right\+D\+Box. \hyperlink{class_d_box}{D\+Box} A\+ND operation. 
+
+Returns a new \hyperlink{class_d_box}{D\+Box} which is the intersection of $\ast$this and $\ast$a\+\_\+right\+D\+Box. $\ast$this is unchanged \mbox{\Hypertarget{class_d_box_a98da582f742e5e82bdbb740533cc959b}\label{class_d_box_a98da582f742e5e82bdbb740533cc959b}} 
+\index{D\+Box@{D\+Box}!operator \&=@{operator \&=}}
+\index{operator \&=@{operator \&=}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{operator \&=()}{operator \&=()}}
+{\footnotesize\ttfamily void D\+Box\+::operator\&= (\begin{DoxyParamCaption}\item[{const \hyperlink{class_d_box}{D\+Box} \&}]{a\+\_\+right\+D\+Box }\end{DoxyParamCaption})}
+
+
+
+Computes intersection of \hyperlink{class_d_box}{D\+Box} and a\+\_\+right\+D\+Box in place. 
+
+Modifies $\ast$this to be the intersection of $\ast$this and a\+\_\+right\+D\+Box. \mbox{\Hypertarget{class_d_box_ae4b6aec5cb444f68cc8273d5629296c4}\label{class_d_box_ae4b6aec5cb444f68cc8273d5629296c4}} 
+\index{D\+Box@{D\+Box}!operator==@{operator==}}
+\index{operator==@{operator==}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{operator==()}{operator==()}}
+{\footnotesize\ttfamily bool D\+Box\+::operator== (\begin{DoxyParamCaption}\item[{const \hyperlink{class_d_box}{D\+Box} \&}]{a\+\_\+rhs\+D\+Box }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Defines equality between D\+Boxes. 
+
+Two D\+Boxes are considered equal if they have identical (==) low\+Corner and high\+Corner \mbox{\Hypertarget{class_d_box_aa7a5dc0dac5dc889b86f6014771c4f56}\label{class_d_box_aa7a5dc0dac5dc889b86f6014771c4f56}} 
+\index{D\+Box@{D\+Box}!refine@{refine}}
+\index{refine@{refine}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{refine()}{refine()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \hyperlink{class_d_box}{D\+Box} D\+Box\+::refine (\begin{DoxyParamCaption}\item[{int}]{a\+\_\+numpoints }\end{DoxyParamCaption}) const}
+
+
+
+refine in all of the coordinate directions by a\+\_\+numpoints. 
+
+does not change $\ast$this. returns the refined box \mbox{\Hypertarget{class_d_box_a8452a7fb054283c0ed4488decd86cfda}\label{class_d_box_a8452a7fb054283c0ed4488decd86cfda}} 
+\index{D\+Box@{D\+Box}!refine@{refine}}
+\index{refine@{refine}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{refine()}{refine()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \hyperlink{class_d_box}{D\+Box} D\+Box\+::refine (\begin{DoxyParamCaption}\item[{const \hyperlink{class_point}{Point} \&}]{a\+\_\+pt }\end{DoxyParamCaption}) const}
+
+
+
+refine in each coordinate direction by an amount given by the component of a\+\_\+pt. 
+
+does not change $\ast$this. returns the refined box \mbox{\Hypertarget{class_d_box_ad36875d6c989bb3d4c8baaad9a5476ff}\label{class_d_box_ad36875d6c989bb3d4c8baaad9a5476ff}} 
+\index{D\+Box@{D\+Box}!refine\+CC@{refine\+CC}}
+\index{refine\+CC@{refine\+CC}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{refine\+C\+C()}{refineCC()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \hyperlink{class_d_box}{D\+Box} D\+Box\+::refine\+CC (\begin{DoxyParamCaption}\item[{const \hyperlink{class_point}{Point} \&}]{a\+\_\+pt }\end{DoxyParamCaption}) const}
+
+
+
+refine in each coordinate direction by an amount given by the component of a\+\_\+pt. 
+
+does not change $\ast$this. returns the refined box \mbox{\Hypertarget{class_d_box_af4826905ec8e333891898b129c8c4951}\label{class_d_box_af4826905ec8e333891898b129c8c4951}} 
+\index{D\+Box@{D\+Box}!refine\+CC@{refine\+CC}}
+\index{refine\+CC@{refine\+CC}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{refine\+C\+C()}{refineCC()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \hyperlink{class_d_box}{D\+Box} D\+Box\+::refine\+CC (\begin{DoxyParamCaption}\item[{int}]{a\+\_\+nref }\end{DoxyParamCaption}) const}
+
+does not change $\ast$this. returns the refined box \mbox{\Hypertarget{class_d_box_a62403e537be588d0af273cb9d84e089c}\label{class_d_box_a62403e537be588d0af273cb9d84e089c}} 
+\index{D\+Box@{D\+Box}!shift@{shift}}
+\index{shift@{shift}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{shift()}{shift()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \hyperlink{class_d_box}{D\+Box} D\+Box\+::shift (\begin{DoxyParamCaption}\item[{int}]{a\+\_\+direction,  }\item[{int}]{a\+\_\+offset }\end{DoxyParamCaption}) const}
+
+
+
+Computes shifted \hyperlink{class_d_box}{D\+Box} by a\+\_\+offset in direction a\+\_\+direction. 
+
+Does not change $\ast$this. Returns the shifted box. \mbox{\Hypertarget{class_d_box_ad01e33bf0839296a79a315c4dc17f97c}\label{class_d_box_ad01e33bf0839296a79a315c4dc17f97c}} 
+\index{D\+Box@{D\+Box}!shift@{shift}}
+\index{shift@{shift}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{shift()}{shift()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \hyperlink{class_d_box}{D\+Box} D\+Box\+::shift (\begin{DoxyParamCaption}\item[{const \hyperlink{class_point}{Point} \&}]{a\+\_\+pt }\end{DoxyParamCaption}) const}
+
+
+
+Computes a \hyperlink{class_d_box}{D\+Box} shifted according to the vector a\+\_\+pt. 
+
+Does not change $\ast$this. Returns the shifted box. Each point is shifted by adding a\+\_\+pt. \mbox{\Hypertarget{class_d_box_a9f3523e560c447da80e405afbcb5b0ea}\label{class_d_box_a9f3523e560c447da80e405afbcb5b0ea}} 
+\index{D\+Box@{D\+Box}!size@{size}}
+\index{size@{size}!D\+Box@{D\+Box}}
+\subsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily unsigned int D\+Box\+::size (\begin{DoxyParamCaption}\item[{unsigned char}]{a\+\_\+dim }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the number of points that lie along a \hyperlink{class_d_box}{D\+Box}\textquotesingle{}s edge in direction a\+\_\+dim. 
+
+This is a measure of the \char`\"{}edge length\char`\"{} of the \hyperlink{class_d_box}{D\+Box}. Note that the value returned is the number of points along the \hyperlink{class_d_box}{D\+Box}\textquotesingle{}s edge, N\+OT m\+\_\+high\+Corner\mbox{[}a\+\_\+dim\mbox{]} -\/ m\+\_\+low\+Corner\mbox{[}a\+\_\+dim\mbox{]}. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/\+Rect\+M\+D\+Array/D\+Box.\+H\item 
+src/\+Rect\+M\+D\+Array/D\+Box.\+cpp\end{DoxyCompactItemize}

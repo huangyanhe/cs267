@@ -1,0 +1,193 @@
+\hypertarget{class_point}{}\section{Point Class Reference}
+\label{class_point}\index{Point@{Point}}
+
+
+A point in space.  
+
+
+
+
+{\ttfamily \#include $<$Point.\+H$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_point_ad92f2337b839a94ce97dcdb439b4325a}\label{class_point_ad92f2337b839a94ce97dcdb439b4325a}} 
+\hyperlink{class_point_ad92f2337b839a94ce97dcdb439b4325a}{Point} ()
+\begin{DoxyCompactList}\small\item\em Default Constructor. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_point_ad2979175ac77062182ecfae283c8b97f}\label{class_point_ad2979175ac77062182ecfae283c8b97f}} 
+\hyperlink{class_point_ad2979175ac77062182ecfae283c8b97f}{Point} (const int a\+\_\+tuple\mbox{[}D\+IM\mbox{]})
+\begin{DoxyCompactList}\small\item\em Construct a \hyperlink{class_point}{Point} using an int array. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_point_abaef269e1437aab4ed03ba64b4fafaa2}\label{class_point_abaef269e1437aab4ed03ba64b4fafaa2}} 
+\hyperlink{class_point_abaef269e1437aab4ed03ba64b4fafaa2}{Point} (const array$<$ int, D\+IM $>$ a\+\_\+tuple)
+\begin{DoxyCompactList}\small\item\em Construct a \hyperlink{class_point}{Point} using a std\+::array of ints. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_point_ad3049b9597a2dc93be3fc304bbf3cdbb}\label{class_point_ad3049b9597a2dc93be3fc304bbf3cdbb}} 
+\hyperlink{class_point_ad3049b9597a2dc93be3fc304bbf3cdbb}{Point} (const \hyperlink{class_point}{Point} \&a\+\_\+pt)
+\begin{DoxyCompactList}\small\item\em Copy Constructor. \end{DoxyCompactList}\item 
+bool \hyperlink{class_point_ab93641cb4a786c87778c63ad23e9ec0b}{operator$<$} (const \hyperlink{class_point}{Point} \&a\+\_\+rhs) const
+\begin{DoxyCompactList}\small\item\em Definition of \char`\"{}$<$\char`\"{} operator on Points. Returns true if this$\ast$ is \char`\"{}less than\char`\"{} $\ast$a\+\_\+rhs. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_point_a33ef2fd0c9e91605f6cd986e99e9fd06}\label{class_point_a33ef2fd0c9e91605f6cd986e99e9fd06}} 
+\hyperlink{class_point}{Point} \hyperlink{class_point_a33ef2fd0c9e91605f6cd986e99e9fd06}{operator+} (const \hyperlink{class_point}{Point} \&a\+\_\+rhs\+Point) const
+\begin{DoxyCompactList}\small\item\em Componentwise addition of two Points. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_point_a2d918abfc8d84e03b890878778180fd3}\label{class_point_a2d918abfc8d84e03b890878778180fd3}} 
+\hyperlink{class_point}{Point} \hyperlink{class_point_a2d918abfc8d84e03b890878778180fd3}{operator-\/} (const \hyperlink{class_point}{Point} \&a\+\_\+rhs\+Point) const
+\begin{DoxyCompactList}\small\item\em Componentwise subtraction of two Points. \end{DoxyCompactList}\item 
+\hyperlink{class_point}{Point} \hyperlink{class_point_a4f8c24c02a61c5727fa4e049638feba7}{operator/} (int a\+\_\+nref) const
+\begin{DoxyCompactList}\small\item\em Componentwise division of a \hyperlink{class_point}{Point} by an Integer. \end{DoxyCompactList}\item 
+\hyperlink{class_point}{Point} \hyperlink{class_point_a15d362c09b31d632a0f3cd5e7a96eef7}{operator/} (const \hyperlink{class_point}{Point} \&a\+\_\+pt) const
+\begin{DoxyCompactList}\small\item\em Componentwise division of a \hyperlink{class_point}{Point} by another \hyperlink{class_point}{Point}. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_point_a0e08b54dfb11c2c54907eb0b6aa54dae}\label{class_point_a0e08b54dfb11c2c54907eb0b6aa54dae}} 
+\hyperlink{class_point}{Point} \hyperlink{class_point_a0e08b54dfb11c2c54907eb0b6aa54dae}{operator$\ast$} (int a\+\_\+nref) const
+\begin{DoxyCompactList}\small\item\em Componentwise multiplication of a \hyperlink{class_point}{Point} by an Integer. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_point_a2db4fa18cb39589963aacca00636dbe5}\label{class_point_a2db4fa18cb39589963aacca00636dbe5}} 
+\hyperlink{class_point}{Point} \hyperlink{class_point_a2db4fa18cb39589963aacca00636dbe5}{operator$\ast$} (const \hyperlink{class_point}{Point} \&a\+\_\+pt) const
+\begin{DoxyCompactList}\small\item\em Componentwise multiplication between two Points. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_point_ab7db9ac762d6637efcce56afc7750f1f}\label{class_point_ab7db9ac762d6637efcce56afc7750f1f}} 
+void \hyperlink{class_point_ab7db9ac762d6637efcce56afc7750f1f}{operator$\ast$=} (const \hyperlink{class_point}{Point} \&a\+\_\+pt)
+\begin{DoxyCompactList}\small\item\em Multiplication of two Points in place. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_point_a587465b64c61c24c7bcb9abf0dfda114}\label{class_point_a587465b64c61c24c7bcb9abf0dfda114}} 
+void \hyperlink{class_point_a587465b64c61c24c7bcb9abf0dfda114}{operator+=} (const \hyperlink{class_point}{Point} \&a\+\_\+pt)
+\begin{DoxyCompactList}\small\item\em Addition of two Points in place. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_point_a5c41a95bd50b076bdca75d920f73554f}\label{class_point_a5c41a95bd50b076bdca75d920f73554f}} 
+void \hyperlink{class_point_a5c41a95bd50b076bdca75d920f73554f}{operator-\/=} (const \hyperlink{class_point}{Point} \&a\+\_\+pt)
+\begin{DoxyCompactList}\small\item\em Subtraction of two Points in place. \end{DoxyCompactList}\item 
+void \hyperlink{class_point_a61672dab6c26441eac5aca9928cdfc1f}{operator/=} (const \hyperlink{class_point}{Point} \&a\+\_\+pt)
+\begin{DoxyCompactList}\small\item\em Division of two Points in place. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_point_a79d9895cf934366e864a69a483e5b8ad}\label{class_point_a79d9895cf934366e864a69a483e5b8ad}} 
+void \hyperlink{class_point_a79d9895cf934366e864a69a483e5b8ad}{operator$\ast$=} (int a\+\_\+n)
+\begin{DoxyCompactList}\small\item\em Multiplication in place by an Integer. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_point_ae6e49461a0bc525c0f55bd5ce42db45b}\label{class_point_ae6e49461a0bc525c0f55bd5ce42db45b}} 
+void \hyperlink{class_point_ae6e49461a0bc525c0f55bd5ce42db45b}{operator+=} (int a\+\_\+n)
+\begin{DoxyCompactList}\small\item\em Addition in place by an Integer. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_point_a880f2ce648e6011177058678f6b2021b}\label{class_point_a880f2ce648e6011177058678f6b2021b}} 
+void \hyperlink{class_point_a880f2ce648e6011177058678f6b2021b}{operator-\/=} (int a\+\_\+n)
+\begin{DoxyCompactList}\small\item\em Subtraction in place by an Integer. \end{DoxyCompactList}\item 
+void \hyperlink{class_point_a62ab14874fced136ff69ed4cf6d34c90}{operator/=} (int a\+\_\+n)
+\begin{DoxyCompactList}\small\item\em Division in place by an Integer. \end{DoxyCompactList}\item 
+bool \hyperlink{class_point_a8cf841adb026628dda2df391952ece75}{operator==} (const \hyperlink{class_point}{Point} \&a\+\_\+pt) const
+\begin{DoxyCompactList}\small\item\em Equality between two Points. \end{DoxyCompactList}\item 
+bool \hyperlink{class_point_abc6eed13223637f36a7d00adadb20931}{operator!=} (const \hyperlink{class_point}{Point} \&a\+\_\+pt) const
+\begin{DoxyCompactList}\small\item\em Inequality between two Points. \end{DoxyCompactList}\item 
+const int \& \hyperlink{class_point_a267f1f8120637239e6486bdae0ad48e0}{operator\mbox{[}$\,$\mbox{]}} (unsigned char a\+\_\+index) const
+\begin{DoxyCompactList}\small\item\em Get component of $\ast$this corresponding to a\+\_\+index. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{class_point_aa92158a649554fe87ccf3c2cf4065737}\label{class_point_aa92158a649554fe87ccf3c2cf4065737}} 
+int \& \hyperlink{class_point_aa92158a649554fe87ccf3c2cf4065737}{operator\mbox{[}$\,$\mbox{]}} (unsigned char a\+\_\+index)
+\begin{DoxyCompactList}\small\item\em Get component of $\ast$this corresponding to a\+\_\+index. \end{DoxyCompactList}\item 
+void \hyperlink{class_point_ae1b141ad286025fc7b4183cc27ef8c0d}{print} () const
+\begin{DoxyCompactList}\small\item\em Print out the contents of a \hyperlink{class_point}{Point}. \end{DoxyCompactList}\item 
+void \hyperlink{class_point_a8d35b17f0c98a44464926cf605e3d7b6}{print2} () const
+\begin{DoxyCompactList}\small\item\em Print out the contents of a \hyperlink{class_point}{Point}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A point in space. 
+
+An Integer valued point in space of arbitrary dimension. Used to represent Points in a rectangular grid. 
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_point_abc6eed13223637f36a7d00adadb20931}\label{class_point_abc6eed13223637f36a7d00adadb20931}} 
+\index{Point@{Point}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!Point@{Point}}
+\subsubsection{\texorpdfstring{operator"!=()}{operator!=()}}
+{\footnotesize\ttfamily bool Point\+::operator!= (\begin{DoxyParamCaption}\item[{const \hyperlink{class_point}{Point} \&}]{a\+\_\+pt }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Inequality between two Points. 
+
+Returns false if $\ast$this == $\ast$a\+\_\+pt. \mbox{\Hypertarget{class_point_a4f8c24c02a61c5727fa4e049638feba7}\label{class_point_a4f8c24c02a61c5727fa4e049638feba7}} 
+\index{Point@{Point}!operator/@{operator/}}
+\index{operator/@{operator/}!Point@{Point}}
+\subsubsection{\texorpdfstring{operator/()}{operator/()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \hyperlink{class_point}{Point} Point\+::operator/ (\begin{DoxyParamCaption}\item[{int}]{a\+\_\+nref }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Componentwise division of a \hyperlink{class_point}{Point} by an Integer. 
+
+Quotients are rounded down. Division of any component by 0 yields an error. \mbox{\Hypertarget{class_point_a15d362c09b31d632a0f3cd5e7a96eef7}\label{class_point_a15d362c09b31d632a0f3cd5e7a96eef7}} 
+\index{Point@{Point}!operator/@{operator/}}
+\index{operator/@{operator/}!Point@{Point}}
+\subsubsection{\texorpdfstring{operator/()}{operator/()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \hyperlink{class_point}{Point} Point\+::operator/ (\begin{DoxyParamCaption}\item[{const \hyperlink{class_point}{Point} \&}]{a\+\_\+pt }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Componentwise division of a \hyperlink{class_point}{Point} by another \hyperlink{class_point}{Point}. 
+
+Quotients are rounded down. Division of any component by 0 yields an error. \mbox{\Hypertarget{class_point_a61672dab6c26441eac5aca9928cdfc1f}\label{class_point_a61672dab6c26441eac5aca9928cdfc1f}} 
+\index{Point@{Point}!operator/=@{operator/=}}
+\index{operator/=@{operator/=}!Point@{Point}}
+\subsubsection{\texorpdfstring{operator/=()}{operator/=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void Point\+::operator/= (\begin{DoxyParamCaption}\item[{const \hyperlink{class_point}{Point} \&}]{a\+\_\+pt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Division of two Points in place. 
+
+Quotients are rounded down. Division of any component by 0 yields an error. \mbox{\Hypertarget{class_point_a62ab14874fced136ff69ed4cf6d34c90}\label{class_point_a62ab14874fced136ff69ed4cf6d34c90}} 
+\index{Point@{Point}!operator/=@{operator/=}}
+\index{operator/=@{operator/=}!Point@{Point}}
+\subsubsection{\texorpdfstring{operator/=()}{operator/=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void Point\+::operator/= (\begin{DoxyParamCaption}\item[{int}]{a\+\_\+n }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Division in place by an Integer. 
+
+Quotients are rounded down. Division of any component by 0 yields an error. \mbox{\Hypertarget{class_point_ab93641cb4a786c87778c63ad23e9ec0b}\label{class_point_ab93641cb4a786c87778c63ad23e9ec0b}} 
+\index{Point@{Point}!operator$<$@{operator$<$}}
+\index{operator$<$@{operator$<$}!Point@{Point}}
+\subsubsection{\texorpdfstring{operator$<$()}{operator<()}}
+{\footnotesize\ttfamily bool Point\+::operator$<$ (\begin{DoxyParamCaption}\item[{const \hyperlink{class_point}{Point} \&}]{a\+\_\+rhs }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Definition of \char`\"{}$<$\char`\"{} operator on Points. Returns true if this$\ast$ is \char`\"{}less than\char`\"{} $\ast$a\+\_\+rhs. 
+
+This is just an ordering. It is used to add Points to maps etc. Don\textquotesingle{}t use it to actually compare Points. \mbox{\Hypertarget{class_point_a8cf841adb026628dda2df391952ece75}\label{class_point_a8cf841adb026628dda2df391952ece75}} 
+\index{Point@{Point}!operator==@{operator==}}
+\index{operator==@{operator==}!Point@{Point}}
+\subsubsection{\texorpdfstring{operator==()}{operator==()}}
+{\footnotesize\ttfamily bool Point\+::operator== (\begin{DoxyParamCaption}\item[{const \hyperlink{class_point}{Point} \&}]{a\+\_\+pt }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Equality between two Points. 
+
+Returns true if $\ast$this\mbox{[} $k$\mbox{]} == $\ast$a\+\_\+pt\mbox{[} $k$\mbox{]} $\forall\,k\,\in\,[0,DIM)$ \mbox{\Hypertarget{class_point_a267f1f8120637239e6486bdae0ad48e0}\label{class_point_a267f1f8120637239e6486bdae0ad48e0}} 
+\index{Point@{Point}!operator\mbox{[}\mbox{]}@{operator[]}}
+\index{operator\mbox{[}\mbox{]}@{operator[]}!Point@{Point}}
+\subsubsection{\texorpdfstring{operator[]()}{operator[]()}}
+{\footnotesize\ttfamily const int\& Point\+::operator\mbox{[}$\,$\mbox{]} (\begin{DoxyParamCaption}\item[{unsigned char}]{a\+\_\+index }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get component of $\ast$this corresponding to a\+\_\+index. 
+
+For use with constant Points \mbox{\Hypertarget{class_point_ae1b141ad286025fc7b4183cc27ef8c0d}\label{class_point_ae1b141ad286025fc7b4183cc27ef8c0d}} 
+\index{Point@{Point}!print@{print}}
+\index{print@{print}!Point@{Point}}
+\subsubsection{\texorpdfstring{print()}{print()}}
+{\footnotesize\ttfamily void Point\+::print (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Print out the contents of a \hyperlink{class_point}{Point}. 
+
+Output is formatted\+: (p1,p2,...) \mbox{\Hypertarget{class_point_a8d35b17f0c98a44464926cf605e3d7b6}\label{class_point_a8d35b17f0c98a44464926cf605e3d7b6}} 
+\index{Point@{Point}!print2@{print2}}
+\index{print2@{print2}!Point@{Point}}
+\subsubsection{\texorpdfstring{print2()}{print2()}}
+{\footnotesize\ttfamily void Point\+::print2 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Print out the contents of a \hyperlink{class_point}{Point}. 
+
+Output is formatted\+: p1 p2 p3 ... 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+src/\+Rect\+M\+D\+Array/Point.\+H\item 
+src/\+Rect\+M\+D\+Array/Point\+Implem.\+H\end{DoxyCompactItemize}

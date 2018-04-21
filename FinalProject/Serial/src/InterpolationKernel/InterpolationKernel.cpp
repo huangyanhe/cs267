@@ -40,6 +40,48 @@ InterpolationKernel::InterpolationKernel(int a_Order, int a_Smoothness)
     }
   else if (a_Order == 4)
     {
+      if (a_Smoothness == 0)
+	{
+	  m_supportSize = 2;
+	  //m_coefficients(m_supportSize, vector<double>(0,0));
+	  //m_coefficients(m_powers, vector<int>(0,0));
+	  vector<double> coefficients0;
+	  vector<int> powers0;
+	  vector<double> coefficients1;
+	  vector<int> powers1;
+	  vector<double> coefficients2;
+	  vector<int> powers2;
+	  //Region [0,1]
+	  coefficients0.push_back(1.0);
+	  powers0.push_back(0);
+	  coefficients0.push_back(-0.5);
+	  powers0.push_back(1);
+	  coefficients0.push_back(-1.0);
+	  powers0.push_back(2);
+	  coefficients0.push_back(0.5);
+	  powers0.push_back(3);
+	  //Region [1,2]
+	  coefficients1.push_back(1.0);
+	  powers1.push_back(0);
+	  coefficients1.push_back(-11.0/6.0);
+	  powers1.push_back(1);
+	  coefficients1.push_back(1.0);
+	  powers1.push_back(2);
+	  coefficients1.push_back(-1.0/6.0);
+	  powers1.push_back(3);
+	  //Region of zero
+	  coefficients2.push_back(0.0);
+	  powers2.push_back(1);
+	  
+
+	  m_coefficients.push_back(coefficients0);
+	  m_powers.push_back(powers0);
+	  m_coefficients.push_back(coefficients1);
+	  m_powers.push_back(powers1);
+	  m_coefficients.push_back(coefficients2);
+	  m_powers.push_back(powers2);
+	  
+	}
     }
   else if (a_Order == 6)
     {

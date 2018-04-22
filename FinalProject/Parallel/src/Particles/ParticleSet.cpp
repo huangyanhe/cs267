@@ -1,5 +1,5 @@
 #include "ParticleSet.H"
-
+#include "omp.h"
 //Constructors
 // articleSet::ParticleSet(
 //               DBox& a_box,
@@ -61,17 +61,25 @@ void ParticleSet::incrementDelta(const ParticleShift& a_shift, double a_dt)
 // Dimensionally Independent Deposition
 void  ParticleSet::deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_particles)
 {
-  array<double,DIM> pos;
-  double interpcoeff;
-  // for (auto it= t_particles.begin(); it!= t_particles.end(); ++it)
+  DBox box_charge = a_Charge.getDBox();  
+  int l = a_Charge.dataSize();
+  //cout << "l = " << l <<endl;
+  // For (auto it= t_particles.begin(); it!= t_particles.end(); ++it)
   //   {
   //     it->print();
   //   }
   // cout<<"m_dx = "<< m_dx<<endl;
   // m_box.print();
   // a_Charge.getDBox().print();
-  for (int it = 0; it <t_particles.size(); it++)
+  omp_lock_t* charge_lock = (omp_lock_t*)malloc(l*sizeof(omp_lock_t));
+  for(int i = 0; i < l; i++) 
     {
+      omp_init_lock(&charge_lock[i]);
+    }
+#pragma omp parallel for num_threads(2) schedule(dynamic)
+  for (int it = 0; it < t_particles.size(); it++)
+    {
+      array<double,DIM> pos;
       array<int,DIM> iposLow, iposHigh;
       for (int l = 0; l < DIM; l++)
         {
@@ -94,7 +102,8 @@ void  ParticleSet::deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_pa
       DBox SupportBox(LC, HC);
       //SupportBox.print();
       //Only place that it seems like the scaling needs to be taken into account.
-      interpcoeff = 1/pow(m_dx*m_L, DIM)*t_particles[it].strength;
+      double interpcoeff = 1/pow(m_dx*m_L, DIM)*t_particles[it].strength;
+      int index;
       for (Point s = SupportBox.getLowCorner(); SupportBox.notDone(s); SupportBox.increment(s))
 	{
 	  double KernelProduct = 1.0;
@@ -106,10 +115,21 @@ void  ParticleSet::deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_pa
 	      //cout<<"val = "<<val<<endl;
 	      KernelProduct *= m_W.apply(val, region);
 	    }
+	  index = box_charge.getIndex(s);
+	  omp_set_lock(&charge_lock[index]);
+	  //cout << "index = " << index << endl;
 	  a_Charge[s] += interpcoeff*KernelProduct;
+	  omp_unset_lock(&charge_lock[index]);
 	}
     }
+  for(int i = 0; i < l; i++)
+    {
+      omp_destroy_lock(&charge_lock[i]);
+    }
+  free(charge_lock);
+  //cout << a_Charge[box_charge.getLowCorner()] << endl;
 }
+
 void  ParticleSet::deposit(RectMDArray<double>& a_Charge)
 {
   deposit( a_Charge, m_particles);
@@ -158,6 +178,8 @@ void  ParticleSet::deposit(RectMDArray<double>& a_Charge)
 //Dimensionally Independent Interpolation
 void  ParticleSet::InterpolateForce(RectMDArray<double, DIM>& a_Field, vector<Particle>& t_particles)
 {
+
+#pragma omp parallel for schedule(dynamic) 
   for (int it = 0; it <t_particles.size(); it++)
     {
       array<int,DIM> iposLow, iposHigh;
@@ -192,6 +214,7 @@ void  ParticleSet::InterpolateForce(RectMDArray<double, DIM>& a_Field, vector<Pa
 	    }
 	  for (int j = 0; j<DIM; j++)
 	    {
+	      
 	      t_particles[it].EField[j] += a_Field(s, j)*KernelProduct;
 	    }
 	}
@@ -200,6 +223,7 @@ void  ParticleSet::InterpolateForce(RectMDArray<double, DIM>& a_Field, vector<Pa
 //Uses member particle positions to interpolate the electric field onto a ParticleShift.
 void  ParticleSet::InterpolateForce(RectMDArray<double, DIM>& a_Field, vector<DX>& t_particles)
 {
+#pragma omp parallel for schedule(dynamic)
   for (int it = 0; it <m_particles.size(); it++)
     {
       array<int,DIM> iposLow, iposHigh;
@@ -299,22 +323,23 @@ void ParticleSet::wrapParticles(vector<Particle>& t_particles)
       domainSpecs[j] = highBoundary[j] - lowBoundary[j];
     }
   //The ordering of this should be explored. Since it is a vector of particles this should be best.
-  for (int it = 0; it < t_particles.size(); it++)
-    {
-      for (int j =0; j<DIM; j++)
-	{
-	  //Determines if the marticles left the spatial domain.
-	  //Might be good to implement this for different 
-	  if (t_particles[it].m_x[j]>highBoundary[j])
-	    {
-	      t_particles[it].m_x[j] = t_particles[it].m_x[j] - domainSpecs[j];
-	    }
-	  else if (t_particles[it].m_x[j]<lowBoundary[j])
-	    {
-	      t_particles[it].m_x[j] = t_particles[it].m_x[j] + domainSpecs[j];
-	    }
-	}
-    }
+  int l = t_particles.size();
+#pragma omp parallel for collapse(2)
+  for (int it = 0; it < l; it++) {
+    for (int j =0; j<DIM; j++)
+      {
+	//Determines if the marticles left the spatial domain.
+	//Might be good to implement this for different 
+	if (t_particles[it].m_x[j]>highBoundary[j])
+	  {
+	    t_particles[it].m_x[j] = t_particles[it].m_x[j] - domainSpecs[j];
+	  }
+	else if (t_particles[it].m_x[j]<lowBoundary[j])
+	  {
+	    t_particles[it].m_x[j] = t_particles[it].m_x[j] + domainSpecs[j];
+	  }
+      }
+  }
 }
 void ParticleSet::wrapParticles()
 {

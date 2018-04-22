@@ -1,5 +1,7 @@
 #include "ParticleVelocities.H"
-
+#include "omp.h"
+#include <stdlib.h>
+#include <stdio.h>
 ParticleVelocities::ParticleVelocities()
 {
 }
@@ -57,39 +59,69 @@ void ParticleVelocities::define(ParticleSet& a_state)
   //cout<<"In PV define m = "<< m<<endl;
   PS.define(m_dx, m, m_L, m_box);
 }
+
 void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
 {
   // cout<<"m_domainSize =";
   // for (int dir = 0; dir < DIM; dir++)
   //   cout<<m_domainSize[dir];
   // cout<<endl;
-
+ 
   //cout<<"At getGhostDeposition"<<endl;
-  for (int k = 0; k < 2*DIM; k++)
+  //cout << "m_box = " << m_box.sizeOf() << endl;
+
+  int l = 128;
+  omp_lock_t* box_lock = (omp_lock_t*)malloc(l*sizeof(omp_lock_t));
+  for(int i = 0; i < l; i++)
     {
-      DBox bx = m_bdry[k];
-      //bx.print();
-      //      for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
-#pragma omp parallel for reduction (+:enlargedGrid)
-      for (int i = 0; i < bx.sizeOf(); i++)
-	{
-	  Point pt = bx.getPoint(i);
-          int image[DIM];
-          for (int dir = 0; dir < DIM; dir++)
-            {
-              image[dir] = (pt[dir] + m_domainSize[dir])%m_domainSize[dir];
-            }
-          Point ptimage(image);
-	  // cout<<"pt =";
-	  // pt.print();
-	  // cout<<"ptimage =";
-	  // ptimage.print();
-	  // cout<<"value ="<< enlargedGrid[pt]<<endl;
-          enlargedGrid[ptimage] = enlargedGrid[ptimage] + enlargedGrid[pt];
-        }
+      omp_init_lock(&box_lock[i]);
     }
+#pragma omp parallel num_threads(4) shared(enlargedGrid, box_lock) 
+  {
+    for (int k = 0; k < 2*DIM; k++)
+      {
+	DBox bx = m_bdry[k];
+	//bx.print();
+	//      for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
+#pragma omp for   
+	for (int i = 0; i < bx.sizeOf(); i++)
+	  {
+	    Point pt = bx.getPoint(i);
+	    int image[DIM];
+	    for (int dir = 0; dir < DIM; dir++)
+	      {
+		image[dir] = (pt[dir] + m_domainSize[dir])%m_domainSize[dir];
+	      }
+	    Point ptimage(image);
+	    // cout<<"pt =";
+	    // pt.print();
+	    // cout<<"ptimage =";
+	    // ptimage.print();
+	    // cout<<"value ="<< enlargedGrid[pt]<<endl;
+	    int j = m_box.getIndex(ptimage);
+	    //cout << "ptimage= " << j << "m_box= " << m_box.sizeOf() << endl;
+	    
+	    //int num = omp_get_num_threads();
+	    //cout << num << endl;
+	    //int ID = omp_get_thread_num();
+	    
+	    //	  cout << "test locks =" << omp_test_lock(&box_lock[j]) << endl;
+	    omp_set_lock(&box_lock[j]);
+	    //cout <<" lock using= " << j << endl;
+	    enlargedGrid[ptimage] += enlargedGrid[pt];
+	    omp_unset_lock(&box_lock[j]);
+	  }
+      }
+  }
+  for (int i = 0; i < l; i++)
+    {
+      omp_destroy_lock(&box_lock[i]);
+    }
+  free(box_lock);
 }
-// void ParticleVelocities::setGhost(RectMDArray<double>& enlargedGrid)
+// Void
+// Particlevelocities
+//::setGhost(RectMDArray<double>& enlargedGrid)
 // {
 //   for (int k = 0; k < 2*DIM; k++)
 //     {
@@ -107,12 +139,14 @@ void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
 //     }
 // }
 void ParticleVelocities::setGhost(RectMDArray<double>& enlargedGrid)
-{
+{ 
   for (int k = 0; k < 2*DIM; k++)
     {
       DBox bx = m_bdry[k];
-      for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
+#pragma omp parallel for num_threads(4)
+      for (int i = 0; i < bx.sizeOf(); i++)
         {
+          Point pt = bx.getPoint(i);
           int image[DIM];
           for (int dir = 0; dir < DIM; dir++)
             {
@@ -126,13 +160,16 @@ void ParticleVelocities::setGhost(RectMDArray<double>& enlargedGrid)
         }
     }
 }
+
 void ParticleVelocities::setGhostMD(RectMDArray<double, DIM>& enlargedGrid)
-{
+{   
   for (int k = 0; k < 2*DIM; k++)
     {
-      DBox bx = m_bdry[k];
-      for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
+      DBox bx = m_bdry[k]; 
+#pragma omp parallel for num_threads(4)
+      for (int i = 0; i < bx.sizeOf(); i++)
         {
+          Point pt = bx.getPoint(i);
           int image[DIM];
           for (int dir = 0; dir < DIM; dir++)
             {
@@ -153,6 +190,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   //First need to compute a_state.m_x + dt*a_state.m_v + a_k
   //dt is used to control how much of the velocity is added since it isn't used anywhere else
   vector<Particle> t_particles = a_state.m_particles;
+#pragma omp parallel for schedule(dynamic)
   for (int j = 0; j<a_k.m_particles.size(); j++)
     {
       t_particles[j].addVelocity(dt);
@@ -174,16 +212,21 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   //     cout<<density[p]<<endl;
   //   }
   // Deals with Ghost Cells 
+  //cout << "stopped here" << endl;
   getGhostDeposition(density);
+  // cout << "finished once" << endl;
   //setGhost(density);
   // Solve Poisson's Equation with Periodic Boundary Conditions 
   //write density into phu
-  for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
+  int l = phiBox.sizeOf();
+#pragma omp parallel for
+  for (int i = 0; i < l; i++)
     {
+      Point p = phiBox.getPoint(i);
       phi[p] = density[p];
       // cout<<"phi[ ";
-      // p.print();
-      // cout<< "]"<<phi[p]<<endl;
+      //p.print();
+      //cout<< "]"<<phi[p]<<endl;
     }
   //Poisson solve
   PS.Solve( phi);
@@ -194,16 +237,20 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   //     cout<<phi[p]<<endl;
   //   }
   //Write Phi values out back into dbox with ghost cells
-  for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
+#pragma omp parallel for
+  for (int i = 0; i < l; i++)
   {
-   density[p] = phi[p];
+    Point p = phiBox.getPoint(i);
+    density[p] = phi[p];
    // cout<<"phi[ ";
    // p.print();
    // cout<< "]"<<phi[p]<<endl;
   }
   //Set ghost cells for computing the gradient
   //cout<<"Set Ghost"<<endl;
+  //cout << "setGhost start" << endl;
   setGhost(density);
+  //cout << "setGhost finished" << endl;
   // for (Point p=density.getDBox().getLowCorner(); density.getDBox().notDone(p); density.getDBox().increment(p))
   // {
   //   cout<<"density[ ";
@@ -212,8 +259,11 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   // }
   // Finite Difference 4th order first derivative
   //cout<<"Made it to FD step"<<endl;
-  for (Point p=m_box.getLowCorner(); m_box.notDone(p); m_box.increment(p))
+  int r = m_box.sizeOf();
+#pragma omp parallel for schedule(dynamic)
+  for (int i = 0; i < r; i++)
     {
+      Point p = m_box.getPoint(i);
       //p.print();
       for (int j = 0; j<DIM; j++)
 	{
@@ -228,30 +278,35 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
 	      
 	}
     }
+
+  //cout << "setGhostMD start" << endl;
   setGhostMD(EField);
+  //cout << "setGhostMD finish" << endl;
   //Computes Electric Field Energy for plotting in LLD case.
   if (abs(dt) <=pow(10.0, -16))
     {
       double EField_Amplitude = 0.0;
-      for (Point p=m_box.getLowCorner(); m_box.notDone(p); m_box.increment(p))
+#pragma omp parallel for collapse(2) reduction(+:EField_Amplitude)
+      for (int i = 0; i < r; i++)
 	{
 	  for (int j = 0; j<DIM; j++)
 	    {
+	      Point p = m_box.getPoint(i);
 	      EField_Amplitude += pow(EField(p, j), 2);    
 	    }
 	}
       EField_Amplitude*=m_dx;
       EField_Amplitude = sqrt(EField_Amplitude);
-      cout<< EField_Amplitude<<endl;
+      cout<< " EField_Amplitude = " << EField_Amplitude <<endl;
     }
   //Interpolate back and return particle fields in a_k
   //cout<<"Made it out of FD step"<<endl;
   a_k.zeroEField();
+  //cout << "InterpolateForce start" << endl;
   a_state.InterpolateForce(EField, a_k.m_particles);
-
-  // for (auto iter = a_k.m_particles.begin(); iter!= a_k.m_particles.end(); ++iter)
+  // cout << "InterpolateForce finish" << endl;
+  //  for (auto iter = a_k.m_particles.begin(); iter!= a_k.m_particles.end(); ++iter)
   //   {
-  //     iter->print();
-  //   }
-  
+  //    iter->print();
+  //   }  
 }

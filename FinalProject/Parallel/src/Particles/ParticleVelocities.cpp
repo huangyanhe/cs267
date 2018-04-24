@@ -165,6 +165,8 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   //phi.setVal(0.0);
   //cout<<"At Deposit"<<endl;
   a_state.deposit(density,  t_particles);
+
+  
   // for (Point p=density.getDBox().getLowCorner(); density.getDBox().notDone(p); density.getDBox().increment(p))
   //   {
   //     p.print();
@@ -182,6 +184,17 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
       // p.print();
       // cout<< "]"<<phi[p]<<endl;
     }
+
+   // MPI Communication
+  double temp_array[phi.dataSize()];
+  MPI_Allreduce(&phi[0], &temp_array[0], phi.dataSize(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  //Could potentially replace this with a fucntion redefining the pointer for RectMDArray
+  for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
+    {
+      phi[p] = temp_array[phi.getDBox().getIndex(p)]; 
+    }
+  
+  
   //Poisson solve
   PS.Solve( phi);
   // cout<<"Made it out of solve"<<endl;

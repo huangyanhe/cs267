@@ -71,6 +71,19 @@ int main(int argc, char* argv[])
   double timeStop;
   cin >> timeStop;
 
+  //
+  //  set up MPI
+  //
+  int n_proc, rank;
+  MPI_Init( &argc, &argv );
+  MPI_Comm_size( MPI_COMM_WORLD, &n_proc );
+  MPI_Comm_rank( MPI_COMM_WORLD, &rank );
+
+  MPI_Datatype PARTICLE;
+  MPI_Type_contiguous( 3*DIM+1, MPI_DOUBLE, &PARTICLE );
+  MPI_Type_commit( &PARTICLE );
+  
+  
   //N = 2*Grid_Size in Matlab
   N = Power(2,M);
   double alpha = 0.05;
@@ -104,7 +117,7 @@ int main(int argc, char* argv[])
   Point highCorner(inthighCorner);
   DBox domain(lowCorner, highCorner);
   //domain.print();
-  ParticleSet p(domain, h, lowCorn, M, L, order, smoothness );
+  
 
   //Assumes equally spaced grids in x and v.
   //Changing this is pretty easy.
@@ -133,84 +146,87 @@ int main(int argc, char* argv[])
     {
       Modes[j] = 1.0/2.0;
     }
+
+  ParticleSet p(domain, h, lowCorn, M, L, order, smoothness );
+  int totalNumParticles;
+  if (rank == 0)
+    {
+      //cout<<"Num Particles = "<<Power(Np, DIM)*Power(2*Np, DIM) <<endl;
+      if (test == 1)
+	{
+      
+	  p.m_particles.resize(Power(Np, DIM)*Power(2*Np, DIM));
+	  int j = 0;
+	  for (Point ptV=PhaseVSpace.getLowCorner(); PhaseVSpace.notDone(ptV); PhaseVSpace.increment(ptV))
+	    {
+	      for (Point ptX=PhaseXSpace.getLowCorner(); PhaseXSpace.notDone(ptX); PhaseXSpace.increment(ptX), j++)
+		{
+		  for(int k=0; k<DIM; k++)
+		    {
+		      p.m_particles[j].m_x[k] = ptX[k]*hp;
+		      p.m_particles[j].m_v[k] = ptV[k]*hp;
+		      p.m_particles[j].EField[k] = 0.0;
+		    }
+		  double fFirstTerm= 1.0;
+		  double fSecondTerm =1.0;
+		  for(int k=0; k<DIM; k++)
+		    {
+		      fFirstTerm *= exp(-p.m_particles[j].m_v[k]*vmax*p.m_particles[j].m_v[k]*vmax/2.0);
+		      fSecondTerm *= exp(-p.m_particles[j].m_v[k]*vmax*p.m_particles[j].m_v[k]*vmax/2.0)*cos(Modes[k]*p.m_particles[j].m_x[k]*L);
+		    }
+		  p.m_particles[j].strength = 1/sqrt(2.0*M_PI)*(fFirstTerm + alpha*fSecondTerm)*pow(hp*L,DIM)*pow(hp*vmax,DIM);
+		}
+	    }
+	
+	}
+
+      p.m_particles.erase(remove_if(p.m_particles.begin(), p.m_particles.end(), removeParticle), p.m_particles.end());
+      totalNumParticles = p.m_particles.size();
+    }
+
   
-  //cout<<"Num Particles = "<<Power(Np, DIM)*Power(2*Np, DIM) <<endl;
-  if (test == 1)
-  {
-    p.m_particles.resize(Power(Np, DIM)*Power(2*Np, DIM));
-    int j = 0;
-    for (Point ptV=PhaseVSpace.getLowCorner(); PhaseVSpace.notDone(ptV); PhaseVSpace.increment(ptV))
-      {
-	for (Point ptX=PhaseXSpace.getLowCorner(); PhaseXSpace.notDone(ptX); PhaseXSpace.increment(ptX), j++)
-	  {
-	    //p.m_particles.push_back();
-	    for(int k=0; k<DIM; k++)
-	      {
-		//p.m_particles[j].m_x[k] = ptX[k]*hp*L;
-		//p.m_particles[j].m_v[k] = ptV[k]*hp*vmax;
-		p.m_particles[j].m_x[k] = ptX[k]*hp;
-		p.m_particles[j].m_v[k] = ptV[k]*hp;
-		p.m_particles[j].EField[k] = 0.0;
-	      }
-	    double fFirstTerm= 1.0;
-	    double fSecondTerm =1.0;
-	    for(int k=0; k<DIM; k++)
-	      {
-		//fFirstTerm *= exp(-p.m_particles[j].m_v[k]*p.m_particles[j].m_v[k]/2.0);
-		//fSecondTerm *= exp(-p.m_particles[j].m_v[k]*p.m_particles[j].m_v[k]/2.0)*cos(Modes[k]*p.m_particles[j].m_x[k]);
-		fFirstTerm *= exp(-p.m_particles[j].m_v[k]*vmax*p.m_particles[j].m_v[k]*vmax/2.0);
-		fSecondTerm *= exp(-p.m_particles[j].m_v[k]*vmax*p.m_particles[j].m_v[k]*vmax/2.0)*cos(Modes[k]*p.m_particles[j].m_x[k]*L);
-	      }
-	    p.m_particles[j].strength = 1/sqrt(2.0*M_PI)*(fFirstTerm + alpha*fSecondTerm)*pow(hp*L,DIM)*pow(hp*vmax,DIM);
-	  }
-      }
-  }
+  //
+  //  set up the data partitioning across processors
+  //
+  int particle_per_proc = (totalNumParticles + n_proc - 1) / n_proc;
+  int *partition_offsets = (int*) malloc( (n_proc+1) * sizeof(int) );
+  for( int i = 0; i < n_proc+1; i++ )
+    partition_offsets[i] = min( i * particle_per_proc, n );
+    
+  int *partition_sizes = (int*) malloc( n_proc * sizeof(int) );
+  for( int i = 0; i < n_proc; i++ )
+    partition_sizes[i] = partition_offsets[i+1] - partition_offsets[i];
 
-  p.m_particles.erase(remove_if(p.m_particles.begin(), p.m_particles.end(), removeParticle), p.m_particles.end());
-
+  //
+  //  allocate storage for local partition
+  //
+  ParticleSet plocal(domain, h, lowCorn, M, L, order, smoothness );
+  int nlocal = partition_sizes[rank];
+  plocal.m_particles.resize(nlocal);
+  MPI_Scatterv( p.m_particles, partition_sizes, partition_offsets, PARTICLE, plocal.m_particles, nlocal, PARTICLE, 0, MPI_COMM_WORLD );
+  
   // for (auto it=p.m_particles.begin(); it!=p.m_particles.end(); ++it)
   //   {
   //     it->print();
   //   }
-  
-  //Need to check on some of these parameters.
-  double dx = 1./N;
-  //cout << "number of particles = " << p.m_particles.size() << endl;
-  ParticleShift kIn,kOut;
-  kIn.init(p);
-  kOut.init(p);
-  kIn.setToZero();
-  //cout<<"In Particle Velocities"<<endl;
-  //ParticleVelocities pv(p); 
-  //cout<<"Out Particle Velocities"<<endl;
+
   double time = 0.;
   double dt = 2.0/N;
+  //Max number of time steps
   int m = 5000;
 
   RK4<ParticleSet,ParticleVelocities,ParticleShift> integrator;
-  integrator.define(p);
-// #if ANIMATION
-//   outField(p,pcfactor);
-//   PWrite(&p);
-// #endif 
+  integrator.define(plocal);
+
   for(int i=0; i<m; i++)
     {
       integrator.advance(time, dt, p);
       time = time + dt;
       cout<<time<<endl;
-      //cout << "time = " << time << "  dt " << dt << endl;
-// #if ANIMATION
-//       outField(p,pcfactor);
-//       PWrite(&p);
-// #endif
+
       if (time >= timeStop) 
         {
           break;
         }
     }
-  // if (!((test == 1) || (test == 2) || (test == 3)))
-  //   {
-  //     outField(p,pcfactor);
-  //     PWrite(&p);
-  //   }
 }

@@ -55,7 +55,7 @@ void outField(ParticleSet& p, int a_coarsenFactor)
 };
 int main(int argc, char* argv[])
 {
-  unsigned int M = 6;
+  unsigned int M = 5;
   unsigned int N;
   //cout << "input test = 1 (Linear Landau Damping), 2, other" << endl;
   int test=1;
@@ -90,8 +90,8 @@ int main(int argc, char* argv[])
   
   //N = 2*Grid_Size in Matlab
   N = Power(2,M);
-  double alpha = 0.01;
-  double vmax = 10.0;
+  double alpha = 0.05;
+  double vmax = 6.0;
   double L = 4*M_PI;
   int cfactor = 2;
   double h = 1./N;

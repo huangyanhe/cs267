@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
   //unsigned int cfactor;
   //cin >> cfactor;
   //cout << "enter stopping time" << endl;
-  double timeStop = 10.0;
+  double timeStop = 30;
   //cin >> timeStop;
 
   //
@@ -188,19 +188,22 @@ int main(int argc, char* argv[])
       totalNumParticles = p.m_particles.size();
     }
 
-  
+ MPI_Bcast( &totalNumParticles, 1, MPI_INT, 0, MPI_COMM_WORLD); 
   //
   //  set up the data partitioning across processors
   //
   int particle_per_proc = (totalNumParticles + n_proc - 1) / n_proc;
+  cout<<"Particles per Processor ="<< particle_per_proc<<endl;
   int *partition_offsets = (int*) malloc( (n_proc+1) * sizeof(int) );
   for( int i = 0; i < n_proc+1; i++ )
     partition_offsets[i] = min( i * particle_per_proc, totalNumParticles );
     
   int *partition_sizes = (int*) malloc( n_proc * sizeof(int) );
   for( int i = 0; i < n_proc; i++ )
+  {
     partition_sizes[i] = partition_offsets[i+1] - partition_offsets[i];
-
+    cout<<"rank ="<< rank<< " Partition sizes= "<< partition_sizes[i]<<endl; 
+  }
   //
   //  allocate storage for local partition
   //
@@ -229,8 +232,10 @@ int main(int argc, char* argv[])
     {
       integrator.advance(time, dt, plocal);
       time = time + dt;
-      cout<<time<<endl;
-
+      if (rank == 0)
+      {
+        cout<<time<<endl;
+      }
       if (time >= timeStop) 
         {
           break;

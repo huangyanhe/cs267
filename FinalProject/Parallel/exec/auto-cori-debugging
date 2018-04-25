@@ -8,4 +8,4 @@
 #SBATCH -J auto-cori-debugging.%j.error
 
 rm mpi.txt
-srun -n 1 -N 2 ./PIC1p1D.exe -no -s mpi.txt
+srun -n 2 -N 2 ./PIC1p1D.exe -no -s mpi.txt

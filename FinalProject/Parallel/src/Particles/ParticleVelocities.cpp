@@ -186,7 +186,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
     }
 
    // MPI Communication
-  cout<<"Made it to Allreduce"<<endl;
+ // cout<<"Made it to Allreduce"<<endl;
   double temp_array1[phi.dataSize()];
   double temp_array2[phi.dataSize()];
   for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
@@ -194,12 +194,12 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   //      cout<<"Linear index"<<phi.getDBox().getIndex(p)<<endl;
         temp_array2[phi.getDBox().getIndex(p)] = phi[p]; 
     }
-  cout<<"Phi Data Size = "<<phi.dataSize()<<endl;
-  cout<< "dbox high corner = "<<endl;
-  phi.getDBox().getHighCorner().print();
+//  cout<<"Phi Data Size = "<<phi.dataSize()<<endl;
+  //cout<< "dbox high corner = "<<endl;
+  //phi.getDBox().getHighCorner().print();
   MPI_Allreduce(&temp_array2, &temp_array1, phi.dataSize(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
   //Could potentially replace this with a fucntion redefining the pointer for RectMDArray
-  cout<<"Made it past Allreduce"<<endl;
+  //cout<<"Made it past Allreduce"<<endl;
   for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
     {
       phi[p] = temp_array1[phi.getDBox().getIndex(p)]; 

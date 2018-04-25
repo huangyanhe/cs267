@@ -1,0 +1,79 @@
+rm: cannot remove 'mpi.txt': No such file or directory
+Particles per Processor =4573920
+rank =1 Partition sizes= 4573920
+rank =1 Partition sizes= 4573920
+Particles per Processor =152
+rank =0 Partition sizes= 152
+rank =0 Partition sizes= 152
+Made it to scatter
+Made it past Scatter
+Num Particles[0] = 152
+Made it to Allreduce
+Phi Data Size = 8
+dbox high corner = 
+(7)
+Made it to scatter
+Made it past Scatter
+Num Particles[1] = 4573920
+Made it to Allreduce
+Phi Data Size = 8
+dbox high corner = 
+(7)
+Made it past Allreduce
+Made it past Allreduce
+0.0695814
+Made it to Allreduce
+Phi Data Size = 8
+dbox high corner = 
+(7)
+Made it past Allreduce
+Made it to Allreduce
+Phi Data Size = 8
+dbox high corner = 
+(7)
+Made it to Allreduce
+Phi Data Size = 8
+Made it past Allreduce
+dbox high corner = 
+(7)
+Made it past Allreduce
+0.25
+Made it to Allreduce
+Phi Data Size = 8
+dbox high corner = 
+(7)
+Made it to Allreduce
+Phi Data Size = 8
+Made it past Allreduce
+dbox high corner = 
+(7)
+0.25
+Made it past Allreduce
+0.0665661
+Made it to Allreduce
+Phi Data Size = 8
+dbox high corner = 
+(7)
+Made it to Allreduce
+Phi Data Size = 8
+Made it past Allreduce
+dbox high corner = 
+(7)
+Made it past Allreduce
+Made it to Allreduce
+Phi Data Size = 8
+Made it to Allreduce
+Phi Data Size = 8
+dbox high corner = 
+(7)
+dbox high corner = 
+(7)
+Made it past Allreduce
+Made it past Allreduce
+Made it to Allreduce
+Phi Data Size = 8
+dbox high corner = 
+(7)
+0.5
+Made it past Allreduce
+0.5

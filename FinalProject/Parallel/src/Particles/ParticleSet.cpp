@@ -53,129 +53,129 @@ void ParticleSet::incrementDelta(const ParticleShift& a_shift, double a_dt)
 }
 // Dimensionally Independent Deposition
 
-void  ParticleSet::deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_particles)
-{
-#pragma omp parallel 
-  {
-    RectMDArray<double> copy_Charge(a_Charge.getDBox());
-    copy_Charge.setVal(0.0);
-    array<double,DIM> pos; 
-    array<int,DIM> iposLow, iposHigh;
-#pragma omp for schedule(static) 
-    for (int it = 0; it < t_particles.size(); it++)
-      {
-	for (int l = 0; l < DIM; l++)
-	  {
-	    pos[l] = t_particles[it].m_x[l];
-	    iposLow[l] = floor(pos[l]/m_dx);
-	    iposHigh[l] = ceil(pos[l]/m_dx); 
-	  }
+// void  ParticleSet::deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_particles)
+// {
+// #pragma omp parallel 
+//   {
+//     RectMDArray<double> copy_Charge(a_Charge.getDBox());
+//     copy_Charge.setVal(0.0);
+//     array<double,DIM> pos; 
+//     array<int,DIM> iposLow, iposHigh;
+// #pragma omp for schedule(static) 
+//     for (int it = 0; it < t_particles.size(); it++)
+//       {
+// 	for (int l = 0; l < DIM; l++)
+// 	  {
+// 	    pos[l] = t_particles[it].m_x[l];
+// 	    iposLow[l] = floor(pos[l]/m_dx);
+// 	    iposHigh[l] = ceil(pos[l]/m_dx); 
+// 	  }
 	
-	Point Shift = getUnitv(0);
-	Shift *= 0;
-	for (int j =0; j<DIM; j++)
-	  {
-	    Shift += getUnitv(j);
-	  }
-	Shift *= (m_W.supportSize() - 1);
-	Point HighCorner(iposHigh);
-	Point LowCorner(iposLow);
-	Point LC = (LowCorner - Shift);
-	Point HC = (HighCorner+ Shift);
-	DBox SupportBox(LC, HC);
-	double interpcoeff = 1/pow(m_dx*m_L, DIM)*t_particles[it].strength;
-	int index;
-	for (Point s = SupportBox.getLowCorner(); SupportBox.notDone(s); SupportBox.increment(s))
-	  {
-	    double KernelProduct = 1.0;
-	    for (int j =0; j<DIM; j++)
-	      {
-		int region = min(abs(s[j] - LowCorner[j]), abs(s[j] - HighCorner[j]));
-		double val = abs(s[j]*m_dx - pos[j])/m_dx;
-		KernelProduct *= m_W.apply(val, region);
-	      }
-	    copy_Charge[s] += interpcoeff*KernelProduct;
-	  }
-      }
-#pragma omp critical
-    {
-      a_Charge += copy_Charge;
-    }
-  }
-}
+// 	Point Shift = getUnitv(0);
+// 	Shift *= 0;
+// 	for (int j =0; j<DIM; j++)
+// 	  {
+// 	    Shift += getUnitv(j);
+// 	  }
+// 	Shift *= (m_W.supportSize() - 1);
+// 	Point HighCorner(iposHigh);
+// 	Point LowCorner(iposLow);
+// 	Point LC = (LowCorner - Shift);
+// 	Point HC = (HighCorner+ Shift);
+// 	DBox SupportBox(LC, HC);
+// 	double interpcoeff = 1/pow(m_dx*m_L, DIM)*t_particles[it].strength;
+// 	int index;
+// 	for (Point s = SupportBox.getLowCorner(); SupportBox.notDone(s); SupportBox.increment(s))
+// 	  {
+// 	    double KernelProduct = 1.0;
+// 	    for (int j =0; j<DIM; j++)
+// 	      {
+// 		int region = min(abs(s[j] - LowCorner[j]), abs(s[j] - HighCorner[j]));
+// 		double val = abs(s[j]*m_dx - pos[j])/m_dx;
+// 		KernelProduct *= m_W.apply(val, region);
+// 	      }
+// 	    copy_Charge[s] += interpcoeff*KernelProduct;
+// 	  }
+//       }
+// #pragma omp critical
+//     {
+//       a_Charge += copy_Charge;
+//     }
+//   }
+// }
  
 //deposition version 2
 
-// void  ParticleSet::deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_particles)
-// {
-//   DBox box_charge = a_Charge.getDBox();  
-//   int l = a_Charge.dataSize();
-//   //cout << "l = " << l <<endl;
-//   // For (auto it= t_particles.begin(); it!= t_particles.end(); ++it)
-//   //   {
-//   //     it->print();
-//   //   }
-//   // cout<<"m_dx = "<< m_dx<<endl;
-//   // m_box.print();
-//   // a_Charge.getDBox().print();
-//   omp_lock_t* charge_lock = (omp_lock_t*)malloc(l*sizeof(omp_lock_t));
-//   for(int i = 0; i < l; i++) 
-//     {
-//       omp_init_lock(&charge_lock[i]);
-//     }
-// #pragma omp parallel for num_threads(2) schedule(dynamic)
-//   for (int it = 0; it < t_particles.size(); it++)
-//     {
-//       array<double,DIM> pos;
-//       array<int,DIM> iposLow, iposHigh;
-//       for (int l = 0; l < DIM; l++)
-//         {
-// 	  pos[l] = t_particles[it].m_x[l];
-// 	  iposLow[l] = floor(pos[l]/m_dx);
-// 	  iposHigh[l] = ceil(pos[l]/m_dx); 
-// 	}
+void  ParticleSet::deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_particles)
+{
+  DBox box_charge = a_Charge.getDBox();  
+  int l = a_Charge.dataSize();
+  //cout << "l = " << l <<endl;
+  // For (auto it= t_particles.begin(); it!= t_particles.end(); ++it)
+  //   {
+  //     it->print();
+  //   }
+  // cout<<"m_dx = "<< m_dx<<endl;
+  // m_box.print();
+  // a_Charge.getDBox().print();
+  omp_lock_t* charge_lock = (omp_lock_t*)malloc(l*sizeof(omp_lock_t));
+  for(int i = 0; i < l; i++) 
+    {
+      omp_init_lock(&charge_lock[i]);
+    }
+#pragma omp parallel for num_threads(2) schedule(dynamic)
+  for (int it = 0; it < t_particles.size(); it++)
+    {
+      array<double,DIM> pos;
+      array<int,DIM> iposLow, iposHigh;
+      for (int l = 0; l < DIM; l++)
+        {
+	  pos[l] = t_particles[it].m_x[l];
+	  iposLow[l] = floor(pos[l]/m_dx);
+	  iposHigh[l] = ceil(pos[l]/m_dx); 
+	}
 
-//       Point Shift = getUnitv(0);
-//       Shift *= 0;
-//       for (int j =0; j<DIM; j++)
-// 	{
-// 	  Shift += getUnitv(j);
-// 	}
-//       Shift *= (m_W.supportSize() - 1);
-//       Point HighCorner(iposHigh);
-//       Point LowCorner(iposLow);
-//       Point LC = (LowCorner - Shift);
-//       Point HC = (HighCorner+ Shift);
-//       DBox SupportBox(LC, HC);
-//       //SupportBox.print();
-//       //Only place that it seems like the scaling needs to be taken into account.
-//       double interpcoeff = 1/pow(m_dx*m_L, DIM)*t_particles[it].strength;
-//       int index;
-//       for (Point s = SupportBox.getLowCorner(); SupportBox.notDone(s); SupportBox.increment(s))
-// 	{
-// 	  double KernelProduct = 1.0;
-// 	  for (int j =0; j<DIM; j++)
-// 	    {
-// 	      int region = min(abs(s[j] - LowCorner[j]), abs(s[j] - HighCorner[j]));
-// 	      double val = abs(s[j]*m_dx - pos[j])/m_dx;
-// 	      //cout<<"s[j] = "<<s[j]<<endl;
-// 	      //cout<<"val = "<<val<<endl;
-// 	      KernelProduct *= m_W.apply(val, region);
-// 	    }
-// 	  index = box_charge.getIndex(s);
-// 	  omp_set_lock(&charge_lock[index]);
-// 	  //cout << "index = " << index << endl;
-// 	  a_Charge[s] += interpcoeff*KernelProduct;
-// 	  omp_unset_lock(&charge_lock[index]);
-// 	}
-//     }
-//   for(int i = 0; i < l; i++)
-//     {
-//       omp_destroy_lock(&charge_lock[i]);
-//     }
-//   free(charge_lock);
-//   //cout << a_Charge[box_charge.getLowCorner()] << endl;
-//}
+      Point Shift = getUnitv(0);
+      Shift *= 0;
+      for (int j =0; j<DIM; j++)
+	{
+	  Shift += getUnitv(j);
+	}
+      Shift *= (m_W.supportSize() - 1);
+      Point HighCorner(iposHigh);
+      Point LowCorner(iposLow);
+      Point LC = (LowCorner - Shift);
+      Point HC = (HighCorner+ Shift);
+      DBox SupportBox(LC, HC);
+      //SupportBox.print();
+      //Only place that it seems like the scaling needs to be taken into account.
+      double interpcoeff = 1/pow(m_dx*m_L, DIM)*t_particles[it].strength;
+      int index;
+      for (Point s = SupportBox.getLowCorner(); SupportBox.notDone(s); SupportBox.increment(s))
+	{
+	  double KernelProduct = 1.0;
+	  for (int j =0; j<DIM; j++)
+	    {
+	      int region = min(abs(s[j] - LowCorner[j]), abs(s[j] - HighCorner[j]));
+	      double val = abs(s[j]*m_dx - pos[j])/m_dx;
+	      //cout<<"s[j] = "<<s[j]<<endl;
+	      //cout<<"val = "<<val<<endl;
+	      KernelProduct *= m_W.apply(val, region);
+	    }
+	  index = box_charge.getIndex(s);
+	  omp_set_lock(&charge_lock[index]);
+	  //cout << "index = " << index << endl;
+	  a_Charge[s] += interpcoeff*KernelProduct;
+	  omp_unset_lock(&charge_lock[index]);
+	}
+    }
+  for(int i = 0; i < l; i++)
+    {
+      omp_destroy_lock(&charge_lock[i]);
+    }
+  free(charge_lock);
+  //cout << a_Charge[box_charge.getLowCorner()] << endl;
+}
 
 void  ParticleSet::deposit(RectMDArray<double>& a_Charge)
 {

@@ -184,7 +184,7 @@ int main(int argc, char* argv[])
   //ParticleVelocities pv(p); 
   //cout<<"Out Particle Velocities"<<endl;
   double time = 0.;
-  double dt = 2.0/N;
+  double dt = 1.0/N;
   int m = 5000;
 
   RK4<ParticleSet,ParticleVelocities,ParticleShift> integrator;

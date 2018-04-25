@@ -9,6 +9,9 @@
 #include "WriteRectMDArray.H" 
 #include "VisitWriter.H"
 #include "RK4.H"
+
+inline int min(int a, int b){return a < b ? a : b;}
+
 auto removeParticle = [](Particle p) -> bool
 {
   double minStrength = pow(10.0, -9);
@@ -192,7 +195,7 @@ int main(int argc, char* argv[])
   int particle_per_proc = (totalNumParticles + n_proc - 1) / n_proc;
   int *partition_offsets = (int*) malloc( (n_proc+1) * sizeof(int) );
   for( int i = 0; i < n_proc+1; i++ )
-    partition_offsets[i] = min( i * particle_per_proc, n );
+    partition_offsets[i] = min( i * particle_per_proc, totalNumParticles );
     
   int *partition_sizes = (int*) malloc( n_proc * sizeof(int) );
   for( int i = 0; i < n_proc; i++ )
@@ -204,7 +207,7 @@ int main(int argc, char* argv[])
   ParticleSet plocal(domain, h, lowCorn, M, L, order, smoothness );
   int nlocal = partition_sizes[rank];
   plocal.m_particles.resize(nlocal);
-  MPI_Scatterv( p.m_particles, partition_sizes, partition_offsets, PARTICLE, plocal.m_particles, nlocal, PARTICLE, 0, MPI_COMM_WORLD );
+  MPI_Scatterv( &p.m_particles, partition_sizes, partition_offsets, PARTICLE, &plocal.m_particles, nlocal, PARTICLE, 0, MPI_COMM_WORLD );
   
   // for (auto it=p.m_particles.begin(); it!=p.m_particles.end(); ++it)
   //   {

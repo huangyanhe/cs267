@@ -12,7 +12,7 @@ VPATH= . $(HOME) $(PARTICLES) $(RMDA) $(FFT) $(PS) $(TIMER) $(WRITERS) $(IK)
 ANIMATION = 1
 
 DIM=1
-#CXX = CC
+CXX = CC
 MPCC = CC
 #CXX=clang++
 FFTWDIR = /opt/cray/pe/fftw/3.3.4.6/haswell
@@ -20,6 +20,7 @@ FFTWDIR = /opt/cray/pe/fftw/3.3.4.6/haswell
 #CFLAGS = -g -Wall
 #CFLAGS = -O3
 CFLAGS =
+CFLAGS += $(MPILIBS)
 CFLAGS += -std=c++11
 CFLAGS += -I$(PARTICLES) -I$(RMDA) -I$(IK) -I$(PS) -I$(FFT) -I$(TIMER) -I$(WRITERS) -I$(FFTWDIR)/include
 
@@ -42,7 +43,7 @@ $(odir)/%.o:%.cpp GNUmakefile
 	mkdir -p $(ddir);$(CXX) -MM $(CFLAGS) $< | sed '1s/^/o.$(DIM)d\//' > $*.d;mv $*.d $(ddir)
 
 PICLLD: GNUmakefile $(OBJS) 
-	$(MPCC) $(CFLAGS) $(OBJS) $(LIBS) -o $(MPILIBS) PIC$(DIM)p$(DIM)D.exe
+	$(MPCC) $(CFLAGS) $(OBJS) $(LIBS) -o PIC$(DIM)p$(DIM)D.exe
 
 -include $(DEPS)
 

@@ -70,13 +70,14 @@ void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
   //cout<<"At getGhostDeposition"<<endl;
   //cout << "m_box = " << m_box.sizeOf() << endl;
 
-  int l = 128;
+  
+  int l = enlargedGrid.dataSize();
   omp_lock_t* box_lock = (omp_lock_t*)malloc(l*sizeof(omp_lock_t));
   for(int i = 0; i < l; i++)
     {
       omp_init_lock(&box_lock[i]);
     }
-#pragma omp parallel num_threads(4) shared(enlargedGrid, box_lock) 
+#pragma omp parallel shared(enlargedGrid, box_lock) 
   {
     for (int k = 0; k < 2*DIM; k++)
       {
@@ -143,7 +144,7 @@ void ParticleVelocities::setGhost(RectMDArray<double>& enlargedGrid)
   for (int k = 0; k < 2*DIM; k++)
     {
       DBox bx = m_bdry[k];
-#pragma omp parallel for num_threads(4)
+#pragma omp parallel for 
       for (int i = 0; i < bx.sizeOf(); i++)
         {
           Point pt = bx.getPoint(i);
@@ -166,7 +167,7 @@ void ParticleVelocities::setGhostMD(RectMDArray<double, DIM>& enlargedGrid)
   for (int k = 0; k < 2*DIM; k++)
     {
       DBox bx = m_bdry[k]; 
-#pragma omp parallel for num_threads(4)
+#pragma omp parallel for 
       for (int i = 0; i < bx.sizeOf(); i++)
         {
           Point pt = bx.getPoint(i);
@@ -297,7 +298,8 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
 	}
       EField_Amplitude*=m_dx;
       EField_Amplitude = sqrt(EField_Amplitude);
-      cout<< " EField_Amplitude = " << EField_Amplitude <<endl;
+      //      cout<< " EField_Amplitude = " << EField_Amplitude <<endl;
+      cout<<  EField_Amplitude <<endl;
     }
   //Interpolate back and return particle fields in a_k
   //cout<<"Made it out of FD step"<<endl;

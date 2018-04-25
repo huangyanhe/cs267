@@ -85,6 +85,11 @@ template <class T=double, unsigned int C=1>
   inline unsigned int dataSize()
   {return m_box.sizeOf()*C;};
   bool defined() const;
+
+  inline void operator+=(const RectMDArray<T,C>& a_srcArray);
+
+  
+  
 private:
   DBox m_box;
   T* m_rawPtr;
@@ -93,5 +98,5 @@ private:
   RectMDArray(const RectMDArray<T,C>& a_srcArray);
   RectMDArray<T,C> operator=(const RectMDArray<T,C>& a_srcArray);
 };
-#include "RectMDArrayImplem.H"  
+#include "RectMDArrayImplem.H"
 #endif

@@ -40,6 +40,7 @@ $(odir)/%.o:%.cpp GNUmakefile
 #	mkdir -p $(ddir);$(CXX) -MM $(CFLAGS) $<  > $*.d;mv $*.d $(ddir)
 	mkdir -p $(ddir);$(CXX) -MM $(CFLAGS) $< | sed '1s/^/o.$(DIM)d\//' > $*.d;mv $*.d $(ddir)
 
+export OMP_NUM_THREADS=32
 PICLLD: GNUmakefile $(OBJS) 
 	$(CXX) $(CFLAGS) $(OBJS) $(LIBS) -o PIC$(DIM)p$(DIM)D.exe
 

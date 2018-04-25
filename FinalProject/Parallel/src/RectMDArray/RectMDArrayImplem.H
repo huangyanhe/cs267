@@ -106,5 +106,10 @@ template <class T, unsigned int C> const T& RectMDArray<T,C>::operator()(const P
   return m_rawPtr[k+m*a_comp];
 }
 
-
-
+template <class T, unsigned int C> void RectMDArray<T,C>::operator+=(const RectMDArray<T,C>& a_srcArray)
+{
+  for (Point pt=m_box.getLowCorner(); m_box.notDone(pt); m_box.increment(pt))
+    {
+      (*this)[pt] += a_srcArray[pt];
+    }
+}

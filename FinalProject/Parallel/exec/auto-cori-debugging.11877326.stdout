@@ -1,0 +1,2 @@
+rm: cannot remove 'mpi.txt': No such file or directory
+srun: error: Only allocated 2 nodes asked for 32

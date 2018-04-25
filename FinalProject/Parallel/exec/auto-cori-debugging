@@ -1,11 +1,11 @@
 #!/bin/bash -l
 #SBATCH -C haswell
 #SBATCH -p debug
-#SBATCH -N 2
-#SBATCH -t 00:20:00
+#SBATCH -N 32
+#SBATCH -t 00:30:00
 #SBATCH -J auto-cori-debugging 
 #SBATCH -o auto-cori-debugging.%j.stdout 
 #SBATCH -J auto-cori-debugging.%j.error
 
 rm mpi.txt
-srun -n 2 -N 2 ./PIC1p1D.exe -no -s mpi.txt
+srun -n 32 -N 32 ./PIC1p1D.exe -no -s mpi.txt

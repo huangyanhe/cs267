@@ -58,7 +58,7 @@ public:
               DBox& a_box,
               double& a_dx, 
               array<double, DIM>& a_lowCorner,
-              int a_M, double a_L, int order=2, int smoothness=0);
+              int a_M, double& a_L, int order=2, int smoothness=0);
   ParticleSet(){};
   ~ParticleSet(){};
 
@@ -70,8 +70,8 @@ public:
   double m_L;
   /// Spatial grid.
   DBox m_box;
-  /// Location in physical space of m_box.m_lowCorner;
-  array<double,DIM> m_lowCorner;
+  /// Location in physicalspace of m_box.m_lowCorner;
+  array<double, DIM> m_lowCorner;
   /// Interpolation Kernel used for deposition and interpolation
   InterpolationKernel m_W;
   /// RMDA used as temporary for deposition and interpolation. It is defined on Dbox.grow(m_W.support)

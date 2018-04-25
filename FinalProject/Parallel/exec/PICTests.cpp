@@ -1,3 +1,4 @@
+#include <mpi.h>
 #include <iostream>
 #include <cassert>
 #include <cmath>
@@ -229,4 +230,5 @@ int main(int argc, char* argv[])
           break;
         }
     }
+MPI_Finalize( );
 }

@@ -1,5 +1,6 @@
 #ifndef _PARTICLEVELOCITIES_H_
 #define _PARTICLEVELOCITIES_H_
+#include <mpi.h>
 #include <iostream>
 #include <cassert>
 #include <cmath>

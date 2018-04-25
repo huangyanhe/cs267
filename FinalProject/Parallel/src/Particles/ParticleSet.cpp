@@ -18,15 +18,19 @@ ParticleSet::ParticleSet(
 	      DBox& a_box,
               double& a_dx, 
               array<double, DIM>& a_lowCorner,
-              int a_M, double a_L, int order, int smoothness):
+              int a_M, double& a_L, int order, int smoothness):
   m_particles{},
   m_dx{a_dx},
+  m_L{a_L},
   m_box{a_box},
-  m_lowCorner{a_lowCorner},
-  m_W{order, smoothness},
-  m_L{a_L}
+  //m_lowCorner{a_lowCorner},
+  m_W{order, smoothness}
+  //m_lowCorner{a_lowCorner}
 {
-  //  m_tempArray.define(a_box.grow(m_W.supportSize()));
+for (int j=0; j<DIM; j++)
+{
+    m_lowCorner[j] = a_lowCorner[j];
+    };
 }
 // Functions
 void ParticleSet::increment(const ParticleShift& a_shift)

@@ -55,25 +55,25 @@ void outField(ParticleSet& p, int a_coarsenFactor)
 };
 int main(int argc, char* argv[])
 {
-  unsigned int M;
+  unsigned int M = 3;
   unsigned int N;
-  cout << "input test = 1 (Linear Landau Damping), 2, other" << endl;
-  int test;
-  cin >> test;
-  cout << "input log_2(number of grid points)" << endl; 
-  cin >> M;
-  cout << "input order of interpolating function(lowest = 2)" << endl;
-  int order;
-  cin >> order;
-  cout << "input smoothness of interpolating function(lowest = 0)" << endl;
-  int smoothness;
-  cin >> smoothness;  
+  //cout << "input test = 1 (Linear Landau Damping), 2, other" << endl;
+  int test=1;
+  //cin >> test;
+  //cout << "input log_2(number of grid points)" << endl; 
+  //cin >> M;
+  //cout << "input order of interpolating function(lowest = 2)" << endl;
+  int order=4;
+  //cin >> order;
+  //cout << "input smoothness of interpolating function(lowest = 0)" << endl;
+  int smoothness = 0;
+  //cin >> smoothness;  
   //cout << "input particle refinement factor" << endl;
   //unsigned int cfactor;
   //cin >> cfactor;
-  cout << "enter stopping time" << endl;
-  double timeStop;
-  cin >> timeStop;
+  //cout << "enter stopping time" << endl;
+  double timeStop = 10.0;
+  //cin >> timeStop;
 
   //
   //  set up MPI
@@ -207,12 +207,14 @@ int main(int argc, char* argv[])
   ParticleSet plocal(domain, h, lowCorn, M, L, order, smoothness );
   int nlocal = partition_sizes[rank];
   plocal.m_particles.resize(nlocal);
-  MPI_Scatterv( &p.m_particles, partition_sizes, partition_offsets, PARTICLE, &plocal.m_particles, nlocal, PARTICLE, 0, MPI_COMM_WORLD );
-  
-  // for (auto it=p.m_particles.begin(); it!=p.m_particles.end(); ++it)
-  //   {
-  //     it->print();
-  //   }
+  cout<<"Made it to scatter"<<endl;
+  MPI_Scatterv( &p.m_particles[0], partition_sizes, partition_offsets, PARTICLE, &plocal.m_particles[0], nlocal, PARTICLE, 0, MPI_COMM_WORLD );
+  cout<<"Made it past Scatter"<<endl;
+
+   for (auto it=plocal.m_particles.begin(); it!=plocal.m_particles.end(); ++it)
+     {
+       it->print();
+     }
 
   double time = 0.;
   double dt = 2.0/N;
@@ -224,7 +226,7 @@ int main(int argc, char* argv[])
 
   for(int i=0; i<m; i++)
     {
-      integrator.advance(time, dt, p);
+      integrator.advance(time, dt, plocal);
       time = time + dt;
       cout<<time<<endl;
 

@@ -186,12 +186,23 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
     }
 
    // MPI Communication
-  double temp_array[phi.dataSize()];
-  MPI_Allreduce(&phi[0], &temp_array[0], phi.dataSize(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-  //Could potentially replace this with a fucntion redefining the pointer for RectMDArray
+  cout<<"Made it to Allreduce"<<endl;
+  double temp_array1[phi.dataSize()];
+  double temp_array2[phi.dataSize()];
   for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
     {
-      phi[p] = temp_array[phi.getDBox().getIndex(p)]; 
+        cout<<"Linear index"<<phi.getDBox().getIndex(p)<<endl;
+        temp_array2[phi.getDBox().getIndex(p)] = phi[p]; 
+    }
+  cout<<"Phi Data Size = "<<phi.dataSize()<<endl;
+  cout<< "dbox high corner = "<<endl;
+  phi.getDBox().getHighCorner().print();
+  MPI_Allreduce(&temp_array2, &temp_array1, phi.dataSize(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  //Could potentially replace this with a fucntion redefining the pointer for RectMDArray
+  cout<<"Made it past Allreduce"<<endl;
+  for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
+    {
+      phi[p] = temp_array1[phi.getDBox().getIndex(p)]; 
     }
   
   
@@ -252,7 +263,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
 	}
       EField_Amplitude*=m_dx;
       EField_Amplitude = sqrt(EField_Amplitude);
-      cout<< EField_Amplitude<<endl;
+//      cout<< EField_Amplitude<<endl;
     }
   //Interpolate back and return particle fields in a_k
   //cout<<"Made it out of FD step"<<endl;

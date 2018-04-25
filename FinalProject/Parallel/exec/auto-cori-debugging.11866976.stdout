@@ -1,0 +1,7 @@
+rm: cannot remove 'mpi.txt': No such file or directory
+Made it to scatter
+Made it past Scatter
+terminate called after throwing an instance of 'std::length_error'
+  what():  vector::_M_default_append
+srun: error: nid00564: task 0: Aborted
+srun: Terminating job step 11866976.0

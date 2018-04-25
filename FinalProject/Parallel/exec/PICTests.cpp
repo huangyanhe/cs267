@@ -211,10 +211,11 @@ int main(int argc, char* argv[])
   MPI_Scatterv( &p.m_particles[0], partition_sizes, partition_offsets, PARTICLE, &plocal.m_particles[0], nlocal, PARTICLE, 0, MPI_COMM_WORLD );
   cout<<"Made it past Scatter"<<endl;
 
-   for (auto it=plocal.m_particles.begin(); it!=plocal.m_particles.end(); ++it)
-     {
-       it->print();
-     }
+//   for (auto it=plocal.m_particles.begin(); it!=plocal.m_particles.end(); ++it)
+//     {
+//       it->print();
+//     }
+  cout<<"Num Particles["<< rank<<"] = "<< plocal.m_particles.size()<<endl;
 
   double time = 0.;
   double dt = 2.0/N;

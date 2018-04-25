@@ -191,7 +191,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   double temp_array2[phi.dataSize()];
   for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
     {
-        cout<<"Linear index"<<phi.getDBox().getIndex(p)<<endl;
+  //      cout<<"Linear index"<<phi.getDBox().getIndex(p)<<endl;
         temp_array2[phi.getDBox().getIndex(p)] = phi[p]; 
     }
   cout<<"Phi Data Size = "<<phi.dataSize()<<endl;
@@ -251,6 +251,11 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
     }
   setGhostMD(EField);
   //Computes Electric Field Energy for plotting in LLD case.
+  int myRank; 
+  MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+
+  if (myRank == 0)
+  {
   if (abs(dt) <=pow(10.0, -16))
     {
       double EField_Amplitude = 0.0;
@@ -263,8 +268,9 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
 	}
       EField_Amplitude*=m_dx;
       EField_Amplitude = sqrt(EField_Amplitude);
-//      cout<< EField_Amplitude<<endl;
+      cout<< EField_Amplitude<<endl;
     }
+  }
   //Interpolate back and return particle fields in a_k
   //cout<<"Made it out of FD step"<<endl;
   a_k.zeroEField();

@@ -7,5 +7,4 @@
 #SBATCH -o auto-cori-debugging.%j.stdout 
 #SBATCH -J auto-cori-debugging.%j.error
 
-rm mpi.txt
-srun -n 32 -N 32 ./PIC1p1D.exe -no -s mpi.txt
+srun -n 32 -N 32 ./PIC2p2D.exe -no -s mpi.txt

@@ -269,6 +269,19 @@ bool Point::operator==(const Point& a_rhsPoint) const
     }
   return ret;
 }
+
+Point& Point::operator=(const Point& a_pt)
+{
+  if((this) != &a_pt)
+    {
+      for(int i = 0; i < DIM; i++)
+	{
+	  m_tuple[i] = a_pt.m_tuple[i];
+	}
+    }
+  return *this;
+}
+
 bool Point::operator!=(const Point& a_rhsPoint) const 
 {
   return !(*this == a_rhsPoint);

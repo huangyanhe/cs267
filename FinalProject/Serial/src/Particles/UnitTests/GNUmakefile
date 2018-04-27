@@ -4,18 +4,19 @@ HOME = ./../../..
 IK = $(HOME)/src/InterpolationKernel/
 RMDA = $(HOME)/src/RectMDArray/
 PARTICLES = $(HOME)/src/Particles/
+POISSON = $(HOME)/src/PoissonSolver/
 CONV = $(HOME)/src/Hockney
-FFT = $(HOME)/src/fftTools
+FFT = $(HOME)/src/FFT
 WRITERS = $(HOME)/utils/Writers
 TIMER = $(HOME)/utils/timer
-FFTWDIR = /usr/local
-VPATH= . $(IK) $(WRITERS) $(RMDA) $(PARTICLES) $(CONV) $(FFT) $(TIMER)
+FFTWDIR = /opt/cray/pe/fftw/3.3.4.6/haswell
+VPATH= . $(IK) $(WRITERS) $(RMDA) $(PARTICLES) $(POISSON) $(CONV) $(FFT) $(TIMER)
 
 
 DIM=1
-CXX=clang++
+CXX=CC
 CFLAGS = -g -Wall
-CFLAGS += -std=c++11 -I$(IK) -I$(WRITERS) -I$(RMDA) -I$(PARTICLES) -I$(CONV) -I$(FFT) -I$(TIMER) -I$(FFTWDIR)/include
+CFLAGS += -std=c++11 -I$(IK) -I$(WRITERS) -I$(RMDA) -I$(PARTICLES) -I$(POISSON) -I$(CONV) -I$(FFT) -I$(TIMER) -I$(FFTWDIR)/include
 CFLAGS += -DDIM=$(DIM)
 
 odir = ./o.$(DIM)d
@@ -23,7 +24,7 @@ ddir = ./d.$(DIM)d
 
 LIBS:= -L$(FFTWDIR)/lib -lfftw3 
 
-SRCFILES:= $(notdir $(wildcard ./*.cpp $(IK)/*.cpp $(RMDA)/*.cpp $(PARTICLES)/*.cpp $(CONV)/*.cpp $(FFT)/*.cpp $(TIMER)/*.cpp))
+SRCFILES:= $(notdir $(wildcard ./*.cpp $(IK)/*.cpp $(RMDA)/*.cpp $(PARTICLES)/*.cpp  $(POISSON)/*.cpp $(CONV)/*.cpp $(FFT)/*.cpp $(TIMER)/*.cpp))
 
 OBJS:=$(patsubst %.cpp,$(odir)/%.o,$(SRCFILES))
 

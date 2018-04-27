@@ -60,66 +60,97 @@ void ParticleVelocities::define(ParticleSet& a_state)
   PS.define(m_dx, m, m_L, m_box);
 }
 
+
 void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
 {
   // cout<<"m_domainSize =";
   // for (int dir = 0; dir < DIM; dir++)
   //   cout<<m_domainSize[dir];
   // cout<<endl;
- 
+
   //cout<<"At getGhostDeposition"<<endl;
-  //cout << "m_box = " << m_box.sizeOf() << endl;
+  for (int k = 0; k < 2*DIM; k++)
+    {
+      DBox bx = m_bdry[k];
+      //bx.print();
+      for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
+        {
+          int image[DIM];
+          for (int dir = 0; dir < DIM; dir++)
+            {
+              image[dir] = (pt[dir] + m_domainSize[dir])%m_domainSize[dir];
+            }
+          Point ptimage(image);
+	  // cout<<"pt =";
+	  // pt.print();
+	  // cout<<"ptimage =";
+	  // ptimage.print();
+	  // cout<<"value ="<< enlargedGrid[pt]<<endl;
+          enlargedGrid[ptimage] += enlargedGrid[pt];
+        }
+    }
+}
+
+// void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
+// {
+//   // cout<<"m_domainSize =";
+//   // for (int dir = 0; dir < DIM; dir++)
+//   //   cout<<m_domainSize[dir];
+//   // cout<<endl;
+ 
+//   //cout<<"At getGhostDeposition"<<endl;
+//   //cout << "m_box = " << m_box.sizeOf() << endl;
 
   
-  int l = enlargedGrid.dataSize();
-  omp_lock_t* box_lock = (omp_lock_t*)malloc(l*sizeof(omp_lock_t));
-  for(int i = 0; i < l; i++)
-    {
-      omp_init_lock(&box_lock[i]);
-    }
-#pragma omp parallel shared(enlargedGrid, box_lock) 
-  {
-    for (int k = 0; k < 2*DIM; k++)
-      {
-	DBox bx = m_bdry[k];
-	//bx.print();
-	//      for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
-#pragma omp for   
-	for (int i = 0; i < bx.sizeOf(); i++)
-	  {
-	    Point pt = bx.getPoint(i);
-	    int image[DIM];
-	    for (int dir = 0; dir < DIM; dir++)
-	      {
-		image[dir] = (pt[dir] + m_domainSize[dir])%m_domainSize[dir];
-	      }
-	    Point ptimage(image);
-	    // cout<<"pt =";
-	    // pt.print();
-	    // cout<<"ptimage =";
-	    // ptimage.print();
-	    // cout<<"value ="<< enlargedGrid[pt]<<endl;
-	    int j = m_box.getIndex(ptimage);
-	    //cout << "ptimage= " << j << "m_box= " << m_box.sizeOf() << endl;
+//   int l = enlargedGrid.dataSize();
+//   omp_lock_t* box_lock = (omp_lock_t*)malloc(l*sizeof(omp_lock_t));
+//   for(int i = 0; i < l; i++)
+//     {
+//       omp_init_lock(&box_lock[i]);
+//     }
+// #pragma omp parallel shared(enlargedGrid, box_lock) 
+//   {
+//     for (int k = 0; k < 2*DIM; k++)
+//       {
+// 	DBox bx = m_bdry[k];
+// 	//bx.print();
+// 	//      for (Point pt=bx.getLowCorner(); bx.notDone(pt);bx.increment(pt))
+// #pragma omp for   
+// 	for (int i = 0; i < bx.sizeOf(); i++)
+// 	  {
+// 	    Point pt = bx.getPoint(i);
+// 	    int image[DIM];
+// 	    for (int dir = 0; dir < DIM; dir++)
+// 	      {
+// 		image[dir] = (pt[dir] + m_domainSize[dir])%m_domainSize[dir];
+// 	      }
+// 	    Point ptimage(image);
+// 	    // cout<<"pt =";
+// 	    // pt.print();
+// 	    // cout<<"ptimage =";
+// 	    // ptimage.print();
+// 	    // cout<<"value ="<< enlargedGrid[pt]<<endl;
+// 	    int j = m_box.getIndex(ptimage);
+// 	    //cout << "ptimage= " << j << "m_box= " << m_box.sizeOf() << endl;
 	    
-	    //int num = omp_get_num_threads();
-	    //cout << num << endl;
-	    //int ID = omp_get_thread_num();
+// 	    //int num = omp_get_num_threads();
+// 	    //cout << num << endl;
+// 	    //int ID = omp_get_thread_num();
 	    
-	    //	  cout << "test locks =" << omp_test_lock(&box_lock[j]) << endl;
-	    omp_set_lock(&box_lock[j]);
-	    //cout <<" lock using= " << j << endl;
-	    enlargedGrid[ptimage] += enlargedGrid[pt];
-	    omp_unset_lock(&box_lock[j]);
-	  }
-      }
-  }
-  for (int i = 0; i < l; i++)
-    {
-      omp_destroy_lock(&box_lock[i]);
-    }
-  free(box_lock);
-}
+// 	    //	  cout << "test locks =" << omp_test_lock(&box_lock[j]) << endl;
+// 	    omp_set_lock(&box_lock[j]);
+// 	    //cout <<" lock using= " << j << endl;
+// 	    enlargedGrid[ptimage] += enlargedGrid[pt];
+// 	    omp_unset_lock(&box_lock[j]);
+// 	  }
+//       }
+//   }
+//   for (int i = 0; i < l; i++)
+//     {
+//       omp_destroy_lock(&box_lock[i]);
+//     }
+//   free(box_lock);
+// }
 // Void
 // Particlevelocities
 //::setGhost(RectMDArray<double>& enlargedGrid)

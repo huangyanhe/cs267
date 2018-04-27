@@ -159,18 +159,19 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   //Then use interpolation made up of the interpolating function given
   RectMDArray<double> density(a_state.m_box.grow(m_supportSize));
   density.setVal(0.0);
-  DBox phiBox = a_state.m_box;
+  DBox phiBox(a_state.m_box);
   RectMDArray<double> phi(phiBox);
+
   RectMDArray<double, DIM> EField(a_state.m_box.grow(m_supportSize));
   //phi.setVal(0.0);
-  //cout<<"At Deposit"<<endl;
+  cout<<"At Deposit"<<endl;
   a_state.deposit(density,  t_particles);
   // for (Point p=density.getDBox().getLowCorner(); density.getDBox().notDone(p); density.getDBox().increment(p))
   //   {
   //     p.print();
   //     cout<<density[p]<<endl;
   //   }
-  // Deals with Ghost Cells 
+  cout << "Deals with Ghost Cells" << endl; 
   getGhostDeposition(density);
   //setGhost(density);
   // Solve Poisson's Equation with Periodic Boundary Conditions 
@@ -182,9 +183,9 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
       // p.print();
       // cout<< "]"<<phi[p]<<endl;
     }
-  //Poisson solve
+  cout << "start Poisson solve " << endl;
   PS.Solve( phi);
-  // cout<<"Made it out of solve"<<endl;
+  cout<<"Made it out of solve"<<endl;
   //     for (Point p=phi.getDBox().getLowCorner(); phi.getDBox().notDone(p); phi.getDBox().increment(p))
   //   {
   //     p.print();
@@ -199,7 +200,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
    // cout<< "]"<<phi[p]<<endl;
   }
   //Set ghost cells for computing the gradient
-  //cout<<"Set Ghost"<<endl;
+  cout<<"Set Ghost"<<endl;
   setGhost(density);
   // for (Point p=density.getDBox().getLowCorner(); density.getDBox().notDone(p); density.getDBox().increment(p))
   // {
@@ -208,7 +209,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   //   cout<< "]"<<density[p]<<endl;
   // }
   // Finite Difference 4th order first derivative
-  //cout<<"Made it to FD step"<<endl;
+  cout<<"Made it to FD step"<<endl;
   for (Point p=m_box.getLowCorner(); m_box.notDone(p); m_box.increment(p))
     {
       //p.print();
@@ -225,6 +226,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
 	      
 	}
     }
+  cout << "finish FD step" << endl;
   setGhostMD(EField);
   //Computes Electric Field Energy for plotting in LLD case.
   if (abs(dt) <=pow(10.0, -16))
@@ -244,11 +246,11 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   //Interpolate back and return particle fields in a_k
   //cout<<"Made it out of FD step"<<endl;
   a_k.zeroEField();
+  cout << "finish zeroEF" << endl;
   a_state.InterpolateForce(EField, a_k.m_particles);
-
+  cout << "finish interpolate force" << endl;
   // for (auto iter = a_k.m_particles.begin(); iter!= a_k.m_particles.end(); ++iter)
   //   {
   //     iter->print();
-  //   }
-  
+  //   }  
 }

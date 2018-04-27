@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
   unsigned int M;
   unsigned int N;
   cout << "input test = 1 (Linear Landau Damping), 2, other" << endl;
-  int test;
+  int test = 1;
   cin >> test;
   cout << "input log_2(number of grid points)" << endl; 
   cin >> M;
@@ -66,12 +66,12 @@ int main(int argc, char* argv[])
   cin >> smoothness;  
   //cout << "input particle refinement factor" << endl;
   //unsigned int cfactor;
-  //cin >> cfactor;
+  //  cin >> cfactor;
   cout << "enter stopping time" << endl;
   double timeStop;
   cin >> timeStop;
 
-  //N = 2*Grid_Size in Matlab
+  //  N = 2*Grid_Size in Matlab
   N = Power(2,M);
   double alpha = 0.05;
   double vmax = 10.0;

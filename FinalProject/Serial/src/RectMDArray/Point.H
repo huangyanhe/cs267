@@ -94,6 +94,13 @@ public:
     Returns true if *this[\f$k\f$] == *a_pt[\f$k\f$] \f$\forall\,k\,\in\,[0,DIM)\f$
   */
   inline bool operator==(const Point& a_pt) const;
+  
+  /// Copy the point
+  /**
+     Returns the copy Point
+   */
+  inline  Point& operator=(const Point& a_pt); 
+
 
   /// Inequality between two Points.
   /**

@@ -17,6 +17,7 @@ public:
   //Used to Solve Poisson's equation on a periodic domain
   void Solve( RectMDArray<double>& a_rhs);
   ~PoissonSolver(){};
+
 protected:
   double m_h;
   int m_M, m_N;
@@ -25,4 +26,6 @@ protected:
   DBox m_box;
   RectMDArray<double > m_eigenvalues;
 };
+
+//void copyReal(RectMDArray<complex<double> >& a_cxarray,RectMDArray<double >& a_real);
 #endif

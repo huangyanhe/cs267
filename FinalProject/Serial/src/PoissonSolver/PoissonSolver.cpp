@@ -15,14 +15,14 @@
 #include "PoissonSolver.H"
 
 using namespace std;
-void copyReal(RectMDArray<complex<double> >& a_cxarray,RectMDArray<double >& a_real)
-{
-  DBox d = a_real.getDBox()&a_cxarray.getDBox();
-  for (Point pt=d.getLowCorner();d.notDone(pt);d.increment(pt))
-    {
-      a_real[pt] = real(a_cxarray[pt]);
-    }
-};
+//void copyReal(RectMDArray<complex<double> >& a_cxarray,RectMDArray<double >& a_real)
+// {
+//   DBox d = a_real.getDBox()&a_cxarray.getDBox();
+//   for (Point pt=d.getLowCorner();d.notDone(pt);d.increment(pt))
+//     {
+//       a_real[pt] = real(a_cxarray[pt]);
+//     }
+// };
 void PoissonSolver::buildEigenvalues()
 {
   //cout<<"m_N = "<<m_N<<endl;

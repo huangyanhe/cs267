@@ -11,9 +11,10 @@ TIMER = $(HOME)/utils/timer
 VPATH= . $(HOME) $(PARTICLES) $(RMDA) $(FFT) $(PS) $(TIMER) $(WRITERS) $(IK)
 ANIMATION = 1
 
-DIM=1
+DIM=2
 #CXX = CC
 CXX=clang++
+#CXX=g++
 #FFTWDIR = /opt/cray/pe/fftw/3.3.4.6/haswell
 FFTWDIR = /usr/local/Cellar/fftw/3.3.6-pl2
 CFLAGS = -g -Wall

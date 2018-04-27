@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 
 
   
-  PoissonSolver PS(h, M, 1, GridBox);
+  PoissonSolver PS(h, M, 1.0, GridBox);
   cout<<"made it here"<<endl;
   RectMDArray<double > RHS(GridBox);
   
@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
       double exact = 1.0;
       for (int j =0; j<DIM; j++)
 	{
-	  exact *= -sin(2.0*M_PI*p[j]/N)/pow(2*M_PI,2);
+	  exact *= -sin(2.0*M_PI*p[j]/N)/pow(2*M_PI/N,2)*DIM;
 	}
       cout<<" exact = "<<exact<<endl;
     }

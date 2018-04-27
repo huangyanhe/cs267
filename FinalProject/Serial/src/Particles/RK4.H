@@ -79,6 +79,7 @@ void RK4<X, F, dX>::advance(double a_time, double a_dt, X& a_state)
   // Compute k1
   //cout<<"Compute k1"<<endl;
   m_f(m_k, a_time, 0.0, a_state); 
+  //cout<<"Finished Computing k1"<<endl; 
   //Increment delta by k1
   m_k*=1/a_state.m_L;
   m_delta.incrementPositionandVelocity(sixth*a_dt*a_dt, sixth*a_dt, m_k);
@@ -115,6 +116,6 @@ void RK4<X, F, dX>::advance(double a_time, double a_dt, X& a_state)
   //     it->print();
   //   }
 }
-  
+ 
 #endif 
   

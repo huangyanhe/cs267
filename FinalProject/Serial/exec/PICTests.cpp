@@ -14,41 +14,41 @@ auto removeParticle = [](Particle p) -> bool
   bool removeIfFalse =  (p.strength < minStrength);
   return removeIfFalse;
 };
-void outField(ParticleSet& p, int a_coarsenFactor)
-{
-  int coarsenFactor = a_coarsenFactor;
-  DBox bx = p.m_box.coarsen(coarsenFactor);
-  double h = p.m_dx*coarsenFactor;
-  RectMDArray<double> outVort(bx);
-  array<int,DIM> ipos;
-  array<double,DIM> xpos;
-  double weight;
-  Point e0 = getUnitv(0);
-  Point e1 = getUnitv(1);
+// void outField(ParticleSet& p, int a_coarsenFactor)
+// {
+//   int coarsenFactor = a_coarsenFactor;
+//   DBox bx = p.m_box.coarsen(coarsenFactor);
+//   double h = p.m_dx*coarsenFactor;
+//   RectMDArray<double> outVort(bx);
+//   array<int,DIM> ipos;
+//   array<double,DIM> xpos;
+//   double weight;
+//   Point e0 = getUnitv(0);
+//   Point e1 = getUnitv(1);
   
-  outVort.setVal(0.);
-  for (int k = 0; k < p.m_particles.size(); k++)
-    {
-      for (int l = 0; l < DIM; l++)
-        {
-          double newpos = p.m_particles[k].m_x[l]; 
-          ipos[l] = newpos/h;
-          xpos[l] = (newpos - ipos[l]*h)/h;
-        }
-      Point pt(ipos);
-      assert(p.m_box.contains(pt));
-      for (int l0=0; l0 < DIM;l0++)
-        {
-          for (int l1=0;l1 < DIM ; l1++)
-            {
-              outVort[pt+e0*l0 + e1*l1] += 
-                (1.-xpos[0] + (2*xpos[0] - 1.)*l0)*
-                (1.- xpos[1] + (2*xpos[1] - 1.)*l1)*p.m_particles[k].strength/coarsenFactor/coarsenFactor;
-            }
-        }
-    }
-  const char* foo = MDWrite(&outVort);
-};
+//   outVort.setVal(0.);
+//   for (int k = 0; k < p.m_particles.size(); k++)
+//     {
+//       for (int l = 0; l < DIM; l++)
+//         {
+//           double newpos = p.m_particles[k].m_x[l]; 
+//           ipos[l] = newpos/h;
+//           xpos[l] = (newpos - ipos[l]*h)/h;
+//         }
+//       Point pt(ipos);
+//       assert(p.m_box.contains(pt));
+//       for (int l0=0; l0 < DIM;l0++)
+//         {
+//           for (int l1=0;l1 < DIM ; l1++)
+//             {
+//               outVort[pt+e0*l0 + e1*l1] += 
+//                 (1.-xpos[0] + (2*xpos[0] - 1.)*l0)*
+//                 (1.- xpos[1] + (2*xpos[1] - 1.)*l1)*p.m_particles[k].strength/coarsenFactor/coarsenFactor;
+//             }
+//         }
+//     }
+//   const char* foo = MDWrite(&outVort);
+// };
 int main(int argc, char* argv[])
 {
   unsigned int M;
@@ -82,8 +82,8 @@ int main(int argc, char* argv[])
   int Np = 1./hp;
   hp = 1./Np;
   //cout<<"hp = "<<hp<<endl;
-  double delta = h;
-  int pcfactor = 4/cfactor;
+  //double delta = h;
+  //int pcfactor = 4/cfactor;
   //if (pcfactor < 1 ) pcfactor = 1;
   //cout << "number of particles per cell = " << h*h/hp/hp << endl;
 
@@ -174,12 +174,12 @@ int main(int argc, char* argv[])
   //   }
   
   //Need to check on some of these parameters.
-  double dx = 1./N;
+  //double dx = 1./N;
   //cout << "number of particles = " << p.m_particles.size() << endl;
-  ParticleShift kIn,kOut;
-  kIn.init(p);
-  kOut.init(p);
-  kIn.setToZero();
+  //ParticleShift kIn,kOut;
+  //kIn.init(p);
+  //kOut.init(p);
+  //kIn.setToZero();
   //cout<<"In Particle Velocities"<<endl;
   //ParticleVelocities pv(p); 
   //cout<<"Out Particle Velocities"<<endl;

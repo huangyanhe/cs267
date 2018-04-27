@@ -18,7 +18,7 @@ void FFT1DW::forwardFFTCC(vector<complex<double> > & a_fHat,
   fftw_plan p;
   //This is super sloppy but there isn't a version off fftw_plan that takes a type const as input. 
   vector<complex<double> > in = a_f;
-  p = fftw_plan_dft_1d(m_N, reinterpret_cast<fftw_complex*>(&in[0]), reinterpret_cast<fftw_complex*>(&a_fHat[0]), FFTW_FORWARD, FFTW_ESTIMATE);
+  p = fftw_plan_dft_1d(m_N, reinterpret_cast<fftw_complex*>(&(in[0])), reinterpret_cast<fftw_complex*>(&(a_fHat[0])), FFTW_FORWARD, FFTW_ESTIMATE);
   fftw_execute(p);
   fftw_destroy_plan(p);
 };
@@ -27,7 +27,7 @@ void FFT1DW::inverseFFTCC(vector<complex<double> > & a_f,
 {
   fftw_plan p;
   vector<complex<double> > in = a_fHat;
-  p = fftw_plan_dft_1d(m_N, reinterpret_cast<fftw_complex*>(&in[0]), reinterpret_cast<fftw_complex*>(&a_f[0]), FFTW_BACKWARD, FFTW_ESTIMATE);
+  p = fftw_plan_dft_1d(m_N, reinterpret_cast<fftw_complex*>(&(in[0])), reinterpret_cast<fftw_complex*>(&(a_f[0])), FFTW_BACKWARD, FFTW_ESTIMATE);
   fftw_execute(p);
   fftw_destroy_plan(p);
 };

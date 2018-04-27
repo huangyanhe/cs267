@@ -25,8 +25,8 @@ public:
 private:
   //supportSize is the number of points in the support minus 1.
   int m_supportSize;
-  vector<vector<double>> m_coefficients;
-  vector<vector<int>> m_powers;
+  vector<vector<double> > m_coefficients;
+  vector<vector<int> > m_powers;
   
 };
 #endif

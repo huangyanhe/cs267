@@ -18,6 +18,8 @@ void RectMDArray<T,C>::define(const DBox& a_box)
     }
   m_rawPtr = new T[a_box.sizeOf()*C];
   m_box = a_box;
+  cout<<"Constructed RectMDArray"<<endl;
+  cout<<"Address ="<< m_rawPtr<<endl;
 }
 
 //Construct a RectMDArray from a DBox. Calls RectMDArray::define()
@@ -31,6 +33,8 @@ RectMDArray<T,C>::RectMDArray(const DBox& a_box):m_rawPtr(NULL)
 template <class T, unsigned int C> 
 RectMDArray<T,C>::~RectMDArray()
 {
+  cout<<"Destructed RectMDArray"<<endl;
+  cout<<"Address ="<< m_rawPtr<<endl;
   delete [] m_rawPtr;
 }
 template <class T, unsigned int C> bool RectMDArray<T,C>::defined() const
@@ -77,6 +81,8 @@ template <class T, unsigned int C> T& RectMDArray<T,C>::operator[](const Point& 
 {
   static_assert(C==1,"operator[] only defined for scalar RectMDArray");
   int k = m_box.getIndex(a_iv);
+  //cout<< "RMDA Implem m_box.sizeOf() =" << m_box.sizeOf()<<endl;
+  //cout<< "k = "<<k<<endl;
   assert(k < m_box.sizeOf());
   assert(k >= 0);
   return m_rawPtr[k];

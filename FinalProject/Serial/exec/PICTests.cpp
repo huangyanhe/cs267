@@ -8,6 +8,8 @@
 #include "WriteRectMDArray.H" 
 #include "VisitWriter.H"
 #include "RK4.H"
+#include <mpi.h>
+
 auto removeParticle = [](Particle p) -> bool
 {
   double minStrength = pow(10.0, -9);
@@ -51,25 +53,27 @@ void outField(ParticleSet& p, int a_coarsenFactor)
 };
 int main(int argc, char* argv[])
 {
-  unsigned int M;
+  MPI_Init(NULL, NULL);
+
+  unsigned int M=4;
   unsigned int N;
-  cout << "input test = 1 (Linear Landau Damping), 2, other" << endl;
-  int test;
-  cin >> test;
-  cout << "input log_2(number of grid points)" << endl; 
-  cin >> M;
-  cout << "input order of interpolating function(lowest = 2)" << endl;
-  int order;
-  cin >> order;
-  cout << "input smoothness of interpolating function(lowest = 0)" << endl;
-  int smoothness;
-  cin >> smoothness;  
+  //cout << "input test = 1 (Linear Landau Damping), 2, other" << endl;
+  int test = 1;
+  //cin >> test;
+  //cout << "input log_2(number of grid points)" << endl; 
+  //cin >> M;
+  //cout << "input order of interpolating function(lowest = 2)" << endl;
+  int order = 4;
+  //cin >> order;
+ // cout << "input smoothness of interpolating function(lowest = 0)" << endl;
+  int smoothness = 0;
+  //cin >> smoothness;  
   //cout << "input particle refinement factor" << endl;
   //unsigned int cfactor;
   //cin >> cfactor;
-  cout << "enter stopping time" << endl;
-  double timeStop;
-  cin >> timeStop;
+  //cout << "enter stopping time" << endl;
+  double timeStop = 0.25;
+  //cin >> timeStop;
 
   //N = 2*Grid_Size in Matlab
   N = Power(2,M);
@@ -213,4 +217,5 @@ int main(int argc, char* argv[])
   //     outField(p,pcfactor);
   //     PWrite(&p);
   //   }
+MPI_Finalize( );
 }

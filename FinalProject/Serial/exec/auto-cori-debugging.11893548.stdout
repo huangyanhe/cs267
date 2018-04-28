@@ -1,0 +1,21 @@
+0.349931
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Serial/exec/./PIC2p2D.exe': munmap_chunk(): invalid pointer: 0x00000000012cade0 ***
+======= Backtrace: =========
+[0x8e76bb]
+[0x8ec1a2]
+[0x41e74c]
+[0x41fb10]
+[0x8ba049]
+[0x40aad9]
+======= Memory map: ========
+00400000-0103f000 r-xp 00000000 00:3b 281139836                          /global/u1/c/cpwahl/cs267/FinalProject/Serial/exec/PIC2p2D.exe
+0123f000-01267000 rwxp 00c3f000 00:3b 281139836                          /global/u1/c/cpwahl/cs267/FinalProject/Serial/exec/PIC2p2D.exe
+01267000-01359000 rwxp 00000000 00:00 0                                  [heap]
+2aaaaaaab000-2aaaaaaae000 r--p 00000000 00:00 0                          [vvar]
+2aaaaaaae000-2aaaaaab0000 r-xp 00000000 00:00 0                          [vdso]
+2aaaaaab0000-2aaaaaabc000 rwxs 00000000 00:01 1740618                    /dev/zero (deleted)
+2aaaaaabc000-2aaac7e6c000 rwxp 00000000 00:00 0 
+7ffffffd8000-7ffffffff000 rwxp 00000000 00:00 0                          [stack]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+srun: error: nid00630: task 0: Aborted
+srun: Terminating job step 11893548.0

@@ -11,7 +11,7 @@ TIMER = $(HOME)/utils/timer
 VPATH= . $(HOME) $(PARTICLES) $(RMDA) $(FFT) $(PS) $(TIMER) $(WRITERS) $(IK)
 ANIMATION = 1
 
-DIM=2
+DIM=1
 CXX = CC
 MPCC = CC
 #CXX=clang++

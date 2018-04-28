@@ -1,0 +1,206 @@
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1b40 ***
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1b40 ***
+======= Backtrace: =========
+[0x8e7cbb]
+[0x8ec7a2]
+[0x8ed4ed]
+[0x41e8c6]
+[0x4200f0]
+[0x8ba649]
+[0x40aad9]
+======= Memory map: ========
+00400000-01040000 r-xp 00000000 00:3c 176854493                          /global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/PIC2p2D.exe
+0123f000-01267000 rwxp 00c3f000 00:3c 176854493                          /global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/PIC2p2D.exe
+01267000-0145e000 rwxp 00000000 00:00 0                                  [heap]
+2aaaaaaab000-2aaaaaaae000 r--p 00000000 00:00 0                          [vvar]
+2aaaaaaae000-2aaaaaab0000 r-xp 00000000 00:00 0                          [vdso]
+2aaaaaab0000-2aaaaaad5000 rwxs 00000000 00:01 8458554                    /dev/zero (deleted)
+2aaaaaad5000-2aaaaaed7000 rwxp 00000000 00:00 0 
+2aaaaaed7000-2aaaaaed8000 rwxp 2014bad000 00:06 35929                    /dev/kgni0
+2aaaaaed8000-2aaaaaeda000 rwxp 2013a10000 00:06 35929                    /dev/kgni0
+2aaaaaeda000-2aaaaaedb000 r-xp 140a1b000 00:06 35929                     /dev/kgni0
+2aaaaaedb000-2aaaaaedd000 rwxp 13822a000 00:06 35929                     /dev/kgni0
+2aaaaaedd000-2aaaaaede000 r-xp 101d815000 00:06 35929                    /dev/kgni0
+2aaaaaede000-2aaaaaee1000 rwxp 00000000 00:00 0 
+2aaaaaee1000-2aaaaaee5000 rwxp 139380000 00:06 35929                     /dev/kgni0
+2aaaaaee5000-2aaaaaee6000 rwxp 380020664000 00:06 35929                  /dev/kgni0
+2aaaaaee6000-2aaaaaee7000 r-xp 1004628000 00:06 35929                    /dev/kgni0
+2aaaaaee7000-2aaaaaee8000 r-xs 00000000 00:01 8453845                    /dev/zero (deleted)
+2aaaaaee8000-2aaaaaf96000 rwxp 00000000 00:00 0 
+2aaaaaf96000-2aaaaaf97000 ---p 00000000 00:00 0 
+2aaaaaf97000-2aaaab1e8000 rwxp 00000000 00:00 0 
+2aaaab1e8000-2aaaab1e9000 rwxp 380020665000 00:06 35929                  /dev/kgni0
+2aaaab1e9000-2aaaab1fa000 rwxp 00000000 00:00 0 
+2aaaab1fa000-2aaaab1fb000 rwxp 380020666000 00:06 35929                  /dev/kgni0
+2aaaab1fb000-2aaaab1fc000 rwxp 380020801000 00:06 35929                  /dev/kgni0
+2aaaab1fc000-2aaaab1ff000 rwxp 00000000 00:00 0 
+2aaaab1ff000-2aaaab200000 rwxp 380020667000 00:06 35929                  /dev/kgni0
+2aaaab200000-2aaaab600000 rwxs 00000000 00:27 8442293                    /var/lib/hugetlbfs/global/pagesize-2097152/hugepagefile.MPICH.0.59161.kvs_11882960 (deleted)
+2aaaab600000-2aaaab983000 rwxp 00000000 00:00 0 
+2aaaab983000-2aaaab98b000 rwxp 380040000000 00:06 35929                  /dev/kgni0
+2aaaab98b000-2aaaab993000 rwxp 380060000000 00:06 35929                  /dev/kgni0
+2aaaab993000-2aaaab9c3000 rwxp 00000000 00:00 0 
+2aaaaba00000-2aaaabe00000 rwxs 00000000 00:27 8442294                    /var/lib/hugetlbfs/global/pagesize-2097152/hugepagefile.MPICH.1.59161.kvs_11882960 (deleted)
+2aaaabe00000-2aaaabfb1000 rwxp 00000000 00:00 0 
+2aaaac000000-2aaaac022000 rwxp 00000000 00:00 0 
+2aaaac022000-2aaab0000000 ---p 00000000 00:00 0 
+2aaab0000000-2aaab0234000 -w-s 00000000 00:1f 8442295                    /tmp/cpwahl_PIC2p2D.exe_id11882960_mmap-log-13033365379159776822-17.darshan
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1b40 ***
+2aaab0234000-2aaab12b6000 rwxp 00000000 00:00 0 
+2aaab4000000-2aaab4032000 rwxp 00000000 00:00 0 
+2aaab4032000-2aaab8000000 ---p 00000000 00:00 0 
+7ffffffd8000-7ffffffff000 rwxp 00000000 00:00 0                          [stack]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+======= Backtrace: =========
+[0x8e7cbb]
+[0x8ec7a2]
+[0x8ed4ed]
+[0x41e8c6]
+[0x4200f0]
+[0x8ba649]
+[0x40aad9]
+======= Memory map: ========
+00400000-01040000 r-xp 00000000 00:3c 176854493                          /global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/PIC2p2D.exe
+0123f000-01267000 rwxp 00c3f000 00:3c 176854493                          /global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/PIC2p2D.exe
+01267000-0145e000 rwxp 00000000 00:00 0                                  [heap]
+2aaaaaaab000-2aaaaaaae000 r--p 00000000 00:00 0                          [vvar]
+2aaaaaaae000-2aaaaaab0000 r-xp 00000000 00:00 0                          [vdso]
+2aaaaaab0000-2aaaaaad5000 rwxs 00000000 00:01 634743                     /dev/zero (deleted)
+2aaaaaad5000-2aaaaaed7000 rwxp 00000000 00:00 0 
+2aaaaaed7000-2aaaaaed8000 rwxp 2013acd000 00:06 55336                    /dev/kgni0
+2aaaaaed8000-2aaaaaeda000 rwxp 2013f12000 00:06 55336                    /dev/kgni0
+2aaaaaeda000-2aaaaaedb000 r-xp 8e9fb1000 00:06 55336                     /dev/kgni0
+2aaaaaedb000-2aaaaaedd000 rwxp 8e130c000 00:06 55336                     /dev/kgni0
+2aaaaaedd000-2aaaaaede000 r-xp 8e5e71000 00:06 55336                     /dev/kgni0
+2aaaaaede000-2aaaaaee1000 rwxp 00000000 00:00 0 
+2aaaaaee1000-2aaaaaee5000 rwxp 8e14a0000 00:06 55336                     /dev/kgni0
+2aaaaaee5000-2aaaaaee6000 rwxp 38002076e000 00:06 55336                  /dev/kgni0
+2aaaaaee6000-2aaaaaee7000 r-xp 1004442000 00:06 55336                    /dev/kgni0
+2aaaaaee7000-2aaaaaee8000 r-xs 00000000 00:01 634750                     /dev/zero (deleted)
+2aaaaaee8000-2aaaaaf96000 rwxp 00000000 00:00 0 
+2aaaaaf96000-2aaaaaf97000 ---p 00000000 00:00 0 
+2aaaaaf97000-2aaaab1e8000 rwxp 00000000 00:00 0 
+2aaaab1e8000-2aaaab1e9000 rwxp 38002076f000 00:06 55336                  /dev/kgni0
+2aaaab1e9000-2aaaab1fa000 rwxp 00000000 00:00 0 
+2aaaab1fa000-2aaaab1fb000 rwxp 380020770000 00:06 55336                  /dev/kgni0
+2aaaab1fb000-2aaaab1fc000 rwxp 380020801000 00:06 55336                  /dev/kgni0
+2aaaab1fc000-2aaaab1ff000 rwxp 00000000 00:00 0 
+2aaaab1ff000-2aaaab200000 rwxp 380020771000 00:06 55336                  /dev/kgni0
+2aaaab200000-2aaaab600000 rwxs 00000000 00:27 634751                     /var/lib/hugetlbfs/global/pagesize-2097152/hugepagefile.MPICH.0.59775.kvs_11882960 (deleted)
+2aaaab600000-2aaaab983000 rwxp 00000000 00:00 0 
+2aaaab983000-2aaaab98b000 rwxp 380040000000 00:06 55336                  /dev/kgni0
+2aaaab98b000-2aaaab993000 rwxp 380060000000 00:06 55336                  /dev/kgni0
+2aaaab993000-2aaaab9c3000 rwxp 00000000 00:00 0 
+2aaaaba00000-2aaaabe00000 rwxs 00000000 00:27 557459                     /var/lib/hugetlbfs/global/pagesize-2097152/hugepagefile.MPICH.1.59775.kvs_11882960 (deleted)
+2aaaabe00000-2aaaabfb1000 rwxp 00000000 00:00 0 
+2aaaac000000-2aaaac022000 rwxp 00000000 00:00 0 
+2aaaac022000-2aaab0000000 ---p 00000000 00:00 0 
+2aaab0000000-2aaab0234000 -w-s 00000000 00:1f 557460                     /tmp/cpwahl_PIC2p2D.exe_id11882960_mmap-log-13033365379159776822-14.darshan
+2aaab0234000-2aaab12b6000 rwxp 00000000 00:00 0 
+2aaab4000000-2aaab4032000 rwxp 00000000 00:00 0 
+2aaab4032000-2aaab8000000 ---p 00000000 00:00 0 
+7ffffffd8000-7ffffffff000 rwxp 00000000 00:00 0                          [stack]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+======= Backtrace: =========
+[0x8e7cbb]
+[0x8ec7a2]
+[0x8ed4ed]
+[0x41e8c6]
+[0x4200f0]
+[0x8ba649]
+[0x40aad9]
+======= Memory map: ========
+00400000-01040000 r-xp 00000000 00:3b 176854493                          /global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/PIC2p2D.exe
+0123f000-01267000 rwxp 00c3f000 00:3b 176854493                          /global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/PIC2p2D.exe
+01267000-0145e000 rwxp 00000000 00:00 0                                  [heap]
+2aaaaaaab000-2aaaaaaae000 r--p 00000000 00:00 0                          [vvar]
+2aaaaaaae000-2aaaaaab0000 r-xp 00000000 00:00 0                          [vdso]
+2aaaaaab0000-2aaaaaad5000 rwxs 00000000 00:01 837041                     /dev/zero (deleted)
+2aaaaaad5000-2aaaaaed7000 rwxp 00000000 00:00 0 
+2aaaaaed7000-2aaaaaed8000 rwxp 2013b48000 00:06 38939                    /dev/kgni0
+2aaaaaed8000-2aaaaaeda000 rwxp 20136c4000 00:06 38939                    /dev/kgni0
+2aaaaaeda000-2aaaaaedb000 r-xp 2a0a6e000 00:06 38939                     /dev/kgni0
+2aaaaaedb000-2aaaaaedd000 rwxp 17fc040000 00:06 38939                    /dev/kgni0
+2aaaaaedd000-2aaaaaede000 r-xp 2015550000 00:06 38939                    /dev/kgni0
+2aaaaaede000-2aaaaaee1000 rwxp 00000000 00:00 0 
+2aaaaaee1000-2aaaaaee5000 rwxp 2a005c000 00:06 38939                     /dev/kgni0
+2aaaaaee5000-2aaaaaee6000 rwxp 38002036b000 00:06 38939                  /dev/kgni0
+2aaaaaee6000-2aaaaaee7000 r-xp 1004971000 00:06 38939                    /dev/kgni0
+2aaaaaee7000-2aaaaaee8000 r-xs 00000000 00:01 837048                     /dev/zero (deleted)
+2aaaaaee8000-2aaaaaf96000 rwxp 00000000 00:00 0 
+2aaaaaf96000-2aaaaaf97000 ---p 00000000 00:00 0 
+2aaaaaf97000-2aaaab197000 rwxp 00000000 00:00 0 
+2aaaab197000-2aaaab198000 rwxp 38002036c000 00:06 38939                  /dev/kgni0
+2aaaab198000-2aaaab1fa000 rwxp 00000000 00:00 0 
+2aaaab1fa000-2aaaab1fb000 rwxp 38002036d000 00:06 38939                  /dev/kgni0
+2aaaab1fb000-2aaaab1fc000 rwxp 380020801000 00:06 38939                  /dev/kgni0
+2aaaab1fc000-2aaaab1ff000 rwxp 00000000 00:00 0 
+2aaaab1ff000-2aaaab200000 rwxp 38002036e000 00:06 38939                  /dev/kgni0
+2aaaab200000-2aaaab600000 rwxs 00000000 00:27 846327                     /var/lib/hugetlbfs/global/pagesize-2097152/hugepagefile.MPICH.0.6689.kvs_11882960 (deleted)
+2aaaab600000-2aaaab983000 rwxp 00000000 00:00 0 
+2aaaab983000-2aaaab98b000 rwxp 380040000000 00:06 38939                  /dev/kgni0
+2aaaab98b000-2aaaab993000 rwxp 380060000000 00:06 38939                  /dev/kgni0
+2aaaab993000-2aaaab9c3000 rwxp 00000000 00:00 0 
+2aaaaba00000-2aaaabe00000 rwxs 00000000 00:27 837049                     /var/lib/hugetlbfs/global/pagesize-2097152/hugepagefile.MPICH.1.6689.kvs_11882960 (deleted)
+2aaaabe00000-2aaaabfb1000 rwxp 00000000 00:00 0 
+2aaaac000000-2aaaac022000 rwxp 00000000 00:00 0 
+2aaaac022000-2aaab0000000 ---p 00000000 00:00 0 
+2aaab0000000-2aaab0234000 -w-s 00000000 00:1f 837050                     /tmp/cpwahl_PIC2p2D.exe_id11882960_mmap-log-13033365379159776822-22.darshan
+2aaab0234000-2aaab12b6000 rwxp 00000000 00:00 0 
+2aaab4000000-2aaab4032000 rwxp 00000000 00:00 0 
+2aaab4032000-2aaab8000000 ---p 00000000 00:00 0 
+7ffffffd8000-7ffffffff000 rwxp 00000000 00:00 0                          [stack]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+srun: error: nid00508: task 17: Aborted
+srun: Terminating job step 11882960.0
+0.349931
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1b60 ***
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1ec0 ***
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1b10 ***
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1b10 ***
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1b40 ***
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1b40 ***
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1ed0 ***
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1b40 ***
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1b10 ***
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1e70 ***
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1e90 ***
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f17e0 ***
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1e40 ***
+srun: error: nid00505: task 14: Aborted
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1b10 ***
+srun: error: nid00522: task 22: Aborted
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x000000000140ac20 ***
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1ec0 ***
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': double free or corruption (out): 0x00000000013f1b10 ***
+slurmstepd: error: *** STEP 11882960.0 ON nid00486 CANCELLED AT 2018-04-25T22:56:35 ***
+srun: error: nid00497: task 6: Terminated
+srun: error: nid00487: task 1: Terminated
+srun: error: nid00526: task 26: Terminated
+srun: error: nid00525: task 25: Terminated
+srun: error: nid00529: task 29: Terminated
+srun: error: nid00527: task 27: Terminated
+srun: error: nid00500: task 9: Terminated
+srun: error: nid00507: task 16: Terminated
+srun: error: nid00530: task 30: Terminated
+srun: error: nid00495: task 4: Terminated
+srun: error: nid00503: task 12: Terminated
+srun: error: nid00504: task 13: Terminated
+srun: error: nid00501: task 10: Terminated
+srun: error: nid00531: task 31: Terminated
+srun: error: nid00524: task 24: Terminated
+srun: error: nid00493: task 2: Terminated
+srun: error: nid00502: task 11: Terminated
+srun: error: nid00528: task 28: Terminated
+srun: error: nid00499: task 8: Terminated
+srun: error: nid00509: task 18: Terminated
+srun: error: nid00510: task 19: Terminated
+srun: error: nid00506: task 15: Terminated
+srun: error: nid00498: task 7: Terminated
+srun: error: nid00523: task 23: Terminated
+srun: error: nid00496: task 5: Terminated
+srun: error: nid00494: task 3: Terminated
+srun: error: nid00521: task 21: Terminated
+srun: error: nid00511: task 20: Terminated
+srun: error: nid00486: task 0: Terminated
+srun: Force Terminated job step 11882960.0

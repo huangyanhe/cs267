@@ -1,0 +1,100 @@
+Num Particles[1] = 1330816
+Num Particles[0] = 1330816
+0.349931
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': munmap_chunk(): invalid pointer: 0x00000000013efe20 ***
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': munmap_chunk(): invalid pointer: 0x00000000013eff50 ***
+======= Backtrace: =========
+[0x8e7d3b]
+[0x8ec822]
+[0x41e8c6]
+[0x420174]
+[0x8ba6c9]
+[0x40aad9]
+======= Memory map: ========
+00400000-01040000 r-xp 00000000 00:3c 278624767                          /global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/PIC2p2D.exe
+0123f000-01267000 rwxp 00c3f000 00:3c 278624767                          /global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/PIC2p2D.exe
+01267000-01483000 rwxp 00000000 00:00 0                                  [heap]
+2aaaaaaab000-2aaaaaaae000 r--p 00000000 00:00 0                          [vvar]
+2aaaaaaae000-2aaaaaab0000 r-xp 00000000 00:00 0                          [vdso]
+2aaaaaab0000-2aaaaaabd000 rwxs 00000000 00:01 11264121                   /dev/zero (deleted)
+2aaaaaabd000-2aaaaaebf000 rwxp 00000000 00:00 0 
+2aaaaaebf000-2aaaaaec0000 rwxp 201407e000 00:06 1973                     /dev/kgni0
+2aaaaaec0000-2aaaaaec2000 rwxp 200edf4000 00:06 1973                     /dev/kgni0
+2aaaaaec2000-2aaaaaec3000 r-xp 2002e0000 00:06 1973                      /dev/kgni0
+2aaaaaec3000-2aaaaaec5000 rwxp 108caea000 00:06 1973                     /dev/kgni0
+2aaaaaec5000-2aaaaaec6000 r-xp 1f97c42000 00:06 1973                     /dev/kgni0
+2aaaaaec6000-2aaaaaec9000 rwxp 00000000 00:00 0 
+2aaaaaec9000-2aaaaaecd000 rwxp 104320000 00:06 1973                      /dev/kgni0
+2aaaaaecd000-2aaaaaece000 rwxp 38002050d000 00:06 1973                   /dev/kgni0
+2aaaaaece000-2aaaaaecf000 r-xp 100484e000 00:06 1973                     /dev/kgni0
+2aaaaaecf000-2aaaaaed0000 r-xs 00000000 00:01 11263835                   /dev/zero (deleted)
+2aaaaaed0000-2aaaaaf7e000 rwxp 00000000 00:00 0 
+2aaaaaf7e000-2aaaaaf7f000 ---p 00000000 00:00 0 
+2aaaaaf7f000-2aaaab1d0000 rwxp 00000000 00:00 0 
+2aaaab1d0000-2aaaab1d1000 rwxp 38002050e000 00:06 1973                   /dev/kgni0
+2aaaab1d1000-2aaaab1e2000 rwxp 00000000 00:00 0 
+2aaaab1e2000-2aaaab1e3000 rwxp 38002050f000 00:06 1973                   /dev/kgni0
+2aaaab1e3000-2aaaab1eb000 rwxp 380040000000 00:06 1973                   /dev/kgni0
+2aaaab1eb000-2aaaab1f3000 rwxp 380060000000 00:06 1973                   /dev/kgni0
+2aaaab1f3000-2aaaab1f4000 rwxp 380020801000 00:06 1973                   /dev/kgni0
+2aaaab1f4000-2aaaab1f7000 rwxp 00000000 00:00 0 
+2aaaab1f7000-2aaaab1f8000 rwxp 380020510000 00:06 1973                   /dev/kgni0
+2aaaab1f8000-2aaaab1fa000 rwxp 00000000 00:00 0 
+2aaaab200000-2aaaab600000 rwxs 00000000 00:27 11263836                   /var/lib/hugetlbfs/global/pagesize-2097152/hugepagefile.MPICH.0.21830.kvs_11889848 (deleted)
+2aaaab600000-2aaaab9b2000 rwxp 00000000 00:00 0 
+2aaaaba00000-2aaaabe00000 rwxs 00000000 00:27 11263837                   /var/lib/hugetlbfs/global/pagesize-2097152/hugepagefile.MPICH.1.21830.kvs_11889848 (deleted)
+2aaaac000000-2aaaac022000 rwxp 00000000 00:00 0 
+2aaaac022000-2aaab0000000 ---p 00000000 00:00 0 
+2aaab0000000-2aaab0234000 -w-s 00000000 00:1f 11263838                   /tmp/cpwahl_PIC2p2D.exe_id11889848_mmap-log-15341353116225200884-1.darshan
+2aaab0234000-2aaac0be3000 rwxp 00000000 00:00 0 
+7ffffffd8000-7ffffffff000 rwxp 00000000 00:00 0                          [stack]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+======= Backtrace: =========
+[0x8e7d3b]
+[0x8ec822]
+[0x41e8c6]
+[0x420174]
+[0x8ba6c9]
+[0x40aad9]
+======= Memory map: ========
+00400000-01040000 r-xp 00000000 00:3b 278624767                          /global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/PIC2p2D.exe
+0123f000-01267000 rwxp 00c3f000 00:3b 278624767                          /global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/PIC2p2D.exe
+01267000-01483000 rwxp 00000000 00:00 0                                  [heap]
+2aaaaaaab000-2aaaaaaae000 r--p 00000000 00:00 0                          [vvar]
+2aaaaaaae000-2aaaaaab0000 r-xp 00000000 00:00 0                          [vdso]
+2aaaaaab0000-2aaaaaabd000 rwxs 00000000 00:01 8431284                    /dev/zero (deleted)
+2aaaaaabd000-2aaaaaebf000 rwxp 00000000 00:00 0 
+2aaaaaebf000-2aaaaaec0000 rwxp 2013e57000 00:06 2064                     /dev/kgni0
+2aaaaaec0000-2aaaaaec2000 rwxp 2014e68000 00:06 2064                     /dev/kgni0
+2aaaaaec2000-2aaaaaec3000 r-xp 1d69ef000 00:06 2064                      /dev/kgni0
+2aaaaaec3000-2aaaaaec5000 rwxp 1a52576000 00:06 2064                     /dev/kgni0
+2aaaaaec5000-2aaaaaec6000 r-xp 1b2e5b4000 00:06 2064                     /dev/kgni0
+2aaaaaec6000-2aaaaaec9000 rwxp 00000000 00:00 0 
+2aaaaaec9000-2aaaaaecd000 rwxp 1aef98000 00:06 2064                      /dev/kgni0
+2aaaaaecd000-2aaaaaece000 rwxp 380020689000 00:06 2064                   /dev/kgni0
+2aaaaaece000-2aaaaaecf000 r-xp 1003aa3000 00:06 2064                     /dev/kgni0
+2aaaaaecf000-2aaaaaed0000 r-xs 00000000 00:01 8466694                    /dev/zero (deleted)
+2aaaaaed0000-2aaaaaf7e000 rwxp 00000000 00:00 0 
+2aaaaaf7e000-2aaaaaf7f000 ---p 00000000 00:00 0 
+2aaaaaf7f000-2aaaab1d0000 rwxp 00000000 00:00 0 
+2aaaab1d0000-2aaaab1d1000 rwxp 38002068a000 00:06 2064                   /dev/kgni0
+2aaaab1d1000-2aaaab1e2000 rwxp 00000000 00:00 0 
+2aaaab1e2000-2aaaab1e3000 rwxp 38002068b000 00:06 2064                   /dev/kgni0
+2aaaab1e3000-2aaaab1eb000 rwxp 380040000000 00:06 2064                   /dev/kgni0
+2aaaab1eb000-2aaaab1f3000 rwxp 380060000000 00:06 2064                   /dev/kgni0
+2aaaab1f3000-2aaaab1f4000 rwxp 380020801000 00:06 2064                   /dev/kgni0
+2aaaab1f4000-2aaaab1f7000 rwxp 00000000 00:00 0 
+2aaaab1f7000-2aaaab1f8000 rwxp 38002068c000 00:06 2064                   /dev/kgni0
+2aaaab1f8000-2aaaab1fa000 rwxp 00000000 00:00 0 
+2aaaab200000-2aaaab600000 rwxs 00000000 00:27 8466695                    /var/lib/hugetlbfs/global/pagesize-2097152/hugepagefile.MPICH.0.35717.kvs_11889848 (deleted)
+2aaaab600000-2aaaab9b2000 rwxp 00000000 00:00 0 
+2aaaaba00000-2aaaabe00000 rwxs 00000000 00:27 8466696                    /var/lib/hugetlbfs/global/pagesize-2097152/hugepagefile.MPICH.1.35717.kvs_11889848 (deleted)
+2aaaac000000-2aaaac022000 rwxp 00000000 00:00 0 
+2aaaac022000-2aaab0000000 ---p 00000000 00:00 0 
+2aaab0000000-2aaab0234000 -w-s 00000000 00:1f 8466697                    /tmp/cpwahl_PIC2p2D.exe_id11889848_mmap-log-15341353116225200884-0.darshan
+2aaab0234000-2aaacebe4000 rwxp 00000000 00:00 0 
+7ffffffd8000-7ffffffff000 rwxp 00000000 00:00 0                          [stack]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+srun: error: nid00628: task 0: Aborted
+srun: Terminating job step 11889848.0
+srun: error: nid00631: task 1: Aborted

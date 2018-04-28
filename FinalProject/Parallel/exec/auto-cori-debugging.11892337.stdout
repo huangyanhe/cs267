@@ -1,0 +1,30 @@
+Num Particles[0] = 2661632
+Compute k1
+Made it to Allreduce
+Made it past Allreduce
+0.349931
+*** Error in `/global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/./PIC2p2D.exe': free(): invalid size: 0x0000000001300fe0 ***
+======= Backtrace: =========
+[0x8e7ebb]
+[0x8ec9a2]
+[0x8ed6ed]
+[0x41e90d]
+[0x420260]
+[0x8ba849]
+[0x40aad9]
+======= Memory map: ========
+00400000-01040000 r-xp 00000000 00:3b 232984580                          /global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/PIC2p2D.exe
+01240000-01268000 rwxp 00c40000 00:3b 232984580                          /global/u1/c/cpwahl/cs267/FinalProject/Parallel/exec/PIC2p2D.exe
+01268000-0136e000 rwxp 00000000 00:00 0                                  [heap]
+2aaaaaaab000-2aaaaaaae000 r--p 00000000 00:00 0                          [vvar]
+2aaaaaaae000-2aaaaaab0000 r-xp 00000000 00:00 0                          [vdso]
+2aaaaaab0000-2aaaaaabc000 rwxs 00000000 00:01 6061669                    /dev/zero (deleted)
+2aaaaaabc000-2aaaaaee9000 rwxp 00000000 00:00 0 
+2aaaaaee9000-2aaaab11d000 -w-s 00000000 00:1f 6061671                    /tmp/cpwahl_PIC2p2D.exe_id11892337_mmap-log-4218352307138618531-0.darshan
+2aaaab11d000-2aaada2cd000 rwxp 00000000 00:00 0 
+2aaadc000000-2aaadc032000 rwxp 00000000 00:00 0 
+2aaadc032000-2aaae0000000 ---p 00000000 00:00 0 
+7ffffffd8000-7ffffffff000 rwxp 00000000 00:00 0                          [stack]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+srun: error: nid01470: task 0: Aborted
+srun: Terminating job step 11892337.0

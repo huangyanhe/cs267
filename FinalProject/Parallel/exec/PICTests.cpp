@@ -9,6 +9,7 @@
 #include "WriteRectMDArray.H" 
 #include "VisitWriter.H"
 #include "RK4.H"
+#include <sys/time.h>
 
 inline int min(int a, int b){return a < b ? a : b;}
 
@@ -53,9 +54,22 @@ void outField(ParticleSet& p, int a_coarsenFactor)
     }
   const char* foo = MDWrite(&outVort);
 };
+double read_timer( )
+{
+        static bool initialized = false;
+        static struct timeval start;
+        struct timeval end;
+        if( !initialized )
+        {
+            gettimeofday( &start, NULL );
+            initialized = true;
+            }
+            gettimeofday( &end, NULL );
+            return (end.tv_sec - start.tv_sec) + 1.0e-6 * (end.tv_usec - start.tv_usec);
+};
 int main(int argc, char* argv[])
 {
-  unsigned int M = 3;
+  unsigned int M = 6;
   unsigned int N;
   //cout << "input test = 1 (Linear Landau Damping), 2, other" << endl;
   int test=1;
@@ -72,7 +86,7 @@ int main(int argc, char* argv[])
   //unsigned int cfactor;
   //cin >> cfactor;
   //cout << "enter stopping time" << endl;
-  double timeStop = 30;
+  double timeStop = 0.25;
   //cin >> timeStop;
 
   //
@@ -155,6 +169,7 @@ int main(int argc, char* argv[])
   int totalNumParticles;
   if (rank == 0)
     {
+      //ParticleSet p(domain, h, lowCorn, M, L, order, smoothness );
       //cout<<"Num Particles = "<<Power(Np, DIM)*Power(2*Np, DIM) <<endl;
       if (test == 1)
 	{
@@ -218,7 +233,7 @@ int main(int argc, char* argv[])
 //     {
 //       it->print();
 //     }
-  //cout<<"Num Particles["<< rank<<"] = "<< plocal.m_particles.size()<<endl;
+  cout<<"Num Particles["<< rank<<"] = "<< plocal.m_particles.size()<<endl;
 
   double time = 0.;
   double dt = 2.0/N;
@@ -228,18 +243,24 @@ int main(int argc, char* argv[])
   RK4<ParticleSet,ParticleVelocities,ParticleShift> integrator;
   integrator.define(plocal);
 
+  double sim_time = read_timer();
   for(int i=0; i<m; i++)
     {
       integrator.advance(time, dt, plocal);
       time = time + dt;
       if (rank == 0)
       {
-        cout<<time<<endl;
+        //cout<<time<<endl;
       }
       if (time >= timeStop) 
         {
           break;
         }
     }
+    sim_time = read_timer() - sim_time;
+    if (rank == 0)
+        cout<<"M = "<< M<< "simulation time = "<< sim_time<<endl;
+    free(partition_offsets);
+    free(partition_sizes);
 MPI_Finalize( );
 }

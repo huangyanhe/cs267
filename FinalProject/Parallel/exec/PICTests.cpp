@@ -71,8 +71,8 @@ int main(int argc, char* argv[])
 {
   unsigned int M = 6;
   unsigned int N;
-  //cout << "input test = 1 (Linear Landau Damping), 2, other" << endl;
-  int test=1;
+  //cout << "input test = 1 (Linear Landau Damping), 2 (Two-Stream Instability), other" << endl;
+  int test=2;
   //cin >> test;
   //cout << "input log_2(number of grid points)" << endl; 
   //cin >> M;
@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
   //unsigned int cfactor;
   //cin >> cfactor;
   //cout << "enter stopping time" << endl;
-  double timeStop = 0.25;
+  double timeStop = 20;
   //cin >> timeStop;
 
   //
@@ -194,11 +194,29 @@ int main(int argc, char* argv[])
 		      fSecondTerm *= exp(-p.m_particles[j].m_v[k]*vmax*p.m_particles[j].m_v[k]*vmax/2.0)*cos(Modes[k]*p.m_particles[j].m_x[k]*L);
 		    }
 		  p.m_particles[j].strength = 1/sqrt(2.0*M_PI)*(fFirstTerm + alpha*fSecondTerm)*pow(hp*L,DIM)*pow(hp*vmax,DIM);
-		}
-	    }
+     		}
+  	    }
 	
 	}
-
+    else if (test == 2)
+	{
+     if (DIM == 1)
+     {
+	  p.m_particles.resize(Power(Np, DIM)*Power(2*Np, DIM));
+	  int j = 0;
+	  for (Point ptV=PhaseVSpace.getLowCorner(); PhaseVSpace.notDone(ptV); PhaseVSpace.increment(ptV))
+	    {
+	      for (Point ptX=PhaseXSpace.getLowCorner(); PhaseXSpace.notDone(ptX); PhaseXSpace.increment(ptX), j++)
+		    {
+		    p.m_particles[j].m_x[0] = ptX[0]*hp;
+            p.m_particles[j].m_v[0] = ptV[0]*hp;
+	        p.m_particles[j].EField[0] = 0.0;
+		    double fFirstTerm = exp(-p.m_particles[j].m_v[0]*vmax*p.m_particles[j].m_v[0]*vmax/2.0);
+		    p.m_particles[j].strength = 1/sqrt(2.0*M_PI)*p.m_particles[j].m_v[0]*vmax*p.m_particles[j].m_v[0]*vmax*(fFirstTerm )*(1 + cos(Modes[0]*p.m_particles[j].m_x[0]*L) )*pow(hp*L,DIM)*pow(hp*vmax,DIM);
+		    }   
+	    }
+      }	
+	}
       p.m_particles.erase(remove_if(p.m_particles.begin(), p.m_particles.end(), removeParticle), p.m_particles.end());
       totalNumParticles = p.m_particles.size();
     }
@@ -233,7 +251,7 @@ int main(int argc, char* argv[])
 //     {
 //       it->print();
 //     }
-  cout<<"Num Particles["<< rank<<"] = "<< plocal.m_particles.size()<<endl;
+//  cout<<"Num Particles["<< rank<<"] = "<< plocal.m_particles.size()<<endl;
 
   double time = 0.;
   double dt = 2.0/N;
@@ -248,19 +266,45 @@ int main(int argc, char* argv[])
     {
       integrator.advance(time, dt, plocal);
       time = time + dt;
-      if (rank == 0)
+      if (test == 2)
       {
-        //cout<<time<<endl;
+         p.m_particles.resize(n_proc*particle_per_proc); 
+            if (rank == 0)
+            {
+                cout<<time<<endl;
+            }
+            MPI_Gather(&plocal.m_particles[0], particle_per_proc, PARTICLE, &p.m_particles[0], particle_per_proc, PARTICLE, 0, MPI_COMM_WORLD);
+            for (int j =0; j<p.m_particles.size(); j++ )
+            {
+                cout<< p.m_particles[j].m_x[0]*L<<endl;
+                cout<< p.m_particles[j].m_v[0]*vmax<<endl;
+                cout<< p.m_particles[j].strength<<endl;
+            }
       }
       if (time >= timeStop) 
         {
+        if (test == 2)
+        {
+         p.m_particles.resize(n_proc*particle_per_proc); 
+         if (rank == 0)
+          {
+              cout<<time<<endl;
+          }
+          MPI_Gather(&plocal.m_particles[0], particle_per_proc, PARTICLE, &p.m_particles[0], particle_per_proc, PARTICLE, 0, MPI_COMM_WORLD);
+          for (int j =0; j<p.m_particles.size(); j++ )
+          {
+              cout<< p.m_particles[j].m_x[0]*L<<endl;
+              cout<< p.m_particles[j].m_v[0]*vmax<<endl;
+              cout<< p.m_particles[j].strength<<endl;
+          }
+        }
           break;
         }
     }
     sim_time = read_timer() - sim_time;
-    if (rank == 0)
-        cout<<"M = "<< M<< "simulation time = "<< sim_time<<endl;
+   // if (rank == 0)
+   //     cout<<"M = "<< M<< "simulation time = "<< sim_time<<endl;
     free(partition_offsets);
     free(partition_sizes);
-MPI_Finalize( );
+    MPI_Finalize( );
 }

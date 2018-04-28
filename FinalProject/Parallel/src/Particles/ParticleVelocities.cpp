@@ -186,7 +186,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
     }
 
    // MPI Communication
- // cout<<"Made it to Allreduce"<<endl;
+  //cout<<"Made it to Allreduce"<<endl;
   double temp_array1[phi.dataSize()];
   double temp_array2[phi.dataSize()];
   for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
@@ -254,25 +254,25 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   int myRank; 
   MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
 
-  if (myRank == 0)
-  {
-  if (abs(dt) <=pow(10.0, -16))
-    {
-      double EField_Amplitude = 0.0;
-      for (Point p=m_box.getLowCorner(); m_box.notDone(p); m_box.increment(p))
-	{
-	  for (int j = 0; j<DIM; j++)
-	    {
-	      EField_Amplitude += pow(EField(p, j), 2);    
-	    }
-	}
-      EField_Amplitude*=m_dx;
-      EField_Amplitude = sqrt(EField_Amplitude);
-      cout<< EField_Amplitude<<endl;
-    }
-  }
+//  if (myRank == 0)
+//  {
+//  if (abs(dt) <=pow(10.0, -16))
+//    {
+//      double EField_Amplitude = 0.0;
+//      for (Point p=m_box.getLowCorner(); m_box.notDone(p); m_box.increment(p))
+//	{
+//	  for (int j = 0; j<DIM; j++)
+//	    {
+//	      EField_Amplitude += pow(EField(p, j), 2);    
+//	    }
+//	}
+//      EField_Amplitude*=m_dx;
+//      EField_Amplitude = sqrt(EField_Amplitude);
+//      cout<< EField_Amplitude<<endl;
+//    }
+//  }
   //Interpolate back and return particle fields in a_k
-  //cout<<"Made it out of FD step"<<endl;
+  //cout<<"Made it to interpolation step"<<endl;
   a_k.zeroEField();
   a_state.InterpolateForce(EField, a_k.m_particles);
 
@@ -280,5 +280,5 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   //   {
   //     iter->print();
   //   }
-  
+ //cout<<"Trying to leave"<<endl;  
 }

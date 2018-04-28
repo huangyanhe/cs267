@@ -161,7 +161,8 @@ int main(int argc, char* argv[])
       
 	  p.m_particles.resize(Power(Np, DIM)*Power(2*Np, DIM));
 	  int j = 0;
-	  for (Point ptV=PhaseVSpace.getLowCorner(); PhaseVSpace.notDone(ptV); PhaseVSpace.increment(ptV))
+//Could switch the order of these loops to see if there is any difference in initial "decomposition". 
+      for (Point ptV=PhaseVSpace.getLowCorner(); PhaseVSpace.notDone(ptV); PhaseVSpace.increment(ptV))
 	    {
 	      for (Point ptX=PhaseXSpace.getLowCorner(); PhaseXSpace.notDone(ptX); PhaseXSpace.increment(ptX), j++)
 		{

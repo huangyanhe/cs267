@@ -196,7 +196,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
       cout<< "] = "<<phi[p]<<endl;
     }
   //Poisson solve
-  PS.Solve( phi);
+  //PS.Solve( phi);
   cout<<"Made it out of solve"<<endl;
   //     for (Point p=phi.getDBox().getLowCorner(); phi.getDBox().notDone(p); phi.getDBox().increment(p))
   //   {

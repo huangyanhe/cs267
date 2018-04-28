@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 {
   unsigned int M;
   unsigned int N;
-  cout << "input test = 1 (Linear Landau Damping), 2, other" << endl;
+  cout << "input test = 1 (Linear Landau Damping), 2 (Two-Stream Instatbility), other" << endl;
   int test;
   cin >> test;
   cout << "input log_2(number of grid points)" << endl; 
@@ -165,6 +165,69 @@ int main(int argc, char* argv[])
 	  }
       }
   }
+  else if (test == 2)
+    {
+      if (DIM == 1)
+	{
+	  p.m_particles.resize(Power(Np, DIM)*Power(2*Np, DIM));
+	  int j = 0;
+	  for (Point ptV=PhaseVSpace.getLowCorner(); PhaseVSpace.notDone(ptV); PhaseVSpace.increment(ptV))
+	    {
+	      for (Point ptX=PhaseXSpace.getLowCorner(); PhaseXSpace.notDone(ptX); PhaseXSpace.increment(ptX), j++)
+		{
+		  //p.m_particles.push_back();
+		  for(int k=0; k<DIM; k++)
+		    {
+		      //p.m_particles[j].m_x[k] = ptX[k]*hp*L;
+		      //p.m_particles[j].m_v[k] = ptV[k]*hp*vmax;
+		      p.m_particles[j].m_x[k] = ptX[k]*hp;
+		      p.m_particles[j].m_v[k] = ptV[k]*hp;
+		      p.m_particles[j].EField[k] = 0.0;
+		    }
+		  double expTerm= 1.0;
+		  double fSecondTerm =1.0;
+		  for(int k=0; k<DIM; k++)
+		    {
+		      //fFirstTerm *= exp(-p.m_particles[j].m_v[k]*p.m_particles[j].m_v[k]/2.0);
+		      //fSecondTerm *= exp(-p.m_particles[j].m_v[k]*p.m_particles[j].m_v[k]/2.0)*cos(Modes[k]*p.m_particles[j].m_x[k]);
+		      expTerm *= exp(-p.m_particles[j].m_v[k]*vmax*p.m_particles[j].m_v[k]*vmax/2.0);
+		    }
+		      (1 + cos(Modes[k]*p.m_particles[j].m_x[k]*L) ) ;
+		      p.m_particles[j].strength = 1/sqrt(2.0*M_PI)*expTerm*(1 + cos(Modes[k]*p.m_particles[j].m_x[k]*L) )*(p.m_particles[j].m_v[0]*vmax*p.m_particles[j].m_v[0]*vmax)*pow(hp*L,DIM)*pow(hp*vmax,DIM);
+		}
+	    }
+	}
+      else if (DIM == 2)
+	{
+	  p.m_particles.resize(Power(Np, DIM)*Power(2*Np, DIM));
+	  int j = 0;
+	  for (Point ptV=PhaseVSpace.getLowCorner(); PhaseVSpace.notDone(ptV); PhaseVSpace.increment(ptV))
+	    {
+	      for (Point ptX=PhaseXSpace.getLowCorner(); PhaseXSpace.notDone(ptX); PhaseXSpace.increment(ptX), j++)
+		{
+		  //p.m_particles.push_back();
+		  for(int k=0; k<DIM; k++)
+		    {
+		      //p.m_particles[j].m_x[k] = ptX[k]*hp*L;
+		      //p.m_particles[j].m_v[k] = ptV[k]*hp*vmax;
+		      p.m_particles[j].m_x[k] = ptX[k]*hp;
+		      p.m_particles[j].m_v[k] = ptV[k]*hp;
+		      p.m_particles[j].EField[k] = 0.0;
+		    }
+		  double expTerm= 1.0;
+		  double fSecondTerm =1.0;
+		  for(int k=0; k<DIM; k++)
+		    {
+		      //fFirstTerm *= exp(-p.m_particles[j].m_v[k]*p.m_particles[j].m_v[k]/2.0);
+		      //fSecondTerm *= exp(-p.m_particles[j].m_v[k]*p.m_particles[j].m_v[k]/2.0)*cos(Modes[k]*p.m_particles[j].m_x[k]);
+		      expTerm *= exp(-p.m_particles[j].m_v[k]*vmax*p.m_particles[j].m_v[k]*vmax/2.0);
+		    }
+		      (1 + cos(Modes[k]*p.m_particles[j].m_x[k]*L) ) ;
+		      p.m_particles[j].strength = 1/sqrt(2.0*M_PI)*expTerm*(1 + cos(Modes[k]*p.m_particles[j].m_x[k]*L) )*(1.0 + 5.0*p.m_particles[j].m_v[0]*vmax*p.m_particles[j].m_v[0]*vmax)*pow(hp*L,DIM)*pow(hp*vmax,DIM);
+		}
+	    }
+	}
+    }
 
   p.m_particles.erase(remove_if(p.m_particles.begin(), p.m_particles.end(), removeParticle), p.m_particles.end());
 

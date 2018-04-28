@@ -16,6 +16,8 @@ public:
   void buildEigenvalues();
   //Used to Solve Poisson's equation on a periodic domain
   void Solve( RectMDArray<double>& a_rhs);
+  void setPhi();
+  void getPhi();
   ~PoissonSolver(){};
 protected:
   double m_h;
@@ -24,5 +26,6 @@ protected:
   FFTMD m_fftmd;
   DBox m_box;
   RectMDArray<double > m_eigenvalues;
+  RectMDArray<double > phi;
 };
 #endif

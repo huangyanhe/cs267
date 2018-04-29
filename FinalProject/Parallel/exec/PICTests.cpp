@@ -200,22 +200,22 @@ int main(int argc, char* argv[])
 	}
     else if (test == 2)
 	{
-     if (DIM == 1)
-     {
-	  p.m_particles.resize(Power(Np, DIM)*Power(2*Np, DIM));
-	  int j = 0;
-	  for (Point ptV=PhaseVSpace.getLowCorner(); PhaseVSpace.notDone(ptV); PhaseVSpace.increment(ptV))
+	  if (DIM == 1)
 	    {
-	      for (Point ptX=PhaseXSpace.getLowCorner(); PhaseXSpace.notDone(ptX); PhaseXSpace.increment(ptX), j++)
+	      p.m_particles.resize(Power(Np, DIM)*Power(2*Np, DIM));
+	      int j = 0;
+	      for (Point ptV=PhaseVSpace.getLowCorner(); PhaseVSpace.notDone(ptV); PhaseVSpace.increment(ptV))
+		{
+		  for (Point ptX=PhaseXSpace.getLowCorner(); PhaseXSpace.notDone(ptX); PhaseXSpace.increment(ptX), j++)
 		    {
-		    p.m_particles[j].m_x[0] = ptX[0]*hp;
-            p.m_particles[j].m_v[0] = ptV[0]*hp;
-	        p.m_particles[j].EField[0] = 0.0;
-		    double fFirstTerm = exp(-p.m_particles[j].m_v[0]*vmax*p.m_particles[j].m_v[0]*vmax/2.0);
-		    p.m_particles[j].strength = 1/sqrt(2.0*M_PI)*p.m_particles[j].m_v[0]*vmax*p.m_particles[j].m_v[0]*vmax*(fFirstTerm )*(1 + cos(Modes[0]*p.m_particles[j].m_x[0]*L) )*pow(hp*L,DIM)*pow(hp*vmax,DIM);
+		      p.m_particles[j].m_x[0] = ptX[0]*hp;
+		      p.m_particles[j].m_v[0] = ptV[0]*hp;
+		      p.m_particles[j].EField[0] = 0.0;
+		      double fFirstTerm = exp(-p.m_particles[j].m_v[0]*vmax*p.m_particles[j].m_v[0]*vmax/2.0);
+		      p.m_particles[j].strength = 1/sqrt(2.0*M_PI)*p.m_particles[j].m_v[0]*vmax*p.m_particles[j].m_v[0]*vmax*(fFirstTerm )*(1 + cos(Modes[0]*p.m_particles[j].m_x[0]*L) )*pow(hp*L,DIM)*pow(hp*vmax,DIM);
 		    }   
-	    }
-      }	
+		}
+	    }	
 	}
       p.m_particles.erase(remove_if(p.m_particles.begin(), p.m_particles.end(), removeParticle), p.m_particles.end());
       totalNumParticles = p.m_particles.size();

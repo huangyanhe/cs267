@@ -239,7 +239,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
 	}
       EField_Amplitude*=m_dx;
       EField_Amplitude = sqrt(EField_Amplitude);
-      cout<< EField_Amplitude<<endl;
+     // cout<< EField_Amplitude<<endl;
     }
   //Interpolate back and return particle fields in a_k
   //cout<<"Made it out of FD step"<<endl;

@@ -1,0 +1,5 @@
+M = 10simulation time = 1041.46
+M = 10simulation time = 260.864
+M = 10simulation time = 63.4973
+srun: error: Unable to confirm allocation for job 11958332: Unable to contact slurm controller (connect failure)
+srun: Check SLURM_JOB_ID environment variable. Expired or invalid job 11958332

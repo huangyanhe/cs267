@@ -69,7 +69,7 @@ double read_timer( )
 };
 int main(int argc, char* argv[])
 {
-  unsigned int M = 10;
+  unsigned int M = 12;
   unsigned int N;
   //cout << "input test = 1 (Linear Landau Damping), 2 (Two-Stream Instability), other" << endl;
   int test=1;

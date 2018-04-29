@@ -1,0 +1,13 @@
+#!/bin/bash -l
+#SBATCH -C haswell
+#SBATCH -p debug
+#SBATCH -N 64
+#SBATCH -t 00:30:00
+#SBATCH -J auto-cori-strongscaling
+#SBATCH -o auto-cori-strongscaling.%j.stdout 
+#SBATCH -J auto-cori-strongscaling.%j.error
+
+##srun -n 1 -N 1 ./PIC1p1D.exe 
+##srun -n 4 -N 4 ./PIC1p1D.exe 
+##srun -n 16 -N 16 ./PIC1p1D.exe 
+srun -n 64 -N 64 ./PIC1p1D.exe 

@@ -1,0 +1,10 @@
+#!/bin/bash -l
+#SBATCH -C haswell
+#SBATCH -p debug
+#SBATCH -N 16
+#SBATCH -t 00:30:00
+#SBATCH -J auto-cori-weakscaling 
+#SBATCH -o auto-cori-weakscaling.%j.stdout 
+#SBATCH -J auto-cori-weakscaling.%j.error
+
+srun -n 16 -N 16 ./PIC1p1D.exe 

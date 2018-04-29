@@ -13,13 +13,16 @@ ANIMATION = 1
 
 DIM=1
 CXX = CC
+MPCC = CC
 #CXX=clang++
 FFTWDIR = /opt/cray/pe/fftw/3.3.4.6/haswell
 #FFTWDIR = /usr/local/Cellar/fftw/3.3.6-pl2
-CFLAGS = -g -Wall
+#CFLAGS = -g -Wall
 #CFLAGS = -O3
-#CFLAGS += -O1
-CFLAGS += -std=c++11 -I$(PARTICLES) -I$(RMDA) -I$(IK) -I$(PS) -I$(FFT) -I$(TIMER) -I$(WRITERS) -I$(FFTWDIR)/include
+CFLAGS =
+CFLAGS += $(MPILIBS)
+CFLAGS += -std=c++11
+CFLAGS += -I$(PARTICLES) -I$(RMDA) -I$(IK) -I$(PS) -I$(FFT) -I$(TIMER) -I$(WRITERS) -I$(FFTWDIR)/include
 
 odir = ./o.$(DIM)d
 ddir = ./d.$(DIM)d
@@ -40,7 +43,7 @@ $(odir)/%.o:%.cpp GNUmakefile
 	mkdir -p $(ddir);$(CXX) -MM $(CFLAGS) $< | sed '1s/^/o.$(DIM)d\//' > $*.d;mv $*.d $(ddir)
 
 PICLLD: GNUmakefile $(OBJS) 
-	$(CXX) $(CFLAGS) $(OBJS) $(LIBS) -o PIC$(DIM)p$(DIM)D.exe
+	$(MPCC) $(CFLAGS) $(OBJS) $(LIBS) -o PIC$(DIM)p$(DIM)D.exe
 
 -include $(DEPS)
 

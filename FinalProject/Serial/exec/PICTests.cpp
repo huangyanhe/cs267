@@ -9,12 +9,26 @@
 #include "VisitWriter.H"
 #include "RK4.H"
 #include <mpi.h>
+#include <sys/time.h>
 
 auto removeParticle = [](Particle p) -> bool
 {
   double minStrength = pow(10.0, -9);
   bool removeIfFalse =  (p.strength < minStrength);
   return removeIfFalse;
+};
+double read_timer( )
+{
+        static bool initialized = false;
+        static struct timeval start;
+        struct timeval end;
+        if( !initialized )
+        {
+            gettimeofday( &start, NULL );
+            initialized = true;
+            }
+            gettimeofday( &end, NULL );
+            return (end.tv_sec - start.tv_sec) + 1.0e-6 * (end.tv_usec - start.tv_usec);
 };
 void outField(ParticleSet& p, int a_coarsenFactor)
 {
@@ -55,7 +69,7 @@ int main(int argc, char* argv[])
 {
   MPI_Init(NULL, NULL);
 
-  unsigned int M=4;
+  unsigned int M=10;
   unsigned int N;
   //cout << "input test = 1 (Linear Landau Damping), 2, other" << endl;
   int test = 1;
@@ -72,7 +86,7 @@ int main(int argc, char* argv[])
   //unsigned int cfactor;
   //cin >> cfactor;
   //cout << "enter stopping time" << endl;
-  double timeStop = 0.25;
+  double timeStop = 30;
   //cin >> timeStop;
 
   //N = 2*Grid_Size in Matlab
@@ -207,7 +221,7 @@ int main(int argc, char* argv[])
   //cout<<"Out Particle Velocities"<<endl;
   double time = 0.;
   double dt = 2.0/N;
-  int m = 5000;
+  int m = 100;
 
   RK4<ParticleSet,ParticleVelocities,ParticleShift> integrator;
   integrator.define(p);
@@ -215,11 +229,13 @@ int main(int argc, char* argv[])
 //   outField(p,pcfactor);
 //   PWrite(&p);
 // #endif 
+  
+  double sim_time = read_timer();
   for(int i=0; i<m; i++)
     {
       integrator.advance(time, dt, p);
       time = time + dt;
-      cout<<time<<endl;
+//      cout<<time<<endl;
       //cout << "time = " << time << "  dt " << dt << endl;
 // #if ANIMATION
 //       outField(p,pcfactor);
@@ -240,10 +256,12 @@ int main(int argc, char* argv[])
 	   break;
         }
     }
+    sim_time = read_timer() - sim_time;
   // if (!((test == 1) || (test == 2) || (test == 3)))
   //   {
   //     outField(p,pcfactor);
   //     PWrite(&p);
   //   }
+    cout<<"M = "<< M<< "simulation time = "<< sim_time<<endl;
 MPI_Finalize( );
 }

@@ -1,0 +1,12 @@
+srun: Warning: can't run 1 processes on 64 nodes, setting nnodes to 1
+M = 6simulation time = 2.7786
+srun: Warning: can't run 4 processes on 64 nodes, setting nnodes to 4
+M = 7simulation time = 9.06522
+srun: Warning: can't run 16 processes on 64 nodes, setting nnodes to 16
+M = 8simulation time = 33.535
+M = 9simulation time = 120.451
+M = 10simulation time = 451.914
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** STEP 11981799.5 ON nid00532 CANCELLED AT 2018-04-30T13:00:57 DUE TO TIME LIMIT ***
+srun: got SIGCONT
+srun: forcing job termination

@@ -9,12 +9,12 @@
 export OMP_NUM_THREADS=1
 srun -n 1 -c 1 ./PIC1p1D.exe 6
 export OMP_NUM_THREADS=2
-srun -n 1 -c 2 ./PIC1p1D.exe 7
+srun -n 1 -c 2 ./PIC1p1D.exe 6
 export OMP_NUM_THREADS=4
-srun -n 1 -c 4 ./PIC1p1D.exe 8
+srun -n 1 -c 4 ./PIC1p1D.exe 6
 export OMP_NUM_THREADS=8
-srun -n 1 -c 8 ./PIC1p1D.exe 9
+srun -n 1 -c 8 ./PIC1p1D.exe 6
 export OMP_NUM_THREADS=16
-srun -n 1 -c 16 ./PIC1p1D.exe 10
+srun -n 1 -c 16 ./PIC1p1D.exe 6
 export OMP_NUM_THREADS=32
-srun -n 1 -c 32 ./PIC1p1D.exe 11
+srun -n 1 -c 32 ./PIC1p1D.exe 6

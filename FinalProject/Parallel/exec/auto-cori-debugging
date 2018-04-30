@@ -1,0 +1,20 @@
+#!/bin/bash -l
+#SBATCH -C haswell
+#SBATCH -p debug
+#SBATCH -N 1
+#SBATCH -t 00:30:00
+#SBATCH -J auto-cori-debugging 
+#SBATCH -o auto-cori-debugging.%j.stdout 
+#SBATCH -J auto-cori-debugging.%j.error
+export OMP_NUM_THREADS=1
+srun -n 1 -c 1 ./PIC1p1D.exe 6
+export OMP_NUM_THREADS=2
+srun -n 1 -c 2 ./PIC1p1D.exe 7
+export OMP_NUM_THREADS=4
+srun -n 1 -c 4 ./PIC1p1D.exe 8
+export OMP_NUM_THREADS=8
+srun -n 1 -c 8 ./PIC1p1D.exe 9
+export OMP_NUM_THREADS=16
+srun -n 1 -c 16 ./PIC1p1D.exe 10
+export OMP_NUM_THREADS=32
+srun -n 1 -c 32 ./PIC1p1D.exe 11

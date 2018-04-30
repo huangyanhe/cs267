@@ -55,13 +55,13 @@ void ParticleSet::incrementDelta(const ParticleShift& a_shift, double a_dt)
 
 void  ParticleSet::deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_particles)
 {
-#pragma omp parallel  
+#pragma omp parallel   
   {
     RectMDArray<double> copy_Charge(a_Charge.getDBox());
     copy_Charge.setVal(0.0);
     array<double,DIM> pos; 
     array<int,DIM> iposLow, iposHigh;
-#pragma omp for schedule(static) 
+#pragma omp for schedule(guided) 
     for (int it = 0; it < t_particles.size(); it++)
       {
 	for (int l = 0; l < DIM; l++)
@@ -186,7 +186,7 @@ void  ParticleSet::deposit(RectMDArray<double>& a_Charge)
 void  ParticleSet::InterpolateForce(RectMDArray<double, DIM>& a_Field, vector<Particle>& t_particles)
 {
 
-#pragma omp parallel for schedule(dynamic) 
+#pragma omp parallel for schedule(guided) 
   for (int it = 0; it <t_particles.size(); it++)
     {
       array<int,DIM> iposLow, iposHigh;
@@ -230,7 +230,7 @@ void  ParticleSet::InterpolateForce(RectMDArray<double, DIM>& a_Field, vector<Pa
 //Uses member particle positions to interpolate the electric field onto a ParticleShift.
 void  ParticleSet::InterpolateForce(RectMDArray<double, DIM>& a_Field, vector<DX>& t_particles)
 {
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(guided)
   for (int it = 0; it <m_particles.size(); it++)
     {
       array<int,DIM> iposLow, iposHigh;
@@ -331,7 +331,7 @@ void ParticleSet::wrapParticles(vector<Particle>& t_particles)
     }
   //The ordering of this should be explored. Since it is a vector of particles this should be best.
   int l = t_particles.size();
-#pragma omp parallel for collapse(2)
+#pragma omp parallel for collapse(2) schedule(guided)
   for (int it = 0; it < l; it++) {
     for (int j =0; j<DIM; j++)
       {

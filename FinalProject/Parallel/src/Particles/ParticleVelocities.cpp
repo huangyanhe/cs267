@@ -175,7 +175,7 @@ void ParticleVelocities::setGhost(RectMDArray<double>& enlargedGrid)
   for (int k = 0; k < 2*DIM; k++)
     {
       DBox bx = m_bdry[k];
-#pragma omp parallel for 
+#pragma omp parallel for schedule(guided) 
       for (int i = 0; i < bx.sizeOf(); i++)
         {
           Point pt = bx.getPoint(i);
@@ -293,7 +293,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
 
 
 
-#pragma omp parallel for
+#pragma omp parallel for schedule(guided)
   for (int i = 0; i < l; i++)
   {
     Point p = phiBox.getPoint(i);
@@ -316,7 +316,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   // Finite Difference 4th order first derivative
   //cout<<"Made it to FD step"<<endl;
   int r = m_box.sizeOf();
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(guided)
   for (int i = 0; i < r; i++)
     {
       Point p = m_box.getPoint(i);

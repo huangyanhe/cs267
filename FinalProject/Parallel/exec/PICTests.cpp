@@ -8,6 +8,8 @@
 #include "WriteRectMDArray.H" 
 #include "VisitWriter.H"
 #include "RK4.H"
+#include <sys/time.h>
+inline int min(int a, int b){return a < b ? a : b;}
 auto removeParticle = [](Particle p) -> bool
 {
   double minStrength = pow(10.0, -9);
@@ -49,27 +51,41 @@ void outField(ParticleSet& p, int a_coarsenFactor)
     }
   const char* foo = MDWrite(&outVort);
 };
+double read_timer( )
+{
+  static bool initialized = false;
+  static struct timeval start;
+  struct timeval end;
+  if( !initialized )
+    {
+      gettimeofday( &start, NULL );
+      initialized = true;
+    }
+  gettimeofday( &end, NULL );
+  return (end.tv_sec - start.tv_sec) + 1.0e-6 * (end.tv_usec - start.tv_usec);
+};
+
 int main(int argc, char* argv[])
 {
-  unsigned int M;
+  unsigned int M = 6;
   unsigned int N;
-  cout << "input test = 1 (Linear Landau Damping), 2, other" << endl;
+  //cout << "input test = 1 (Linear Landau Damping), 2, other" << endl;
   int test = 1;
-  cin >> test;
-  cout << "input log_2(number of grid points)" << endl; 
-  cin >> M;
-  cout << "input order of interpolating function(lowest = 2)" << endl;
-  int order;
-  cin >> order;
-  cout << "input smoothness of interpolating function(lowest = 0)" << endl;
-  int smoothness;
-  cin >> smoothness;  
+  //cin >> test;
+  //cout << "input log_2(number of grid points)" << endl; 
+  //cin >> M;
+  //cout << "input order of interpolating function(lowest = 2)" << endl;
+  int order = 4;
+  //cin >> order;
+  //cout << "input smoothness of interpolating function(lowest = 0)" << endl;
+  int smoothness = 0;
+  //cin >> smoothness;  
   //cout << "input particle refinement factor" << endl;
   //unsigned int cfactor;
   //  cin >> cfactor;
-  cout << "enter stopping time" << endl;
-  double timeStop;
-  cin >> timeStop;
+  //cout << "enter stopping time" << endl;
+  double timeStop = 30;
+  //cin >> timeStop;
 
   //  N = 2*Grid_Size in Matlab
   N = Power(2,M);
@@ -185,8 +201,8 @@ int main(int argc, char* argv[])
   //cout<<"Out Particle Velocities"<<endl;
   double time = 0.;
   //  double dt = 2.0/N;
-  double dt = 1.0/N;
-  int m = 5000;
+  double dt = 2.0/N;
+  int m = 100;
 
   RK4<ParticleSet,ParticleVelocities,ParticleShift> integrator;
   integrator.define(p);
@@ -194,11 +210,12 @@ int main(int argc, char* argv[])
 //   outField(p,pcfactor);
 //   PWrite(&p);
 // #endif 
+  double sim_time = read_timer();
   for(int i=0; i<m; i++)
     {
       integrator.advance(time, dt, p);
       time = time + dt;
-      cout<<time<<endl;
+      //      cout<<time<<endl;
       //cout << "time = " << time << "  dt " << dt << endl;
 // #if ANIMATION
 //       outField(p,pcfactor);
@@ -209,6 +226,9 @@ int main(int argc, char* argv[])
           break;
         }
     }
+  sim_time = read_timer() - sim_time;
+  cout<<"M = "<< M<< "simulation time = "<< sim_time<<endl;
+
   // if (!((test == 1) || (test == 2) || (test == 3)))
   //   {
   //     outField(p,pcfactor);

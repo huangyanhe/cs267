@@ -198,7 +198,7 @@ void ParticleVelocities::setGhostMD(RectMDArray<double, DIM>& enlargedGrid)
   for (int k = 0; k < 2*DIM; k++)
     {
       DBox bx = m_bdry[k]; 
-#pragma omp parallel for 
+#pragma omp parallel for schedule(guided)
       for (int i = 0; i < bx.sizeOf(); i++)
         {
           Point pt = bx.getPoint(i);
@@ -222,7 +222,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   //First need to compute a_state.m_x + dt*a_state.m_v + a_k
   //dt is used to control how much of the velocity is added since it isn't used anywhere else
   vector<Particle> t_particles = a_state.m_particles;
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(guided)
   for (int j = 0; j<a_k.m_particles.size(); j++)
     {
       t_particles[j].addVelocity(dt);
@@ -251,7 +251,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   // Solve Poisson's Equation with Periodic Boundary Conditions 
   //write density into phu
   int l = phiBox.sizeOf();
-#pragma omp parallel for
+#pragma omp parallel for schedule(guided)
   for (int i = 0; i < l; i++)
     {
       Point p = phiBox.getPoint(i);

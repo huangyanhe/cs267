@@ -9,7 +9,8 @@
 #include "VisitWriter.H"
 #include "RK4.H"
 #include <sys/time.h>
-
+#include <sstream> 
+#include <string>  
 inline int min(int a, int b){return a < b ? a : b;}
 
 auto removeParticle = [](Particle p) -> bool
@@ -70,7 +71,10 @@ double read_timer( )
 
 int main(int argc, char* argv[])
 {
-  unsigned int M = 10;
+  std::stringstream str(argv[argc-1]); 
+  unsigned int M;  
+  str >> M; 
+  //unsigned int M = 10;
   unsigned int N;
   //cout << "input test = 1 (Linear Landau Damping), 2, other" << endl;
   int test = 1;

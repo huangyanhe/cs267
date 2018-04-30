@@ -269,6 +269,30 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   //     cout<<phi[p]<<endl;
   //   }
   //Write Phi values out back into dbox with ghost cells
+  // MPI Communication
+  //cout<<"Made it to Allreduce"<<endl;
+  double temp_array1[phi.dataSize()];
+  double temp_array2[phi.dataSize()];
+  for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
+    {
+      //      cout<<"Linear index"<<phi.getDBox().getIndex(p)<<endl;
+      temp_array2[phi.getDBox().getIndex(p)] = phi[p]; 
+    }
+  //  cout<<"Phi Data Size = "<<phi.dataSize()<<endl;
+  //cout<< "dbox high corner = "<<endl;
+  //phi.getDBox().getHighCorner().print();
+  MPI_Allreduce(&temp_array2, &temp_array1, phi.dataSize(), MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  //Could potentially replace this with a fucntion redefining the pointer for RectMDArray
+  //cout<<"Made it past Allreduce"<<endl;
+  for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
+    {
+      phi[p] = temp_array1[phi.getDBox().getIndex(p)]; 
+    }
+  
+
+
+
+
 #pragma omp parallel for
   for (int i = 0; i < l; i++)
   {
@@ -313,25 +337,29 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
 
   //cout << "setGhostMD start" << endl;
   setGhostMD(EField);
+  
+  int myRank; 
+  MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+
   //cout << "setGhostMD finish" << endl;
   //Computes Electric Field Energy for plotting in LLD case.
-  if (abs(dt) <=pow(10.0, -16))
-    {
-      double EField_Amplitude = 0.0;
-#pragma omp parallel for collapse(2) reduction(+:EField_Amplitude)
-      for (int i = 0; i < r; i++)
-	{
-	  for (int j = 0; j<DIM; j++)
-	    {
-	      Point p = m_box.getPoint(i);
-	      EField_Amplitude += pow(EField(p, j), 2);    
-	    }
-	}
-      EField_Amplitude*=m_dx;
-      EField_Amplitude = sqrt(EField_Amplitude);
-      //      cout<< " EField_Amplitude = " << EField_Amplitude <<endl;
-      cout<<  EField_Amplitude <<endl;
-    }
+ //  if (abs(dt) <=pow(10.0, -16))
+//     {
+//       double EField_Amplitude = 0.0;
+// #pragma omp parallel for collapse(2) reduction(+:EField_Amplitude)
+//       for (int i = 0; i < r; i++)
+// 	{
+// 	  for (int j = 0; j<DIM; j++)
+// 	    {
+// 	      Point p = m_box.getPoint(i);
+// 	      EField_Amplitude += pow(EField(p, j), 2);    
+// 	    }
+// 	}
+//       EField_Amplitude*=m_dx;
+//       EField_Amplitude = sqrt(EField_Amplitude);
+//       //      cout<< " EField_Amplitude = " << EField_Amplitude <<endl;
+//       cout<<  EField_Amplitude <<endl;
+//     } 
   //Interpolate back and return particle fields in a_k
   //cout<<"Made it out of FD step"<<endl;
   a_k.zeroEField();

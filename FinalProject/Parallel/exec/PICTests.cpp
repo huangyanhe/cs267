@@ -1,3 +1,4 @@
+#include <mpi.h>
 #include <iostream>
 #include <cassert>
 #include <cmath>
@@ -234,18 +235,18 @@ int main(int argc, char* argv[])
   //   }
   
   //Need to check on some of these parameters.
-  double dx = 1./N;
+  //double dx = 1./N;
   //cout << "number of particles = " << p.m_particles.size() << endl;
-  ParticleShift kIn,kOut;
-  kIn.init(p);
-  kOut.init(p);
-  kIn.setToZero();
+  //ParticleShift kIn,kOut;
+  //kIn.init(p);
+  //kOut.init(p);
+  //  kIn.setToZero();
   //cout<<"In Particle Velocities"<<endl;
   //ParticleVelocities pv(p); 
   //cout<<"Out Particle Velocities"<<endl;
   double time = 0.;
-  //  double dt = 2.0/N;
-  double dt = 1.0/N;
+  double dt = 2.0/N;
+  //double dt = 1.0/N;
   int m = 100;
 
   RK4<ParticleSet,ParticleVelocities,ParticleShift> integrator;
@@ -272,7 +273,9 @@ int main(int argc, char* argv[])
     }
   sim_time = read_timer() - sim_time;
   if (rank == 0)
-    cout<<"M = "<< M<< "simulation time = "<< sim_time<<endl;
+    {
+      cout<<"M = "<< M<< "simulation time = "<< sim_time<<endl;
+    }  
   free(partition_offsets);
   free(partition_sizes);
   MPI_Finalize( );

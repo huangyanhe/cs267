@@ -5,7 +5,7 @@
 #include "Particle.H"
 #include "RectMDArray.H"
 #include "InterpolationKernel.H"
-
+#include "CH_Timer.H"
 using namespace std;
 
 class ParticleSet;

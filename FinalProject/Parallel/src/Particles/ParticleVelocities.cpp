@@ -2,6 +2,7 @@
 #include "omp.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "CH_Timer.H"
 ParticleVelocities::ParticleVelocities()
 {
 }
@@ -32,6 +33,7 @@ ParticleVelocities::ParticleVelocities(ParticleSet& a_state)
 }
 void ParticleVelocities::define(ParticleSet& a_state)
 {
+  CH_TIMERS("define");
   m_box = a_state.m_box;
   m_dx = a_state.m_dx;
   m_L = a_state.m_L;
@@ -63,6 +65,7 @@ void ParticleVelocities::define(ParticleSet& a_state)
 
 void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
 {
+  CH_TIMERS("getGhostDeposition");
   // cout<<"m_domainSize =";
   // for (int dir = 0; dir < DIM; dir++)
   //   cout<<m_domainSize[dir];
@@ -172,6 +175,7 @@ void ParticleVelocities::getGhostDeposition(RectMDArray<double>& enlargedGrid)
 // }
 void ParticleVelocities::setGhost(RectMDArray<double>& enlargedGrid)
 { 
+  CH_TIMERS("setGhost");
   for (int k = 0; k < 2*DIM; k++)
     {
       DBox bx = m_bdry[k];
@@ -219,6 +223,8 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
                      const double& a_time, const double& dt, 
                      ParticleSet& a_state)
 {
+  CH_TIME("ParticleVelocities::operator()");
+
   //First need to compute a_state.m_x + dt*a_state.m_v + a_k
   //dt is used to control how much of the velocity is added since it isn't used anywhere else
   vector<Particle> t_particles = a_state.m_particles;
@@ -260,15 +266,6 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
       //p.print();
       //cout<< "]"<<phi[p]<<endl;
     }
-  //Poisson solve
-  PS.Solve( phi);
-  // cout<<"Made it out of solve"<<endl;
-  //     for (Point p=phi.getDBox().getLowCorner(); phi.getDBox().notDone(p); phi.getDBox().increment(p))
-  //   {
-  //     p.print();
-  //     cout<<phi[p]<<endl;
-  //   }
-  //Write Phi values out back into dbox with ghost cells
   // MPI Communication
   //cout<<"Made it to Allreduce"<<endl;
   double temp_array1[phi.dataSize()];
@@ -288,9 +285,16 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
     {
       phi[p] = temp_array1[phi.getDBox().getIndex(p)]; 
     }
-  
 
-
+  //Poisson solve
+  PS.Solve( phi);
+  // cout<<"Made it out of solve"<<endl;
+  //     for (Point p=phi.getDBox().getLowCorner(); phi.getDBox().notDone(p); phi.getDBox().increment(p))
+  //   {
+  //     p.print();
+  //     cout<<phi[p]<<endl;
+  //   }
+  //Write Phi values out back into dbox with ghost cells
 
 
 #pragma omp parallel for schedule(guided)

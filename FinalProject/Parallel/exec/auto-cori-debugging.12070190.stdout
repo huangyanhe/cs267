@@ -1,0 +1,8 @@
+srun: Warning: can't run 1 processes on 4 nodes, setting nnodes to 1
+M = 10simulation time = 194.881
+srun: Warning: can't run 2 processes on 4 nodes, setting nnodes to 2
+M = 10simulation time = 97.0519
+M = 10simulation time = 45.8906
+M = 10simulation time = 24.7354
+M = 10simulation time = 13.8088
+M = 10simulation time = 7.4039

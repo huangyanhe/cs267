@@ -1,13 +1,16 @@
 #!/bin/bash -l
 #SBATCH -C haswell
 #SBATCH -p debug
-#SBATCH -N 2
+#SBATCH -N 1
 #SBATCH -t 00:30:00
 #SBATCH -J auto-cori-debugging 
 #SBATCH -o auto-cori-debugging.%j.stdout 
 #SBATCH -J auto-cori-debugging.%j.error
-export OMP_NUM_THREADS=2
-export OMP_PROC_BIND=true     #"spread" is also good for Intel and CCE compilers
-export OMP_PLACES=threads
-srun -n 2 -c 64 ./PIC1p1D.exe 6
-
+export OMP_NUM_THREADS=4
+srun -n 1 -c 8 ./PIC1p1D.exe 10
+export OMP_NUM_THREADS=4
+srun -n 2 -c 8 ./PIC1p1D.exe 10
+export OMP_NUM_THREADS=4
+srun -n 4 -c 8 ./PIC1p1D.exe 10
+export OMP_NUM_THREADS=4
+srun -n 8 -c 8 ./PIC1p1D.exe 10

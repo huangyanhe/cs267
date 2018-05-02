@@ -12,6 +12,7 @@
 #include <sys/time.h>
 #include <sstream> 
 #include <string>  
+#include "CH_Timer.H"
 inline int min(int a, int b){return a < b ? a : b;}
 
 auto removeParticle = [](Particle p) -> bool
@@ -72,6 +73,8 @@ double read_timer( )
 
 int main(int argc, char* argv[])
 {
+  CH_TIMERS("main");
+  CH_TIMER("advance", t1);
   std::stringstream str(argv[argc-1]); 
   unsigned int M;  
   str >> M; 
@@ -258,7 +261,9 @@ int main(int argc, char* argv[])
   double sim_time = read_timer();
   for(int i=0; i<m; i++)
     {
-      integrator.advance(time, dt, p);
+      CH_START(t1);
+      integrator.advance(time, dt, plocal);
+      CH_STOP(t1);
       time = time + dt;
       //cout<<time<<endl;
       //cout << "time = " << time << "  dt " << dt << endl;

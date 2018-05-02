@@ -55,6 +55,7 @@ void ParticleSet::incrementDelta(const ParticleShift& a_shift, double a_dt)
 
 void  ParticleSet::deposit(RectMDArray<double>& a_Charge, vector<Particle>& t_particles)
 {
+  CH_TIMERS("deposit");
 #pragma omp parallel   
   {
     RectMDArray<double> copy_Charge(a_Charge.getDBox());
@@ -185,7 +186,7 @@ void  ParticleSet::deposit(RectMDArray<double>& a_Charge)
 //Dimensionally Independent Interpolation
 void  ParticleSet::InterpolateForce(RectMDArray<double, DIM>& a_Field, vector<Particle>& t_particles)
 {
-
+  CH_TIMERS("InterpolateForce");
 #pragma omp parallel for schedule(guided) 
   for (int it = 0; it <t_particles.size(); it++)
     {
@@ -230,6 +231,7 @@ void  ParticleSet::InterpolateForce(RectMDArray<double, DIM>& a_Field, vector<Pa
 //Uses member particle positions to interpolate the electric field onto a ParticleShift.
 void  ParticleSet::InterpolateForce(RectMDArray<double, DIM>& a_Field, vector<DX>& t_particles)
 {
+  CH_TIMERS("InterpolateForce");
 #pragma omp parallel for schedule(guided)
   for (int it = 0; it <m_particles.size(); it++)
     {
@@ -320,6 +322,7 @@ void  ParticleSet::InterpolateForce(RectMDArray<double, DIM>& a_Field)
 //Wraps Particles that have crossed boundary.
 void ParticleSet::wrapParticles(vector<Particle>& t_particles)
 {
+  CH_TIMERS("wrapParticles");
   double highBoundary[DIM];
   double lowBoundary[DIM];
   double domainSpecs[DIM];

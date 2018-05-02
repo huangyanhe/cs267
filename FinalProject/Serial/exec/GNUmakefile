@@ -11,7 +11,7 @@ TIMER = $(HOME)/utils/timer
 VPATH= . $(HOME) $(PARTICLES) $(RMDA) $(FFT) $(PS) $(TIMER) $(WRITERS) $(IK)
 ANIMATION = 1
 
-DIM=2
+DIM=1
 CXX = CC
 #CXX=clang++
 FFTWDIR = /opt/cray/pe/fftw/3.3.4.6/haswell

@@ -77,7 +77,7 @@ void RK4<X, F, dX>::advance(double a_time, double a_dt, X& a_state)
   m_delta.initDelta(a_state);
   m_k.init(a_state);
   // Compute k1
-  cout<<"Compute k1"<<endl;
+  //cout<<"Compute k1"<<endl;
   m_f(m_k, a_time, 0.0, a_state); 
   //Increment delta by k1
   m_k*=1/a_state.m_L;
@@ -88,27 +88,27 @@ void RK4<X, F, dX>::advance(double a_time, double a_dt, X& a_state)
   //Not 100% sure scaling by m_dx/m_L is correct
   //m_k*=a_state.m_dx;
   // Compute k2
-  cout<<"Compute k2"<<endl;
+  //cout<<"Compute k2"<<endl;
   m_f(m_k, a_time, half*a_dt, a_state);
   //Increment delta by
-  cout << "rk1" << endl;
+  //  cout << "rk1" << endl;
   m_k*=1/a_state.m_L;
-  cout << "rk2" << endl;
+  //cout << "rk2" << endl;
   m_delta.incrementPositionandVelocity(third*a_dt*a_dt, 2.0*third*a_dt, m_k);
-  cout << "rk3" << endl;
+  //cout << "rk3" << endl;
   m_k*=half;
-  cout << "rk4" << endl;
+  //cout << "rk4" << endl;
   m_k*= dt2;
-  cout << "rk5" << endl;
+  //cout << "rk5" << endl;
   //Not 100% sure scaling by m_dx/m_L is correct
   //m_k*=a_state.m_dx;
   // Compute k3
-  cout<<"Compute k3"<<endl;
+  //cout<<"Compute k3"<<endl;
   m_f(m_k, a_time, a_dt, a_state);
   //m_k*=a_state.m_dx;
   m_k*=1/a_state.m_L;
   m_delta.incrementVelocity(sixth*a_dt, m_k);
-  cout << "about to finish rk4" << endl;
+  // cout << "about to finish rk4" << endl;
   //Final increment of both m_x and m_v
   // for (auto it=a_state.m_particles.begin(); it!=a_state.m_particles.end(); ++it )
   //   {
@@ -116,7 +116,7 @@ void RK4<X, F, dX>::advance(double a_time, double a_dt, X& a_state)
   //   }
   a_state.incrementDelta(m_delta, a_dt);
   a_state.wrapParticles();
-  cout << "finished" << endl;
+  //cout << "finished" << endl;
   // for (auto it=m_delta.m_particles.begin(); it!=m_delta.m_particles.end(); ++it )
   //   {
   //     it->print();

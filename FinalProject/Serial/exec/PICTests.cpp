@@ -8,6 +8,7 @@
 #include "WriteRectMDArray.H" 
 #include "VisitWriter.H"
 #include "RK4.H"
+#include "CH_Timer.H"
 auto removeParticle = [](Particle p) -> bool
 {
   double minStrength = pow(10.0, -9);
@@ -51,6 +52,7 @@ void outField(ParticleSet& p, int a_coarsenFactor)
 };
 int main(int argc, char* argv[])
 {
+  CH_TIMERS("main");
   unsigned int M;
   unsigned int N;
   //  cout << "input test = 1 (Linear Landau Damping), 2, other" << endl;
@@ -69,7 +71,7 @@ int main(int argc, char* argv[])
   //unsigned int cfactor;
   //cin >> cfactor;
   //cout << "enter stopping time" << endl;
-  double timeStop = 0.5;
+  double timeStop = 10;
   //cin >> timeStop;
 
   //N = 2*Grid_Size in Matlab
@@ -196,7 +198,9 @@ int main(int argc, char* argv[])
 // #endif 
   for(int i=0; i<m; i++)
     {
+      //CH_START(t1);
       integrator.advance(time, dt, p);
+      //CH_STOP(t1);
       time = time + dt;
       cout<<"t = " << time<<endl;
       //cout << "time = " << time << "  dt " << dt << endl;

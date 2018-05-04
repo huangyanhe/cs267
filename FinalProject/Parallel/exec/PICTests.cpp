@@ -283,6 +283,7 @@ int main(int argc, char* argv[])
     }  
   free(partition_offsets);
   free(partition_sizes);
+  CH_TIMER_REPORT();
   MPI_Finalize( );
   // if (!((test == 1) || (test == 2) || (test == 3)))
   //   {

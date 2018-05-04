@@ -125,6 +125,7 @@ void PoissonSolver::define(double a_h, int a_M, double a_L, DBox a_box)
 };
 void PoissonSolver::Solve( RectMDArray<double>& a_rhs)
 {
+  CH_TIMERS("poisson solve");
   //DBox for grid
   //DBox rhsDomain = a_rhs.getDBox();
   Point low = m_box.getLowCorner();

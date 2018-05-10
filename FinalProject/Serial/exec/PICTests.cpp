@@ -8,7 +8,7 @@
 #include "WriteRectMDArray.H" 
 #include "VisitWriter.H"
 #include "RK4.H"
-#include <mpi.h>
+//#include <mpi.h>
 #include <sys/time.h>
 
 auto removeParticle = [](Particle p) -> bool
@@ -67,9 +67,10 @@ void outField(ParticleSet& p, int a_coarsenFactor)
 };
 int main(int argc, char* argv[])
 {
-  MPI_Init(NULL, NULL);
+  //MPI_Init(NULL, NULL);
 
-  unsigned int M=10;
+  unsigned int M=6;
+  //unsigned int M= 1;
   unsigned int N;
   //cout << "input test = 1 (Linear Landau Damping), 2, other" << endl;
   int test = 1;
@@ -77,7 +78,7 @@ int main(int argc, char* argv[])
   //cout << "input log_2(number of grid points)" << endl; 
   //cin >> M;
   //cout << "input order of interpolating function(lowest = 2)" << endl;
-  int order = 4;
+  int order = 2;
   //cin >> order;
  // cout << "input smoothness of interpolating function(lowest = 0)" << endl;
   int smoothness = 0;
@@ -86,12 +87,13 @@ int main(int argc, char* argv[])
   //unsigned int cfactor;
   //cin >> cfactor;
   //cout << "enter stopping time" << endl;
-  double timeStop = 30;
+  double timeStop = 30.0;
+  //double timeStop;
   //cin >> timeStop;
 
   //N = 2*Grid_Size in Matlab
   N = Power(2,M);
-  double alpha = 0.05;
+  double alpha = 0.01;
   double vmax = 10.0;
   double L = 4*M_PI;
   int cfactor = 2;
@@ -164,24 +166,26 @@ int main(int argc, char* argv[])
 	    //p.m_particles.push_back();
 	    for(int k=0; k<DIM; k++)
 	      {
-		//p.m_particles[j].m_x[k] = ptX[k]*hp*L;
-		//p.m_particles[j].m_v[k] = ptV[k]*hp*vmax;
-		p.m_particles[j].m_x[k] = ptX[k]*hp;
-		p.m_particles[j].m_v[k] = ptV[k]*hp;
+		p.m_particles[j].m_x[k] = ptX[k]*hp*L;
+		p.m_particles[j].m_v[k] = ptV[k]*hp*vmax;
+		//p.m_particles[j].m_x[k] = ptX[k]*hp;
+		//p.m_particles[j].m_v[k] = ptV[k]*hp;
 		p.m_particles[j].EField[k] = 0.0;
 	      }
 	    double fFirstTerm= 1.0;
 	    double fSecondTerm =1.0;
 	    for(int k=0; k<DIM; k++)
 	      {
-		//fFirstTerm *= exp(-p.m_particles[j].m_v[k]*p.m_particles[j].m_v[k]/2.0);
-		//fSecondTerm *= exp(-p.m_particles[j].m_v[k]*p.m_particles[j].m_v[k]/2.0)*cos(Modes[k]*p.m_particles[j].m_x[k]);
-		fFirstTerm *= exp(-p.m_particles[j].m_v[k]*vmax*p.m_particles[j].m_v[k]*vmax/2.0);
-		fSecondTerm *= exp(-p.m_particles[j].m_v[k]*vmax*p.m_particles[j].m_v[k]*vmax/2.0)*cos(Modes[k]*p.m_particles[j].m_x[k]*L);
+		fFirstTerm *= exp(-p.m_particles[j].m_v[k]*p.m_particles[j].m_v[k]/2.0);
+		fSecondTerm *= exp(-p.m_particles[j].m_v[k]*p.m_particles[j].m_v[k]/2.0)*cos(Modes[k]*p.m_particles[j].m_x[k]);
+		//fFirstTerm *= exp(-p.m_particles[j].m_v[k]*vmax*p.m_particles[j].m_v[k]*vmax/2.0);
+		//fSecondTerm *= exp(-p.m_particles[j].m_v[k]*vmax*p.m_particles[j].m_v[k]*vmax/2.0)*cos(Modes[k]*p.m_particles[j].m_x[k]*L);
 	      }
 	    p.m_particles[j].strength = 1/sqrt(2.0*M_PI)*(fFirstTerm + alpha*fSecondTerm)*pow(hp*L,DIM)*pow(hp*vmax,DIM);
 	  }
       }
+    //cout<<"hx = "<<hp*L<<endl;
+    //cout<<"hv = "<<hp*vmax<<endl;
   }
   else if (test == 2)
     {
@@ -221,7 +225,9 @@ int main(int argc, char* argv[])
   //cout<<"Out Particle Velocities"<<endl;
   double time = 0.;
   double dt = 2.0/N;
-  int m = 100;
+  //cout<< "N = "<< N <<endl;
+  //cout<<"dt = "<< dt <<endl;
+  int m = 5000;
 
   RK4<ParticleSet,ParticleVelocities,ParticleShift> integrator;
   integrator.define(p);
@@ -229,13 +235,24 @@ int main(int argc, char* argv[])
 //   outField(p,pcfactor);
 //   PWrite(&p);
 // #endif 
+
+  if (test == 2)
+    {
+      for (int j =0; j<p.m_particles.size(); j++ )
+	{
+	  cout<< p.m_particles[j].m_x[0]*L<<endl;
+	  cout<< p.m_particles[j].m_v[0]*vmax<<endl;
+	  cout<< p.m_particles[j].strength<<endl;
+	}
+    }
   
   double sim_time = read_timer();
   for(int i=0; i<m; i++)
     {
+
       integrator.advance(time, dt, p);
       time = time + dt;
-//      cout<<time<<endl;
+      cout<<time<<endl;
       //cout << "time = " << time << "  dt " << dt << endl;
 // #if ANIMATION
 //       outField(p,pcfactor);
@@ -262,6 +279,6 @@ int main(int argc, char* argv[])
   //     outField(p,pcfactor);
   //     PWrite(&p);
   //   }
-    cout<<"M = "<< M<< "simulation time = "<< sim_time<<endl;
-MPI_Finalize( );
+    //cout<<"M = "<< M<< "simulation time = "<< sim_time<<endl;
+    //MPI_Finalize( );
 }

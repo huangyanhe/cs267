@@ -37,7 +37,7 @@ public:
   {
     for(unsigned int i=0; i<DIM; i++) 
       {
-	m_x[i]+=a_scale*m_v[i];
+	m_x[i]+= (a_scale*m_v[i]);
       }
   }
   inline void incrementVelocity(double a_scale, const DX& a_rhs)
@@ -51,8 +51,8 @@ public:
   {
     for(unsigned int i=0; i<DIM; i++) 
       {
-	m_x[i]+=a_scaleX*a_rhs.EField[i];
-	m_v[i]+=a_scaleV*a_rhs.EField[i];
+	m_x[i]+=(a_scaleX*a_rhs.EField[i]);
+	m_v[i]+=(a_scaleV*a_rhs.EField[i]);
       }
   }
   /// Used to implement ParticleShift::scale.

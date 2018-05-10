@@ -155,7 +155,12 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
       t_particles[j].addVelocity(dt);
       t_particles[j].increment(a_k.m_particles[j]);
     }
+  
   a_state.wrapParticles(t_particles);
+  // for (auto it=t_particles.begin(); it!=t_particles.end(); ++it)
+  //   {
+  //     it->print();
+  //   }
   //Then use interpolation made up of the interpolating function given
   RectMDArray<double> density(a_state.m_box.grow(m_supportSize));
   density.setVal(0.0);
@@ -170,18 +175,27 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   //     p.print();
   //     cout<<density[p]<<endl;
   //   }
-  // Deals with Ghost Cells 
+  // Deals with Ghost Cells
+  // cout<<"Density = "<<endl;
+  // for (Point p=density.getDBox().getLowCorner(); density.getDBox().notDone(p); density.getDBox().increment(p))
+  //   {
+  //      cout<<density[p]<<endl;
+  //   }
+
   getGhostDeposition(density);
   //setGhost(density);
   // Solve Poisson's Equation with Periodic Boundary Conditions 
-  //write density into phu
+  //write density into phi
+  
+  //cout<<"Density = "<<endl;
   for (Point p=phiBox.getLowCorner(); phiBox.notDone(p); phiBox.increment(p))
     {
       phi[p] = density[p];
       // cout<<"phi[ ";
       // p.print();
-      // cout<< "]"<<phi[p]<<endl;
+      //cout<<density[p]<<endl;
     }
+
   //Poisson solve
   PS.Solve( phi);
   // cout<<"Made it out of solve"<<endl;
@@ -201,12 +215,6 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
   //Set ghost cells for computing the gradient
   //cout<<"Set Ghost"<<endl;
   setGhost(density);
-  // for (Point p=density.getDBox().getLowCorner(); density.getDBox().notDone(p); density.getDBox().increment(p))
-  // {
-  //   cout<<"density[ ";
-  //   p.print();
-  //   cout<< "]"<<density[p]<<endl;
-  // }
   // Finite Difference 4th order first derivative
   //cout<<"Made it to FD step"<<endl;
   for (Point p=m_box.getLowCorner(); m_box.notDone(p); m_box.increment(p))
@@ -226,10 +234,15 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
 	}
     }
   setGhostMD(EField);
+  // cout<<"EField = "<<endl;
+  // for (Point p=EField.getDBox().getLowCorner(); EField.getDBox().notDone(p); EField.getDBox().increment(p))
+  // {
+  //   cout<<EField(p, 0)<<endl;
+  // }
   //Computes Electric Field Energy for plotting in LLD case.
   if (abs(dt) <=pow(10.0, -16))
     {
-      double EField_Amplitude = 0.0;
+    double EField_Amplitude = 0.0;
       for (Point p=m_box.getLowCorner(); m_box.notDone(p); m_box.increment(p))
 	{
 	  for (int j = 0; j<DIM; j++)
@@ -239,7 +252,7 @@ void ParticleVelocities::operator()(ParticleShift& a_k,
 	}
       EField_Amplitude*=m_dx;
       EField_Amplitude = sqrt(EField_Amplitude);
-     // cout<< EField_Amplitude<<endl;
+      cout<< EField_Amplitude<<endl;
     }
   //Interpolate back and return particle fields in a_k
   //cout<<"Made it out of FD step"<<endl;

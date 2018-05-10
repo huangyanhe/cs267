@@ -6,6 +6,7 @@ void ParticleShift::init(const ParticleSet& a_particles)
   m_particles.resize(sizeOfa_particle);
   for (int j = 0; j<m_particles.size(); j++)
     {
+      //Sets EField to zero
       m_particles[j] *= 0.0;
     }
 }

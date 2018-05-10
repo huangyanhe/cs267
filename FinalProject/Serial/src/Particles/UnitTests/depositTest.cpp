@@ -75,7 +75,8 @@ int main(int argc, char* argv[])
       lowCorn[j] = 0.0;
     }
   double dx = 1.0/4.0;
-  ParticleSet TestSet( phaseGridBox, dx, lowCorn, M, order, smoothness);
+  double L = 1.0;
+  ParticleSet TestSet( phaseGridBox, dx, lowCorn, M, L, order, smoothness);
 
   RectMDArray<double> Charge(xGridBox.grow(TestSet.m_W.supportSize()));
   Charge.setVal(0.0);

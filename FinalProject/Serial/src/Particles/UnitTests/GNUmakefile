@@ -4,18 +4,18 @@ HOME = ./../../..
 IK = $(HOME)/src/InterpolationKernel/
 RMDA = $(HOME)/src/RectMDArray/
 PARTICLES = $(HOME)/src/Particles/
-CONV = $(HOME)/src/Hockney
-FFT = $(HOME)/src/fftTools
+PS = $(HOME)/src/PoissonSolver
+FFT = $(HOME)/src/FFT
 WRITERS = $(HOME)/utils/Writers
 TIMER = $(HOME)/utils/timer
-FFTWDIR = /usr/local
-VPATH= . $(IK) $(WRITERS) $(RMDA) $(PARTICLES) $(CONV) $(FFT) $(TIMER)
+FFTWDIR = /usr/local/Cellar/fftw/3.3.6-pl2
+VPATH= . $(IK) $(WRITERS) $(RMDA) $(PARTICLES) $(FFT) $(TIMER) $(PS)
 
 
 DIM=1
 CXX=clang++
 CFLAGS = -g -Wall
-CFLAGS += -std=c++11 -I$(IK) -I$(WRITERS) -I$(RMDA) -I$(PARTICLES) -I$(CONV) -I$(FFT) -I$(TIMER) -I$(FFTWDIR)/include
+CFLAGS += -std=c++11 -I$(IK) -I$(WRITERS) -I$(RMDA) -I$(PARTICLES) -I$(FFT) -I$(PS) -I$(TIMER) -I$(FFTWDIR)/include
 CFLAGS += -DDIM=$(DIM)
 
 odir = ./o.$(DIM)d
@@ -23,7 +23,7 @@ ddir = ./d.$(DIM)d
 
 LIBS:= -L$(FFTWDIR)/lib -lfftw3 
 
-SRCFILES:= $(notdir $(wildcard ./*.cpp $(IK)/*.cpp $(RMDA)/*.cpp $(PARTICLES)/*.cpp $(CONV)/*.cpp $(FFT)/*.cpp $(TIMER)/*.cpp))
+SRCFILES:= $(notdir $(wildcard ./*.cpp $(IK)/*.cpp $(RMDA)/*.cpp $(PS)/*.cpp $(PARTICLES)/*.cpp $(FFT)/*.cpp $(TIMER)/*.cpp))
 
 OBJS:=$(patsubst %.cpp,$(odir)/%.o,$(SRCFILES))
 
